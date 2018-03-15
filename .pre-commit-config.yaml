@@ -2,7 +2,7 @@ exclude: '^$'
 fail_fast: false
 repos:
 - repo: git@github.com:pre-commit/pre-commit-hooks
-  sha: v1.2.0
+  rev: v1.2.0
   hooks:
     - id: autopep8-wrapper
     - id: check-added-large-files
@@ -30,7 +30,7 @@ repos:
     - id: trailing-whitespace
 
 - repo: git@github.com:pre-commit/mirrors-yapf.git
-  sha: v0.20.1
+  rev: v0.20.1
   hooks:
     - id: yapf
       exclude: 'migrations|settings|scripts'
@@ -38,25 +38,25 @@ repos:
       args: ['--style=.style.yapf', '--parallel', '--in-place']
 
 - repo: git@github.com:FalconSocial/pre-commit-python-sorter.git
-  sha: b57843b0b874df1d16eb0bef00b868792cb245c2
+  rev: b57843b0b874df1d16eb0bef00b868792cb245c2
   hooks:
     - id: python-import-sorter
       args: ['--silent-overwrite']
 
 - repo: git@github.com:humitos/mirrors-docformatter.git
-  sha: v0.0.1
+  rev: v0.0.1
   hooks:
     - id: docformatter
       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline', '--no-blank']
 
 - repo: git@github.com:humitos/mirrors-autoflake.git
-  sha: v1.0
+  rev: v1.0
   hooks:
     - id: autoflake
       args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
 
 - repo: git://github.com/guykisel/prospector-mirror
-  sha: b27f281eb9398fc8504415d7fbdabf119ea8c5e1
+  rev: b27f281eb9398fc8504415d7fbdabf119ea8c5e1
   hooks:
     - id: prospector
       # https://github.com/pre-commit/pre-commit/issues/178
