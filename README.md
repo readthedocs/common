@@ -1,3 +1,3 @@
-# autolint
+# readthedocs-common
 
-Multiple configuration for autolint shared along multiple repositories
+Shared bits around multiple repositories
