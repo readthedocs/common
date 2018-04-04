@@ -1,6 +1,6 @@
 # https://github.com/google/yapf
 # current version used in this repo
-# yapf==0.20.0
+# yapf==0.21.0
 
 
 [style]
@@ -31,6 +31,16 @@ BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=True
 # Insert a blank line before a class-level docstring.
 BLANK_LINE_BEFORE_CLASS_DOCSTRING=True
 
+# Sets the number of desired blank lines surrounding top-level function and class definitions. For example:
+#
+# class Foo:
+#     pass
+#                    # <------ having two blank lines here
+#                    # <------ is the default setting
+# class Bar:
+#     pass
+BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=2
+
 # Do not split consecutive brackets. Only relevant when
 # dedent_closing_brackets is set. For example:
 #
@@ -51,6 +61,13 @@ COALESCE_BRACKETS=True
 
 # The column limit.
 COLUMN_LIMIT=80
+
+# The style for continuation alignment. Possible values are:
+#  SPACE: Use spaces for continuation alignment. This is default behavior.
+#  FIXED: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs) for continuation alignment.
+#  VALIGN-RIGHT: Vertically align continuation lines with indent characters. Slightly right (one more indent character) if cannot vertically align continuation lines with indent characters.
+# For options FIXED, and VALIGN-RIGHT are only available when USE_TABS is enabled.
+CONTINUATION_ALIGN_STYLE=SPACE
 
 # Indent width used for line continuations.
 CONTINUATION_INDENT_WIDTH=4
@@ -130,6 +147,9 @@ SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=True
 # Set to True to prefer splitting before '&', '|' or '^' rather than
 # after.
 SPLIT_BEFORE_BITWISE_OPERATOR=False
+
+# Split before the closing bracket if a list or dict literal doesn't fit on a single line.
+SPLIT_BEFORE_CLOSING_BRACKET=False
 
 # Split before a dictionary or set generator (comp_for). For example,
 # note the split before the for:

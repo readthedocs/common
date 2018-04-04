@@ -30,7 +30,7 @@ repos:
     - id: trailing-whitespace
 
 - repo: git@github.com:pre-commit/mirrors-yapf.git
-  rev: v0.20.1
+  rev: v0.21.0
   hooks:
     - id: yapf
       exclude: 'migrations|settings|scripts'
