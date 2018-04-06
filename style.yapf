@@ -88,7 +88,7 @@ CONTINUATION_INDENT_WIDTH=4
 #       start_ts=now()-timedelta(days=3),
 #       end_ts=now(),
 #   )        # <--- this bracket is dedented and on a separate line
-DEDENT_CLOSING_BRACKETS=False
+DEDENT_CLOSING_BRACKETS=True
 
 # Place each dictionary entry onto its own line.
 EACH_DICT_ENTRY_ON_SEPARATE_LINE=False
