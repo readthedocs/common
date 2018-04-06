@@ -16,7 +16,8 @@ default: link pre-commit
 
 # Config rules
 CONFIG = \
-	prospector.yml
+	prospector.yml \
+	tasks.py
 
 CONFIG_HIDDEN = \
 	.eslintrc \
