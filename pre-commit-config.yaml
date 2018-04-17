@@ -42,6 +42,8 @@ repos:
     - id: double-quote-string-fixer
     - id: end-of-file-fixer
     - id: fix-encoding-pragma
+    - id: check-merge-conflict
+    - id: check-symlinks
     - id: trailing-whitespace
     - id: flake8
       additional_dependencies: [
