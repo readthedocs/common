@@ -11,6 +11,7 @@ ignore-paths:
   - docs/
 
 ignore-patterns:
+  - rtd_tests/
   - /migrations/
   - local_settings.py
 
