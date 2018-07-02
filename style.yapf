@@ -28,6 +28,9 @@ ALLOW_MULTILINE_DICTIONARY_KEYS=False
 #       ...
 BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=True
 
+# Insert a blank line before a module docstring.
+BLANK_LINE_BEFORE_MODULE_DOCSTRING=True
+
 # Insert a blank line before a class-level docstring.
 BLANK_LINE_BEFORE_CLASS_DOCSTRING=True
 
@@ -143,6 +146,11 @@ SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=False
 # Split before arguments if the argument list is terminated by a
 # comma.
 SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=True
+
+# If a comma separated list (dict, list, tuple, or function def) is on
+# a line that is too long, split such that all elements are on a
+# single line.
+SPLIT_ALL_COMMA_SEPARATED_VALUES=True
 
 # Set to True to prefer splitting before '&', '|' or '^' rather than
 # after.

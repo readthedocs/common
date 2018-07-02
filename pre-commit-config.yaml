@@ -14,7 +14,7 @@ repos:
       args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
 
 - repo: git@github.com:pre-commit/mirrors-yapf.git
-  rev: v0.21.0
+  rev: v0.22.0
   hooks:
     - id: yapf
       exclude: 'migrations|settings|scripts'
