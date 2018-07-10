@@ -22,6 +22,7 @@ pep8:
 
 pylint:
   options:
+    docstring-min-length: 20
     dummy-variables-rgx: '_$|__$|dummy'
     max-line-length: 100
   disable:
@@ -34,6 +35,15 @@ mccabe:
 pep257:
   run: true
   disable:
+    # These ones are ignored because the `missing-docstring` is checked
+    # by `pylint` and it has an option called `docstring-min-length`
+    # which is set to 20. So, methods that are < 20 lines do not
+    # require docstring. In this case, `pep257` will fail because it
+    # will say the docstring is required.
+    - D100  # Missing docstring in public module
+    - D101  # Missing docstring in public class
+    - D102  # Missing docstring in public method
+
     - D105
     - D211
     - D104
