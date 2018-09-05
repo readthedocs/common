@@ -21,6 +21,7 @@ repos:
       additional_dependencies: ['futures']
       args: ['--style=.style.yapf', '--parallel', '--in-place']
 
+# When calling `pre-commit autoupdate`, this repo needs to be commented because it fails
 - repo: git@github.com:FalconSocial/pre-commit-python-sorter.git
   rev: b57843b0b874df1d16eb0bef00b868792cb245c2  # higher than 1.0.4 (latest release)
   hooks:
