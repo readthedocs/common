@@ -1,6 +1,6 @@
 # https://github.com/google/yapf
 # current version used in this repo
-# yapf==0.21.0
+# yapf==0.23.0
 
 
 [style]
@@ -93,6 +93,10 @@ CONTINUATION_INDENT_WIDTH=4
 #   )        # <--- this bracket is dedented and on a separate line
 DEDENT_CLOSING_BRACKETS=True
 
+# Disable the heuristic which places each list element on a separate
+# line if the list is comma-terminated.
+DISABLE_ENDING_COMMA_HEURISTIC=False
+
 # Place each dictionary entry onto its own line.
 EACH_DICT_ENTRY_ON_SEPARATE_LINE=False
 
@@ -150,7 +154,7 @@ SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=True
 # If a comma separated list (dict, list, tuple, or function def) is on
 # a line that is too long, split such that all elements are on a
 # single line.
-SPLIT_ALL_COMMA_SEPARATED_VALUES=True
+SPLIT_ALL_COMMA_SEPARATED_VALUES=False
 
 # Set to True to prefer splitting before '&', '|' or '^' rather than
 # after.
@@ -202,7 +206,7 @@ SPLIT_PENALTY_BITWISE_OPERATOR=300
 SPLIT_PENALTY_COMPREHENSION=80
 
 # The penalty for characters over the column limit.
-SPLIT_PENALTY_EXCESS_CHARACTER=2600
+SPLIT_PENALTY_EXCESS_CHARACTER=50
 
 # The penalty incurred by adding a line split to the unwrapped
 # line. The more line splits added the higher the penalty.
@@ -218,7 +222,7 @@ SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30
 #
 #   from a_very_long_or_indented_module_name_yada_yad import (
 #       long_argument_1, long_argument_2, long_argument_3)
-SPLIT_PENALTY_IMPORT_NAMES=0
+SPLIT_PENALTY_IMPORT_NAMES=1000
 
 # The penalty of splitting the line around the 'and' and 'or'
 # operators.
