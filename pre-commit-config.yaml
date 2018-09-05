@@ -22,7 +22,7 @@ repos:
       args: ['--style=.style.yapf', '--parallel', '--in-place']
 
 - repo: git@github.com:FalconSocial/pre-commit-python-sorter.git
-  rev: b57843b0b874df1d16eb0bef00b868792cb245c2
+  rev: b57843b0b874df1d16eb0bef00b868792cb245c2  # higher than 1.0.4 (latest release)
   hooks:
     - id: python-import-sorter
       args: ['--silent-overwrite']
