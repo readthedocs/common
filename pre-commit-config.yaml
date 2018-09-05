@@ -77,4 +77,11 @@ repos:
       # https://github.com/pre-commit/pre-commit/issues/178
       language: system
       files: '\.py$'
-      args: ['--profile=prospector']
+      args: ['--profile=prospector', '--profile-path=.']
+      exclude: 'migrations'
+
+      # We need run ``pip install -r requirements/testing.txt -r
+      # requirements/lint.txt`` in the virtualenv where our RTD
+      # project is installed because we are using ``language: system``
+      # for this hook
+      # additional_dependencies: []
