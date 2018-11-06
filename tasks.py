@@ -32,7 +32,7 @@ Label = namedtuple('Label', ['name', 'color', 'desc', 'transpose'])
 
 
 @task
-def prepare(ctx, version, since=None):
+def prepare(ctx, version, since=None, path=None):
     """
     Prepare the next release version by updating files.
 
@@ -46,7 +46,9 @@ def prepare(ctx, version, since=None):
     for the new version.
     """
     print('Updating release version in setup.cfg')
-    setupcfg_path = os.path.join(REPO_PATH, 'setup.cfg')
+    if not path:
+        path = REPO_PATH
+    setupcfg_path = os.path.join(path, 'setup.cfg')
     config = RawConfigParser()
     config.read(setupcfg_path)
 
@@ -72,13 +74,13 @@ def prepare(ctx, version, since=None):
         # correct. This can change depending on git reset, etc.
         git_log = ctx.run('git log -1 --format="%ad" -- CHANGELOG.rst')
         since = parse(git_log.stdout.strip()).strftime('%Y-%m-%d')
-    changelog_path = os.path.join(REPO_PATH, 'CHANGELOG.rst')
+    changelog_path = os.path.join(path, 'CHANGELOG.rst')
     template_path = os.path.join(
-        REPO_PATH,
+        path,
         'common',
         'changelog.hbs',
     )
-    bin_path = os.path.join(REPO_PATH, 'node_modules', '.bin')
+    bin_path = os.path.join(path, 'node_modules', '.bin')
     cmd = (
         '{bin_path}/gh-changelog '
         '-o {owner} -r {repository} '
