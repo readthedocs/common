@@ -61,7 +61,7 @@ def prepare(ctx, version, since=None):
 
     # Set the release number
     config.set('metadata', 'version', version)
-    with open(setupcfg_path, 'wb') as configfile:
+    with open(setupcfg_path, 'w') as configfile:
         config.write(configfile)
 
     # Install and run
