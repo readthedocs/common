@@ -32,7 +32,7 @@ Label = namedtuple('Label', ['name', 'color', 'desc', 'transpose'])
 
 
 @task
-def prepare(ctx, version, since=None, path=None):
+def prepare(ctx, version, since=None, path=REPO_PATH):
     """
     Prepare the next release version by updating files.
 
@@ -46,8 +46,6 @@ def prepare(ctx, version, since=None, path=None):
     for the new version.
     """
     print('Updating release version in setup.cfg')
-    if not path:
-        path = REPO_PATH
     setupcfg_path = os.path.join(path, 'setup.cfg')
     config = RawConfigParser()
     config.read(setupcfg_path)
