@@ -32,7 +32,7 @@ Label = namedtuple('Label', ['name', 'color', 'desc', 'transpose'])
 
 
 @task
-def prepare(ctx, version, since=None, path=REPO_PATH):
+def prepare(ctx, version, path=REPO_PATH, since=None):
     """
     Prepare the next release version by updating files.
 
