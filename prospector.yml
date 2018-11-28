@@ -31,6 +31,8 @@ pylint:
     # We are running lint with Python 3.x but we still support Python 2.x
     # (corporate site is under Python 2.x)
     - useless-object-inheritance
+    # We need to adapt our isot config
+    - relative-beyond-top-level
 
 mccabe:
   run: false
