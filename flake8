@@ -1,3 +1,36 @@
 [flake8]
-ignore = C818,C819,E125,D100,D101,D102,D103,D105,D106,D107,D200,D202,D211,D403,P101,FI15,FI16,FI12,FI11,FI17,FI50,FI53,FI54,MQ101,T000
-max-line-length = 80
+ignore =
+  C812,  # missing trailing comma
+  C818,
+  C819,
+  D100,
+  D101,
+  D102,
+  D103,
+  D105,
+  D106,
+  D107,
+  D200,
+  D202,
+  D211,
+  D403,
+
+  E125,  # continuation line with same indent as next logical line
+
+  FI15,
+  FI16,
+  FI12,
+  FI11,
+  FI17,
+  FI50,
+  FI53,
+  FI54,
+
+  MQ101,
+
+  P101,
+
+  Q000,
+  T000,
+  W503  # line break before binary operator
+max-line-length = 88

@@ -2,23 +2,11 @@ exclude: 'migrations|settings|scripts|tests'
 fail_fast: false
 repos:
 
-- repo: https://github.com/asottile/add-trailing-comma
-  rev: v0.7.0
+- repo: https://github.com/ambv/black
+  rev: 18.9b0
   hooks:
-    - id: add-trailing-comma
-
-- repo: git@github.com:humitos/mirrors-autoflake.git
-  rev: v1.1
-  hooks:
-    - id: autoflake
-      args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
-
-- repo: git@github.com:pre-commit/mirrors-yapf.git
-  rev: v0.25.0
-  hooks:
-    - id: yapf
-      additional_dependencies: ['futures']
-      args: ['--style=.style.yapf', '--parallel', '--in-place']
+    - id: black
+      language_version: python3.6
 
 # When calling `pre-commit autoupdate`, this repo needs to be commented because it fails
 - repo: git@github.com:FalconSocial/pre-commit-python-sorter.git
@@ -31,26 +19,23 @@ repos:
   rev: v1.0
   hooks:
     - id: docformatter
-      args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
+      args: ['--in-place', '--wrap-summaries=88', '--wrap-descriptions=88', '--pre-summary-newline']
 
 - repo: git@github.com:pre-commit/pre-commit-hooks
   rev: v1.4.0
   hooks:
-    # Disabled because yapf is better for our purpose
-    # - id: autopep8-wrapper
     - id: check-added-large-files
     - id: debug-statements
-    - id: double-quote-string-fixer
     - id: end-of-file-fixer
     - id: fix-encoding-pragma
     - id: check-merge-conflict
     - id: check-symlinks
-    - id: trailing-whitespace
     - id: mixed-line-ending
       args: ['--fix=lf']
     - id: flake8
       additional_dependencies: [
       'flake8-blind-except',
+      'flake8-bugbear',
       'flake8-coding',
       'flake8-commas',
       'flake8-comprehensions',
@@ -67,7 +52,6 @@ repos:
       # 'flake8-debugger',
       # 'flake8-todo',
       ]
-      exclude: 'test_oauth.py'
 
 - repo: git://github.com/guykisel/prospector-mirror
   rev: b27f281eb9398fc8504415d7fbdabf119ea8c5e1
