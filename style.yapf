@@ -1,6 +1,6 @@
 # https://github.com/google/yapf
 # current version used in this repo
-# yapf==0.23.0
+# yapf==0.25.0
 
 
 [style]
@@ -124,6 +124,9 @@ INDENT_DICTIONARY_VALUE=False
 # The number of columns to use for indentation.
 INDENT_WIDTH=4
 
+# Set to True to prefer indented blank lines rather than empty
+INDENT_BLANK_LINES=False
+
 # Join short lines into one line. E.g., single line 'if' statements.
 JOIN_MULTIPLE_LINES=True
 
@@ -171,6 +174,13 @@ SPLIT_BEFORE_CLOSING_BRACKET=False
 #     for variable in bar if variable != 42
 # }
 SPLIT_BEFORE_DICT_SET_GENERATOR=True
+
+# Split before the '.' if we need to split a longer expression:
+# foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+# would reformat to something like:
+#  foo = ('This is a really long string: {}, {}, {}, {}'
+#         .format(a, b, c, d))
+SPLIT_BEFORE_DOT=True
 
 # Split after the opening paren which surrounds an expression if it doesn't fit on a single line.
 SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=True
