@@ -1,9 +1,9 @@
-exclude: 'migrations|settings|scripts|tests'
+exclude: '^$|migrations|settings|scripts|tests'
 fail_fast: false
 repos:
 
 - repo: https://github.com/asottile/add-trailing-comma
-  rev: v0.7.0
+  rev: v0.7.1
   hooks:
     - id: add-trailing-comma
 
@@ -26,6 +26,7 @@ repos:
   hooks:
     - id: python-import-sorter
       args: ['--silent-overwrite']
+      exclude: 'wsgi.py'
 
 - repo: git@github.com:humitos/mirrors-docformatter.git
   rev: v1.0
@@ -34,7 +35,7 @@ repos:
       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
 
 - repo: git@github.com:pre-commit/pre-commit-hooks
-  rev: v1.4.0
+  rev: v2.1.0
   hooks:
     # Disabled because yapf is better for our purpose
     # - id: autopep8-wrapper
@@ -70,7 +71,7 @@ repos:
       exclude: 'test_oauth.py'
 
 - repo: git://github.com/guykisel/prospector-mirror
-  rev: b27f281eb9398fc8504415d7fbdabf119ea8c5e1
+  rev: 7ff847e779347033ebbd9e3b88279e7f3a998b45
   hooks:
     - id: prospector
       # https://github.com/pre-commit/pre-commit/issues/178
