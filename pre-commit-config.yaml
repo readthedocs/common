@@ -68,7 +68,6 @@ repos:
       # 'flake8-debugger',
       # 'flake8-todo',
       ]
-      exclude: 'test_oauth.py'
 
 - repo: git://github.com/guykisel/prospector-mirror
   rev: 7ff847e779347033ebbd9e3b88279e7f3a998b45
