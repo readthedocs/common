@@ -1,9 +1,9 @@
-exclude: '^$'
+exclude: 'migrations|settings|scripts|tests'
 fail_fast: false
 repos:
 
 - repo: https://github.com/asottile/add-trailing-comma
-  sha: v0.7.0
+  rev: v0.7.0
   hooks:
     - id: add-trailing-comma
 
@@ -14,10 +14,9 @@ repos:
       args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
 
 - repo: git@github.com:pre-commit/mirrors-yapf.git
-  rev: v0.23.0
+  rev: v0.25.0
   hooks:
     - id: yapf
-      exclude: 'migrations|settings|scripts'
       additional_dependencies: ['futures']
       args: ['--style=.style.yapf', '--parallel', '--in-place']
 
@@ -78,7 +77,6 @@ repos:
       language: system
       files: '\.py$'
       args: ['--profile=prospector', '--profile-path=.']
-      exclude: 'migrations'
 
       # We need run ``pip install -r requirements/testing.txt -r
       # requirements/lint.txt`` in the virtualenv where our RTD
