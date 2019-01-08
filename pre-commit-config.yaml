@@ -43,6 +43,7 @@ repos:
     - id: debug-statements
     - id: double-quote-string-fixer
     - id: end-of-file-fixer
+      exclude: 'static'
     - id: fix-encoding-pragma
     - id: check-merge-conflict
     - id: check-symlinks
