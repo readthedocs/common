@@ -17,7 +17,6 @@ repos:
   rev: v0.25.0
   hooks:
     - id: yapf
-      additional_dependencies: ['futures']
       args: ['--style=.style.yapf', '--parallel', '--in-place']
 
 # When calling `pre-commit autoupdate`, this repo needs to be commented because it fails
