@@ -2,10 +2,10 @@ exclude: '^$|migrations|settings|scripts|tests'
 fail_fast: false
 repos:
 
-- repo: https://github.com/asottile/add-trailing-comma
-  rev: v0.7.1
-  hooks:
-    - id: add-trailing-comma
+# - repo: https://github.com/asottile/add-trailing-comma
+#   rev: v0.7.1
+#   hooks:
+#     - id: add-trailing-comma
 
 - repo: git@github.com:humitos/mirrors-autoflake.git
   rev: v1.1
