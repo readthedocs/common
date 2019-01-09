@@ -28,8 +28,9 @@ repos:
       args: ['--silent-overwrite']
       exclude: 'wsgi.py'
 
-- repo: git@github.com:humitos/mirrors-docformatter.git
-  rev: v1.0
+- repo: git@github.com:myint/docformatter.git
+  # Latest release v1.0 does not contains the .pre-commit-hooks.yaml file
+  rev: 7cb0c50b674680e28cae8c4c1add6b43ed2ccb91
   hooks:
     - id: docformatter
       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
