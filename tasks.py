@@ -335,6 +335,7 @@ def upgrade_all_packages(ctx, skip=False, patch=False, packages=None):
         packages = (
             'redis',
             'commonmark',
+            'recommonmark',
             'django',
             'docker',
             'celery',
