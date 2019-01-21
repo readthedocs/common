@@ -1,4 +1,4 @@
-exclude: '^$|migrations|settings|scripts|tests'
+exclude: '^$|settings|scripts'
 fail_fast: false
 repos:
 
@@ -17,6 +17,7 @@ repos:
   rev: v0.25.0
   hooks:
     - id: yapf
+      exclude: 'migrations|tests'
       args: ['--style=.style.yapf', '--parallel', '--in-place']
 
 # When calling `pre-commit autoupdate`, this repo needs to be commented because it fails
