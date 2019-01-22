@@ -1,11 +1,11 @@
-exclude: 'migrations|settings|scripts|tests'
+exclude: '^$|settings|scripts'
 fail_fast: false
 repos:
 
-- repo: https://github.com/asottile/add-trailing-comma
-  rev: v0.7.0
-  hooks:
-    - id: add-trailing-comma
+# - repo: https://github.com/asottile/add-trailing-comma
+#   rev: v0.7.1
+#   hooks:
+#     - id: add-trailing-comma
 
 - repo: git@github.com:humitos/mirrors-autoflake.git
   rev: v1.1
@@ -17,7 +17,7 @@ repos:
   rev: v0.25.0
   hooks:
     - id: yapf
-      additional_dependencies: ['futures']
+      exclude: 'migrations|tests'
       args: ['--style=.style.yapf', '--parallel', '--in-place']
 
 # When calling `pre-commit autoupdate`, this repo needs to be commented because it fails
@@ -26,15 +26,17 @@ repos:
   hooks:
     - id: python-import-sorter
       args: ['--silent-overwrite']
+      exclude: 'wsgi.py'
 
-- repo: git@github.com:humitos/mirrors-docformatter.git
-  rev: v1.0
+- repo: git@github.com:myint/docformatter.git
+  # Latest release v1.0 does not contains the .pre-commit-hooks.yaml file
+  rev: 7cb0c50b674680e28cae8c4c1add6b43ed2ccb91
   hooks:
     - id: docformatter
       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
 
 - repo: git@github.com:pre-commit/pre-commit-hooks
-  rev: v1.4.0
+  rev: v2.1.0
   hooks:
     # Disabled because yapf is better for our purpose
     # - id: autopep8-wrapper
@@ -42,6 +44,7 @@ repos:
     - id: debug-statements
     - id: double-quote-string-fixer
     - id: end-of-file-fixer
+      exclude: 'static'
     - id: fix-encoding-pragma
     - id: check-merge-conflict
     - id: check-symlinks
@@ -67,10 +70,9 @@ repos:
       # 'flake8-debugger',
       # 'flake8-todo',
       ]
-      exclude: 'test_oauth.py'
 
 - repo: git://github.com/guykisel/prospector-mirror
-  rev: b27f281eb9398fc8504415d7fbdabf119ea8c5e1
+  rev: 7ff847e779347033ebbd9e3b88279e7f3a998b45
   hooks:
     - id: prospector
       # https://github.com/pre-commit/pre-commit/issues/178

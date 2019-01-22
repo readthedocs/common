@@ -16,7 +16,7 @@ To install::
 Setup
 -----
 
-The release proces automatically handles updating the changelog and incrementing
+The release process automatically handles updating the changelog and incrementing
 a version in setup.cfg. You'll need a few extra piece to make this work in each
 repository: a version to manipulate and information on the repo for changelog
 automation.
