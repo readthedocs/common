@@ -46,6 +46,7 @@ repos:
     - id: end-of-file-fixer
       exclude: 'static'
     - id: fix-encoding-pragma
+      args: ['--remove']
     - id: check-merge-conflict
     - id: check-symlinks
     - id: trailing-whitespace
@@ -54,7 +55,6 @@ repos:
     - id: flake8
       additional_dependencies: [
       'flake8-blind-except',
-      'flake8-coding',
       'flake8-commas',
       'flake8-comprehensions',
       'flake8-deprecated',
