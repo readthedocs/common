@@ -7,6 +7,42 @@ repos:
 #   hooks:
 #     - id: add-trailing-comma
 
+- repo: git@github.com:pre-commit/pre-commit-hooks
+  rev: v2.1.0
+  hooks:
+    # Disabled because yapf is better for our purpose
+    # - id: autopep8-wrapper
+    - id: check-added-large-files
+    - id: debug-statements
+    - id: double-quote-string-fixer
+    - id: end-of-file-fixer
+      exclude: 'static'
+    - id: fix-encoding-pragma
+      args: ['--remove']
+    - id: check-merge-conflict
+    - id: check-symlinks
+    - id: trailing-whitespace
+    - id: mixed-line-ending
+      args: ['--fix=lf']
+    - id: flake8
+      additional_dependencies: [
+      'flake8-blind-except',
+      'flake8-commas',
+      'flake8-comprehensions',
+      'flake8-deprecated',
+      'flake8-docstrings',
+      'flake8-meiqia',
+      'flake8-mutable',
+      'flake8-pep3101',
+      'flake8-quotes',
+      'flake8-string-format',
+      'flake8-tidy-imports',
+      # These are good but are broken with current pydocstyle version
+      # 'flake8-print',
+      # 'flake8-debugger',
+      # 'flake8-todo',
+      ]
+
 - repo: git@github.com:humitos/mirrors-autoflake.git
   rev: v1.1
   hooks:
@@ -34,42 +70,6 @@ repos:
   hooks:
     - id: docformatter
       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
-
-- repo: git@github.com:pre-commit/pre-commit-hooks
-  rev: v2.1.0
-  hooks:
-    # Disabled because yapf is better for our purpose
-    # - id: autopep8-wrapper
-    - id: check-added-large-files
-    - id: debug-statements
-    - id: double-quote-string-fixer
-    - id: end-of-file-fixer
-      exclude: 'static'
-    - id: fix-encoding-pragma
-    - id: check-merge-conflict
-    - id: check-symlinks
-    - id: trailing-whitespace
-    - id: mixed-line-ending
-      args: ['--fix=lf']
-    - id: flake8
-      additional_dependencies: [
-      'flake8-blind-except',
-      'flake8-coding',
-      'flake8-commas',
-      'flake8-comprehensions',
-      'flake8-deprecated',
-      'flake8-docstrings',
-      'flake8-meiqia',
-      'flake8-mutable',
-      'flake8-pep3101',
-      'flake8-quotes',
-      'flake8-string-format',
-      'flake8-tidy-imports',
-      # These are good but are broken with current pydocstyle version
-      # 'flake8-print',
-      # 'flake8-debugger',
-      # 'flake8-todo',
-      ]
 
 - repo: git://github.com/guykisel/prospector-mirror
   rev: 7ff847e779347033ebbd9e3b88279e7f3a998b45
