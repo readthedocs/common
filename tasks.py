@@ -12,15 +12,13 @@ To get more info on tasks::
     invoke -h setup-labels
 """
 
-from __future__ import division, print_function, unicode_literals
-
 import glob
 import os
 import textwrap
 from collections import namedtuple
 
 from dateutil.parser import parse
-from future.moves.configparser import RawConfigParser, NoSectionError
+from configparser import RawConfigParser, NoSectionError
 from invoke import task, Exit
 
 
