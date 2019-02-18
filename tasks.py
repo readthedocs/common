@@ -12,14 +12,13 @@ To get more info on tasks::
     invoke -h setup-labels
 """
 
-from __future__ import division, print_function, unicode_literals
-
+import glob
 import os
 import textwrap
 from collections import namedtuple
 
 from dateutil.parser import parse
-from future.moves.configparser import RawConfigParser, NoSectionError
+from configparser import RawConfigParser, NoSectionError
 from invoke import task, Exit
 
 
@@ -294,3 +293,57 @@ def setup_labels(ctx, repo, dry_run=False):
         print('Did not do anything with the following labels:')
         for label in untouched:
             print(' - {0}'.format(label.name))
+
+
+@task(name='upgrade')
+def upgrade_all_packages(ctx, skip=False, patch=False, packages=None):
+    """
+    Upgrade all the packages listed in all ``requirements/*.txt`` files.
+
+    This task only upgrades the versions of the packages in the text files, but
+    do not perform the action to effectively upgrade them in the system.
+
+    The task is used to keep Read the Docs updated and find potential
+    incompatibilities with newer versions and take advantage of the latest
+    securities releases.
+    """
+    try:
+        import pur
+    except ImportError:
+        print('You need to install `pur` package: "pip install pur"')
+        raise Exit(1)
+
+    if patch and not skip:
+        method = '--patch'
+    elif skip and not patch:
+        method = '--skip'
+    elif not skip and not patch:
+        # default
+        method = '--skip'
+    else:
+        print("You can't use --patch and --skip together.")
+        raise Exit(1)
+
+    command_template = 'pur {method} {packages} --requirement {reqfile}'
+
+    # We only upgrade these packages for the patch version of them because we
+    # found there are some incompatibilities with the following versions. See
+    # each .txt file to know the reasons.
+    if packages is None:
+        packages = (
+            'redis',
+            'commonmark',
+            'django',
+            'docker',
+            'celery',
+            'gitpython',
+            'elasticsearch',
+            'pyelasticsearch',
+            'mercurial',
+        )
+        packages = ','.join(packages)
+
+    for reqfile in glob.glob('requirements/*.txt'):
+        cmd = command_template.format(packages=packages, reqfile=reqfile, method=method)
+        print('Running: {}'.format(cmd))
+        ctx.run(cmd)
