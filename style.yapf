@@ -1,6 +1,6 @@
 # https://github.com/google/yapf
 # current version used in this repo
-# yapf==0.25.0
+# yapf==0.26.0
 
 
 [style]
@@ -18,6 +18,27 @@ ALLOW_MULTILINE_LAMBDAS=False
 #          value,
 # }
 ALLOW_MULTILINE_DICTIONARY_KEYS=False
+
+# Allow splitting before a default / named assignment in an argument list.
+ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True
+
+# Let spacing indicate operator precedence. For example:
+# a = 1 * 2 + 3 / 4
+# b = 1 / 2 - 3 * 4
+# c = (1 + 2) * (3 - 4)
+# d = (1 - 2) / (3 + 4)
+# e = 1 * 2 - 3
+# f = 1 + 2 + 3 + 4
+#
+# will be formatted as follows to indicate precedence:
+#
+# a = 1*2 + 3/4
+# b = 1/2 - 3*4
+# c = (1+2) * (3-4)
+# d = (1-2) / (3+4)
+# e = 1*2 - 3
+# f = 1 + 2 + 3 + 4
+ARITHMETIC_PRECEDENCE_INDICATION=True
 
 # Insert a blank line before a 'def' or 'class' immediately nested
 # within another 'def' or 'class'. For example:
