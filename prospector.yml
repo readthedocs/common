@@ -15,6 +15,7 @@ ignore-patterns:
   - rtd_tests/
   - /migrations/
   - local_settings.py
+  - settings/
 
 pep8:
   full: true
@@ -27,12 +28,8 @@ pylint:
     dummy-variables-rgx: '_$|__$|dummy'
     max-line-length: 100
   disable:
-    - logging-format-interpolation
     - inconsistent-return-statements
-    # We are running lint with Python 3.x but we still support Python 2.x
-    # (corporate site is under Python 2.x)
-    - useless-object-inheritance
-    # We need to adapt our isort config
+    # We need to adapt our isot config
     - relative-beyond-top-level
 
 mccabe:
@@ -56,6 +53,8 @@ pep257:
 
     - D202  # No blank lines allowed after function docstring (found 1)
     - D211
+    - D104
+    - D202  # No blank lines allowed after function docstring
     - D212  # Multi-line docstring summary should start at the first line
 
     # pydocstyle
