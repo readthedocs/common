@@ -16,6 +16,7 @@ ignore-patterns:
   - /migrations/
   - local_settings.py
   - settings/
+  - conftest.py
 
 pep8:
   full: true
