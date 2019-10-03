@@ -22,8 +22,7 @@ from configparser import RawConfigParser, NoSectionError
 from invoke import task, Exit
 
 
-# This is the symlink path in the repo
-REPO_PATH = os.path.dirname(__file__)
+REPO_PATH = os.path.dirname(os.path.dirname(__file__))
 SETUP_SECTION = 'tool:release'
 
 # Label class used below for setup-labels
