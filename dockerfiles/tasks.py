@@ -50,7 +50,8 @@ def manage(c, command):
 @task
 def attach(c, container):
     """Attach a tty to a running container (useful for pdb)."""
-    c.run(f'docker attach readthedocsorg_{container}_1', pty=True)
+    prefix = c['container_prefix'] # readthedocsorg or readthedocs-corporate
+    c.run(f'docker attach {prefix}_{container}_1', pty=True)
 
 @task
 def restart(c, containers):
