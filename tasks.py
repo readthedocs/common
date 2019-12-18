@@ -17,7 +17,6 @@ import os
 import textwrap
 from collections import namedtuple
 
-from dateutil.parser import parse
 from configparser import RawConfigParser, NoSectionError
 from invoke import task, Exit
 
@@ -43,6 +42,13 @@ def prepare(ctx, version, path=REPO_PATH, since=None):
     updated.  New entries will end up at the top of the file, under a heading
     for the new version.
     """
+
+    try:
+        from dateutil.parser import parse
+    except ImportError:
+        print('You need to install `python-dateutil` package: "pip install python-dateutil"')
+        raise Exit(1)
+
     print('Updating release version in setup.cfg')
     setupcfg_path = os.path.join(path, 'setup.cfg')
     config = RawConfigParser()
