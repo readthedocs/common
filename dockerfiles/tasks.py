@@ -2,6 +2,7 @@ from invoke import task
 
 DOCKER_COMPOSE = 'docker-compose.yml'
 DOCKER_COMPOSE_SEARCH = 'docker-compose-search.yml'
+DOCKER_COMPOSE_DEVPI = 'docker-compose-devpi.yml'
 DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_SEARCH}'
 
 @task
@@ -19,19 +20,31 @@ def down(c, volumes=False):
 
 
 @task
-def up(c, no_search=False, init=False, no_reload=False):
+def up(c, no_search=False, init=False, no_reload=False, no_devpi=False):
     """Start all the docker containers for a Read the Docs instance"""
+    # Environment variables
     INIT = 'INIT='
-    DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD='
     if init:
         INIT = 'INIT=t'
+    DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD='
     if no_reload:
         DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD=t'
 
+    # Extra YAML files
+    NO_SEARCH = f'-f {DOCKER_COMPOSE_SEARCH}'
     if no_search:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} up', pty=True)
-    else:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} up', pty=True)
+        NO_SEARCH = ''
+
+    NO_DEVPI = f'-f {DOCKER_COMPOSE_DEVPI}'
+    if no_devpi:
+        NO_DEVPI = ''
+
+    EXTRAS = ' '.join([
+        NO_SEARCH,
+        NO_DEVPI,
+    ])
+
+    c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} {EXTRAS} up', pty=True)
 
 
 @task
