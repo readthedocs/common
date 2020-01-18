@@ -1,8 +1,9 @@
 from invoke import task
 
-DOCKER_COMPOSE = 'docker-compose.yml'
+DOCKER_COMPOSE = 'common/dockerfiles/docker-compose.yml'
 DOCKER_COMPOSE_SEARCH = 'docker-compose-search.yml'
-DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_SEARCH}'
+DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
+DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}'
 
 @task
 def build(c):
@@ -17,7 +18,6 @@ def down(c, volumes=False):
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} down', pty=True)
 
-
 @task
 def up(c, no_search=False, init=False, no_reload=False):
     """Start all the docker containers for a Read the Docs instance"""
@@ -29,7 +29,7 @@ def up(c, no_search=False, init=False, no_reload=False):
         DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD=t'
 
     if no_search:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} up', pty=True)
+        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} up', pty=True)
     else:
         c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} up', pty=True)
 
