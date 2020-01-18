@@ -30,7 +30,6 @@ services:
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/proxito.sh:/usr/src/app/docker/proxito.sh
-      - ${PWD}:/usr/src/app/checkouts/readthedocs.org
       - ${PWD}/../readthedocs-ext:/usr/src/app/checkouts/readthedocs-ext
     links:
       - storage
@@ -55,8 +54,6 @@ services:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/web.sh:/usr/src/app/docker/web.sh
       - ${PWD}/../readthedocs-ext:/usr/src/app/checkouts/readthedocs-ext
-      - ${PWD}:/usr/src/app/checkouts/readthedocs.org
-      - ${PWD}/dockerfiles/settings/web.py:/usr/src/app/checkouts/readthedocs.org/readthedocs/settings/web.py
     links:
       - storage
       - database
@@ -79,8 +76,6 @@ services:
       - ${PWD}/common/dockerfiles/entrypoints/celery.sh:/usr/src/app/docker/celery.sh
       - ${PWD}/common/dockerfiles/scripts/wait_for_search.py:/usr/src/app/docker/scripts/wait_for_search.py
       - ${PWD}/../readthedocs-ext:/usr/src/app/checkouts/readthedocs-ext
-      - ${PWD}:/usr/src/app/checkouts/readthedocs.org
-      - ${PWD}/dockerfiles/settings/celery.py:/usr/src/app/checkouts/readthedocs.org/readthedocs/settings/celery.py
     links:
       - storage
       - database
@@ -101,8 +96,6 @@ services:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/build.sh:/usr/src/app/docker/build.sh
       - ${PWD}/../readthedocs-ext:/usr/src/app/checkouts/readthedocs-ext
-      - ${PWD}:/usr/src/app/checkouts/readthedocs.org
-      - ${PWD}/dockerfiles/settings/build.py:/usr/src/app/checkouts/readthedocs.org/readthedocs/settings/build.py
 
       # The python code at readthedocs/doc_builder/environments.py
       # mounts `self.project.doc_path`. We need to share this path
