@@ -20,7 +20,7 @@ def down(c, volumes=False):
 
 @task
 def up(c, no_search=False, init=False, no_reload=False):
-    """Start all the docker containers for a Read the Docs instance"""
+    """Create an start all the docker containers for a Read the Docs instance"""
     INIT = 'INIT='
     DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD='
     if init:
@@ -32,6 +32,28 @@ def up(c, no_search=False, init=False, no_reload=False):
         c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} up', pty=True)
     else:
         c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} up', pty=True)
+
+
+@task
+def start(c, no_search=False, init=False, no_reload=False):
+    """Start all services for a Read the Docs instance in the background."""
+    INIT = 'INIT='
+    DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD='
+    if init:
+        INIT = 'INIT=t'
+    if no_reload:
+        DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD=t'
+
+    if no_search:
+        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} start', pty=True)
+    else:
+        c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} start', pty=True)
+
+
+@task
+def stop(c):
+    """Stop all services of the Read the Docs instance."""
+    c.run(f'{DOCKER_COMPOSE_COMMAND} stop', pty=True)
 
 
 @task
