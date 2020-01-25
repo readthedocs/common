@@ -62,7 +62,7 @@ def restart(c, containers):
     # nginx as well because it has the IP cached
     need_nginx_restart = [
         'web',
-        'proxito'
+        'proxito',
         'storage',
     ]
     for extra in need_nginx_restart:
