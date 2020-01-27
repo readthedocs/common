@@ -20,7 +20,7 @@ services:
       - node.name=search
       - cluster.routing.allocation.disk.threshold_enabled=false
       - cluster.info.update.interval=30m
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
     links:
       - web
       - celery
