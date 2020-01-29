@@ -20,40 +20,42 @@ def down(c, volumes=False):
 
 @task
 def up(c, no_search=False, init=False, no_reload=False):
-    """Create an start all the docker containers for a Read the Docs instance"""
-    INIT = 'INIT='
-    DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD='
-    if init:
-        INIT = 'INIT=t'
-    if no_reload:
-        DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD=t'
-
-    if no_search:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} up', pty=True)
-    else:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} up', pty=True)
+    """Create an start all the docker containers for a Read the Docs instance."""
+    _run_init_command(
+        c,
+        no_search=no_search,
+        init=init,
+        no_reload=no_reload,
+        command='up',
+    )
 
 
 @task
-def start(c, no_search=False, init=False, no_reload=False):
-    """Start all services for a Read the Docs instance in the background."""
-    INIT = 'INIT='
-    DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD='
-    if init:
-        INIT = 'INIT=t'
-    if no_reload:
-        DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD=t'
+def start(c, no_search=False, init=False, no_reload=False, containers=''):
+    """Start all services (or just selected ones) for a Read the Docs instance in the background."""
+    _run_init_command(
+        c,
+        no_search=no_search,
+        init=init,
+        no_reload=no_reload,
+        command=f'start {containers}',
+    )
+
+
+def _run_init_command(c, *, no_search, init, no_reload, command):
+    """Helper for up/start commands."""
+    INIT = 'INIT=t' if init else 'INIT='
+    DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD=t' if no_reload else 'DOCKER_NO_RELOAD='
 
     if no_search:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} start', pty=True)
+        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} {command}', pty=True)
     else:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} start', pty=True)
-
+        c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} {command}', pty=True)
 
 @task
-def stop(c):
-    """Stop all services of the Read the Docs instance."""
-    c.run(f'{DOCKER_COMPOSE_COMMAND} stop', pty=True)
+def stop(c, containers=''):
+    """Stop all services (or just selected ones) of a Read the Docs instance."""
+    c.run(f'{DOCKER_COMPOSE_COMMAND} stop {containers}', pty=True)
 
 
 @task
