@@ -1,8 +1,9 @@
 from invoke import task
 
-DOCKER_COMPOSE = 'docker-compose.yml'
-DOCKER_COMPOSE_SEARCH = 'docker-compose-search.yml'
-DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_SEARCH}'
+DOCKER_COMPOSE = 'common/dockerfiles/docker-compose.yml'
+DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
+DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
+DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}'
 
 @task
 def build(c):
@@ -16,7 +17,6 @@ def down(c, volumes=False):
         c.run(f'{DOCKER_COMPOSE_COMMAND} down -v', pty=True)
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} down', pty=True)
-
 
 @task
 def up(c, no_search=False, init=False, no_reload=False):
@@ -48,7 +48,7 @@ def _run_init_command(c, *, no_search, init, no_reload, command):
     DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD=t' if no_reload else 'DOCKER_NO_RELOAD='
 
     if no_search:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} {command}', pty=True)
+        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} {command}', pty=True)
     else:
         c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} {command}', pty=True)
 
@@ -75,7 +75,7 @@ def manage(c, command):
 def attach(c, container):
     """Attach a tty to a running container (useful for pdb)."""
     prefix = c['container_prefix'] # readthedocsorg or readthedocs-corporate
-    c.run(f'docker attach {prefix}_{container}_1', pty=True)
+    c.run(f'docker attach --sig-proxy=false {prefix}_{container}_1', pty=True)
 
 @task
 def restart(c, containers):
@@ -86,7 +86,7 @@ def restart(c, containers):
     # nginx as well because it has the IP cached
     need_nginx_restart = [
         'web',
-        'proxito'
+        'proxito',
         'storage',
     ]
     for extra in need_nginx_restart:
