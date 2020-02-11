@@ -11,6 +11,11 @@ def build(c):
     c.run(f'{DOCKER_COMPOSE_COMMAND} build --no-cache', pty=True)
 
 @task
+def compose(c, command):
+    """Pass the command to docker-compose directly."""
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {command}', pty=True)
+
+@task
 def down(c, volumes=False):
     """Stop and remove all the docker containers."""
     if volumes:
