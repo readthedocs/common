@@ -5,10 +5,13 @@ DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
 DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
 DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}'
 
-@task
-def build(c):
+@task(help={
+    'cache': 'Build Docker image using cache (default: False)',
+})
+def build(c, cache=False):
     """Build docker image for servers."""
-    c.run(f'{DOCKER_COMPOSE_COMMAND} build --no-cache', pty=True)
+    cache_opt = '' if cache else '--no-cache'
+    c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
 
 @task
 def compose(c, command):
@@ -37,7 +40,6 @@ def up(c, no_search=False, init=False, no_reload=False):
         c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} up', pty=True)
     else:
         c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} up', pty=True)
-
 
 @task
 def shell(c, running=False, container='web'):
@@ -75,13 +77,19 @@ def restart(c, containers):
             c.run(f'{DOCKER_COMPOSE_COMMAND} restart nginx', pty=True)
             break
 
-@task
-def pull(c):
+@task(help={
+    'only_latest': 'Only pull the latest tag. Use if you don\'t need all images (default: False)',
+})
+def pull(c, only_latest=False):
     """Pull all docker images required for build servers."""
     images = [
-        ('4.0', 'stable'),
-        ('5.0', 'latest'),
+        ('6.0', 'latest')
     ]
+    if not only_latest:
+        images.extend([
+            ('5.0', 'stable'),
+            ('7.0', 'testing'),
+        ])
     for image, tag in images:
         c.run(f'docker pull readthedocs/build:{image}', pty=True)
         c.run(f'docker tag readthedocs/build:{image} readthedocs/build:{tag}', pty=True)
