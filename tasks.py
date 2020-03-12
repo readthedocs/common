@@ -70,7 +70,7 @@ def prepare(ctx, version, path=REPO_PATH, since=None):
 
     # Install and run
     print('Installing github-changelog')
-    ctx.run('npm install git+https://github.com/agjohnson/github-changelog.git')
+    ctx.run('npm install --no-package-lock git+https://github.com/agjohnson/github-changelog.git')
     if not since:
         # Get last modified date from Git instead of assuming the file metadata is
         # correct. This can change depending on git reset, etc.
