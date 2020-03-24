@@ -16,6 +16,9 @@ else
   --ignore-patterns="*.pyo" \
   --ignore-patterns="*.pyc" \
   --ignore-patterns="*flycheck*.py" \
+  --ignore-patterns="*test*" \
+  --ignore-patterns="*migrations*" \
+  --ignore-patterns="*management/commands*" \
   --ignore-directories \
   --recursive \
   --signal=SIGTERM \
