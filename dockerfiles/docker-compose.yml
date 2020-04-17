@@ -130,3 +130,7 @@ services:
       - postgres_backups_data:/backups
     networks:
       readthedocs:
+
+  storage:
+    environment:
+      - INIT=${INIT:-}
