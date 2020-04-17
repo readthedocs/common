@@ -7,4 +7,6 @@ then
     az storage container create --connection-string $CONNECTION_STRING --public-access "blob" --name "media"
     az storage container create --connection-string $CONNECTION_STRING --public-access "blob" --name "static"
     az storage container create --connection-string $CONNECTION_STRING --public-access "blob" --name "envs"
+
+    az storage cors add --connection-string $CONNECTION_STRING --origins '*' --services 'b' --methods GET OPTIONS HEAD --allowed-headers '*'
 fi
