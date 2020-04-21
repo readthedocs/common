@@ -4,7 +4,7 @@ DOCKER_COMPOSE = 'common/dockerfiles/docker-compose.yml'
 DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
 DOCKER_COMPOSE_DEVPI = 'common/dockerfiles/docker-compose-devpi.yml'
 DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
-DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}'
+DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_DEVPI}'
 
 @task(help={
     'cache': 'Build Docker image using cache (default: False)',
