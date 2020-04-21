@@ -15,4 +15,4 @@ services:
     volumes:
       - devpi:/devpi
     networks:
-      community:
+      readthedocs:
