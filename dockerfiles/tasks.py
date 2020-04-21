@@ -1,14 +1,23 @@
 from invoke import task
 
-DOCKER_COMPOSE = 'docker-compose.yml'
-DOCKER_COMPOSE_SEARCH = 'docker-compose-search.yml'
-DOCKER_COMPOSE_DEVPI = 'docker-compose-devpi.yml'
-DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_SEARCH}'
+DOCKER_COMPOSE = 'common/dockerfiles/docker-compose.yml'
+DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
+DOCKER_COMPOSE_DEVPI = 'common/dockerfiles/docker-compose-devpi.yml'
+DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
+DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}'
+
+@task(help={
+    'cache': 'Build Docker image using cache (default: False)',
+})
+def build(c, cache=False):
+    """Build docker image for servers."""
+    cache_opt = '' if cache else '--no-cache'
+    c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
 
 @task
-def build(c):
-    """Build docker image for servers."""
-    c.run(f'{DOCKER_COMPOSE_COMMAND} build --no-cache', pty=True)
+def compose(c, command):
+    """Pass the command to docker-compose directly."""
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {command}', pty=True)
 
 @task
 def down(c, volumes=False):
@@ -17,7 +26,6 @@ def down(c, volumes=False):
         c.run(f'{DOCKER_COMPOSE_COMMAND} down -v', pty=True)
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} down', pty=True)
-
 
 @task
 def up(c, no_search=False, init=False, no_reload=False, no_devpi=False):
@@ -34,18 +42,15 @@ def up(c, no_search=False, init=False, no_reload=False, no_devpi=False):
     NO_SEARCH = f'-f {DOCKER_COMPOSE_SEARCH}'
     if no_search:
         NO_SEARCH = ''
-
     NO_DEVPI = f'-f {DOCKER_COMPOSE_DEVPI}'
     if no_devpi:
         NO_DEVPI = ''
-
     EXTRAS = ' '.join([
         NO_SEARCH,
         NO_DEVPI,
     ])
 
-    c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} {EXTRAS} up', pty=True)
-
+    c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} {EXTRAS} up', pty=True)
 
 @task
 def shell(c, running=False, container='web'):
@@ -64,7 +69,7 @@ def manage(c, command):
 def attach(c, container):
     """Attach a tty to a running container (useful for pdb)."""
     prefix = c['container_prefix'] # readthedocsorg or readthedocs-corporate
-    c.run(f'docker attach {prefix}_{container}_1', pty=True)
+    c.run(f'docker attach --sig-proxy=false {prefix}_{container}_1', pty=True)
 
 @task
 def restart(c, containers):
@@ -75,7 +80,7 @@ def restart(c, containers):
     # nginx as well because it has the IP cached
     need_nginx_restart = [
         'web',
-        'proxito'
+        'proxito',
         'storage',
     ]
     for extra in need_nginx_restart:
@@ -83,13 +88,19 @@ def restart(c, containers):
             c.run(f'{DOCKER_COMPOSE_COMMAND} restart nginx', pty=True)
             break
 
-@task
-def pull(c):
+@task(help={
+    'only_latest': 'Only pull the latest tag. Use if you don\'t need all images (default: False)',
+})
+def pull(c, only_latest=False):
     """Pull all docker images required for build servers."""
     images = [
-        ('4.0', 'stable'),
-        ('5.0', 'latest'),
+        ('6.0', 'latest')
     ]
+    if not only_latest:
+        images.extend([
+            ('5.0', 'stable'),
+            ('7.0', 'testing'),
+        ])
     for image, tag in images:
         c.run(f'docker pull readthedocs/build:{image}', pty=True)
         c.run(f'docker tag readthedocs/build:{image} readthedocs/build:{tag}', pty=True)
