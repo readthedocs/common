@@ -5,3 +5,5 @@
 # working on a feature that requires a new dependency and you need to
 # call: "pip install newdependency==1.4.2". You can add that command
 # here, and it will be executed in all the instances at startup.
+
+echo 'Executing common.sh'
