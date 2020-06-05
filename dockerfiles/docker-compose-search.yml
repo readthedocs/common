@@ -11,6 +11,10 @@ services:
     environment:
       - SEARCH=t
 
+  web:
+    environment:
+      - SEARCH=t
+
   # You may need to increase the memory for vm
   # sudo sysctl -w vm.max_map_count=262144
   search:
