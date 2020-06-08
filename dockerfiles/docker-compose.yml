@@ -1,8 +1,7 @@
 version: '3'
 
 volumes:
-  build-default-user-builds:
-  build-large-user-builds:
+  build-user-builds:
   storage_data:
   postgres_data:
   postgres_backups_data:
@@ -88,7 +87,7 @@ services:
       readthedocs:
     command: ["../../docker/celery.sh"]
 
-  build-default: &build
+  build:
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/build.sh:/usr/src/app/docker/build.sh
@@ -99,7 +98,7 @@ services:
       # between the build container (git commands), and the container that
       # is created inside the build container (sphinx commands).
       # Because of this, we need to use a shared volume between them
-      - build-default-user-builds:/usr/src/app/checkouts/readthedocs.org/user_builds
+      - build-user-builds:/usr/src/app/checkouts/readthedocs.org/user_builds
 
       # Docker in Docker
       - /var/run/docker.sock:/var/run/docker.sock
@@ -109,34 +108,11 @@ services:
       - cache
     environment:
       - DOCKER_NO_RELOAD
-      - BUILD_USER_BUILDS_VOLUME=build-default-user-builds
-      - CELERY_QUEUE=build:default
     stdin_open: true
     tty: true
     networks:
       readthedocs:
     command: ["../../docker/build.sh"]
-
-  build-large:
-    <<: *build
-    environment:
-      - DOCKER_NO_RELOAD
-      - BUILD_USER_BUILDS_VOLUME=build-large-user-builds
-      - CELERY_QUEUE=build:large
-    volumes:
-      - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
-      - ${PWD}/common/dockerfiles/entrypoints/build.sh:/usr/src/app/docker/build.sh
-      - ${PWD}/../readthedocs-ext:/usr/src/app/checkouts/readthedocs-ext
-
-      # The python code at readthedocs/doc_builder/environments.py
-      # mounts `self.project.doc_path`. We need to share this path
-      # between the build container (git commands), and the container that
-      # is created inside the build container (sphinx commands).
-      # Because of this, we need to use a shared volume between them
-      - build-large-user-builds:/usr/src/app/checkouts/readthedocs.org/user_builds
-
-      # Docker in Docker
-      - /var/run/docker.sock:/var/run/docker.sock
 
   cache:
     image: redis:3.2.7
