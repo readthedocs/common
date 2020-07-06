@@ -7,14 +7,9 @@ ignore-paths:
   - urls.py
   - wsgi.py
   - acl
-  - api
-  - betterversion
-  - bookmarks
   - builds
   - cdn
-  - comments
   - core
-  - djangome
   - doc_builder
   - donate
   - gold
@@ -23,7 +18,6 @@ ignore-paths:
   - notifications
   - oauth
   - payments
-  - privacy
   - profiles
   - projects
   - redirects
@@ -31,7 +25,6 @@ ignore-paths:
   - rtd_tests
   - search
   - settings
-  - tastyapi
   - templates
   - vcs_support
 
