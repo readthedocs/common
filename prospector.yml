@@ -29,6 +29,8 @@ pylint:
     dummy-variables-rgx: '_$|__$|dummy'
     max-line-length: 100
   disable:
+    # We do this for circular imports
+    - import-outside-toplevel
     - inconsistent-return-statements
     # We need to adapt our isot config
     - relative-beyond-top-level
