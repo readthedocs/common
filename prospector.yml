@@ -10,6 +10,10 @@ uses:
 ignore-paths:
   - docs/
   - settings/
+  # pylint can't find the Django model relationships via string path
+  # https://github.com/PyCQA/pylint-django/issues/241
+  # https://github.com/readthedocs/readthedocs-corporate/pull/951#issuecomment-656089561
+  - acl/sso/models.py
 
 ignore-patterns:
   - rtd_tests/
@@ -32,7 +36,7 @@ pylint:
     # We do this for circular imports
     - import-outside-toplevel
     - inconsistent-return-statements
-    # We need to adapt our isot config
+    # We need to adapt our isort config
     - relative-beyond-top-level
 
 mccabe:
