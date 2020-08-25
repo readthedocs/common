@@ -11,7 +11,7 @@ services:
   server:
     # Image used for all the other services (proxito, web, celery, build)
     build:
-      context: .
+      context: ${PWD}
       dockerfile: ${PWD}/dockerfiles/Dockerfile
 
   nginx:
