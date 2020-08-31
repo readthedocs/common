@@ -80,6 +80,9 @@ services:
     depends_on:
       - storage
     environment:
+      # If COLUMNS is not defined Celery fails at startup
+      # https://github.com/celery/celery/issues/5761
+      - COLUMNS=80
       - DOCKER_NO_RELOAD
     stdin_open: true
     tty: true
@@ -107,6 +110,9 @@ services:
       - storage
       - cache
     environment:
+      # If COLUMNS is not defined Celery fails at startup
+      # https://github.com/celery/celery/issues/5761
+      - COLUMNS=80
       - DOCKER_NO_RELOAD
     stdin_open: true
     tty: true
