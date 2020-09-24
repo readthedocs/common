@@ -84,12 +84,12 @@ def restart(c, containers):
 def pull(c, only_latest=False):
     """Pull all docker images required for build servers."""
     images = [
-        ('6.0', 'latest')
+        ('7.0', 'latest')
     ]
     if not only_latest:
         images.extend([
-            ('5.0', 'stable'),
-            ('7.0', 'testing'),
+            ('6.0', 'stable'),
+            ('8.0', 'testing'),
         ])
     for image, tag in images:
         c.run(f'docker pull readthedocs/build:{image}', pty=True)
