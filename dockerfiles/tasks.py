@@ -98,4 +98,4 @@ def pull(c, only_latest=False):
 @task
 def test(c, arguments=''):
     """Run all test suite."""
-    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm --no-deps web tox {arguments}', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} run -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --no-deps web tox {arguments}', pty=True)
