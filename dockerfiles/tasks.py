@@ -33,8 +33,9 @@ def down(c, volumes=False):
     'reload': 'Enable automatic process reloading (default: True)',
     'webpack': 'Start webpack development server (default: False)',
     'ext-theme-enabled': 'Enable new theme from ext-theme (default: False)',
+    'scale-build': 'Add additional build instances (default: 1)',
 })
-def up(c, search=True, init=False, reload=True, webpack=False, ext_theme_enabled=False):
+def up(c, search=True, init=False, reload=True, webpack=False, ext_theme_enabled=False, scale_build=1):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
@@ -56,6 +57,8 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme_enabled
         cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
 
     cmd.append('up')
+
+    cmd.append(f'--scale build={scale_build}')
 
     c.run(' '.join(cmd), pty=True)
 
