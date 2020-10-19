@@ -30,7 +30,7 @@ services:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/proxito.sh:/usr/src/app/docker/proxito.sh
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
-      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../readthedocs-ext-theme}:/usr/src/app/checkouts/ext-theme
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
     links:
       - storage
       - database
@@ -53,7 +53,7 @@ services:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/web.sh:/usr/src/app/docker/web.sh
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
-      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../readthedocs-ext-theme}:/usr/src/app/checkouts/ext-theme
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
     links:
       - storage
       - database
@@ -76,7 +76,7 @@ services:
       - ${PWD}/common/dockerfiles/entrypoints/celery.sh:/usr/src/app/docker/celery.sh
       - ${PWD}/common/dockerfiles/scripts/wait_for_search.py:/usr/src/app/docker/scripts/wait_for_search.py
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
-      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../readthedocs-ext-theme}:/usr/src/app/checkouts/ext-theme
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
     links:
       - storage
       - database
@@ -96,7 +96,7 @@ services:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/build.sh:/usr/src/app/docker/build.sh
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
-      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../readthedocs-ext-theme}:/usr/src/app/checkouts/ext-theme
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
 
       # The python code at readthedocs/doc_builder/environments.py
       # mounts `self.project.doc_path`. We need to share this path
