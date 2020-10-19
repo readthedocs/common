@@ -64,6 +64,7 @@ services:
       - INIT=${INIT:-}
       - DOCKER_NO_RELOAD
       - RTD_EXT_THEME_ENABLED
+      - RTD_EXT_THEME_DEV_SERVER_ENABLED
     stdin_open: true
     tty: true
     networks:
