@@ -32,10 +32,10 @@ def down(c, volumes=False):
     'init': 'Perform initialization steps (default: False)',
     'reload': 'Enable automatic process reloading (default: True)',
     'webpack': 'Start webpack development server (default: False)',
-    'ext-theme-enabled': 'Enable new theme from ext-theme (default: False)',
+    'ext-theme': 'Enable new theme from ext-theme (default: False)',
     'scale-build': 'Add additional build instances (default: 1)',
 })
-def up(c, search=True, init=False, reload=True, webpack=False, ext_theme_enabled=False, scale_build=1):
+def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
@@ -50,10 +50,10 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme_enabled
         cmd.append(f'-f {DOCKER_COMPOSE_SEARCH}')
     if webpack:
         # This option implies the theme is enabled automatically
-        ext_theme_enabled = True
+        ext_theme = True
         cmd.append(f'-f {DOCKER_COMPOSE_WEBPACK}')
         cmd.insert(0, 'RTD_EXT_THEME_DEV_SERVER_ENABLED=t')
-    if ext_theme_enabled:
+    if ext_theme:
         cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
 
     cmd.append('up')
