@@ -72,9 +72,12 @@ def shell(c, running=False, container='web'):
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm {container} /bin/bash', pty=True)
 
 @task
-def manage(c, command):
+def manage(c, command, running=False):
     """Run manage.py with a specific command."""
-    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py {command}', pty=True)
+    subcmd = 'run --rm'
+    if running:
+        subcmd = 'exec'
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} web python3 manage.py {command}', pty=True)
 
 @task
 def attach(c, container):
