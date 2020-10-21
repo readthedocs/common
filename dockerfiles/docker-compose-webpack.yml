@@ -1,0 +1,25 @@
+# docker-compose-webpack.yml starts Webpack dev server for hot reload of built
+# static assets.
+version: '3'
+
+services:
+
+  webpack:
+    image: node:12
+    working_dir: /usr/src/app/checkouts/ext-theme
+    ports:
+      - "10001:10001"
+    volumes:
+      - ${PWD}/common/dockerfiles/entrypoints/webpack.sh:/usr/src/app/docker/webpack.sh
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
+    environment:
+      - INIT=${INIT:-}
+      - DOCKER_NO_RELOAD
+      - NODE_ENV=development
+      - RTD_EXT_THEME_ENABLED
+      - RTD_EXT_THEME_DEV_SERVER_ENABLED
+    stdin_open: true
+    tty: true
+    networks:
+      readthedocs:
+    command: ["../../docker/webpack.sh"]

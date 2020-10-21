@@ -2,8 +2,9 @@ from invoke import task
 
 DOCKER_COMPOSE = 'common/dockerfiles/docker-compose.yml'
 DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
+DOCKER_COMPOSE_WEBPACK = 'common/dockerfiles/docker-compose-webpack.yml'
 DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
-DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}'
+DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
 
 @task(help={
     'cache': 'Build Docker image using cache (default: False)',
@@ -26,21 +27,41 @@ def down(c, volumes=False):
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} down', pty=True)
 
-@task
-def up(c, no_search=False, init=False, no_reload=False, scale_build=1):
+@task(help={
+    'search': 'Start search container (default: True)',
+    'init': 'Perform initialization steps (default: False)',
+    'reload': 'Enable automatic process reloading (default: True)',
+    'webpack': 'Start webpack development server (default: False)',
+    'ext-theme': 'Enable new theme from ext-theme (default: False)',
+    'scale-build': 'Add additional build instances (default: 1)',
+})
+def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1):
     """Start all the docker containers for a Read the Docs instance"""
-    INIT = 'INIT='
-    DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD='
-    SCALE = f'--scale build={scale_build}'
-    if init:
-        INIT = 'INIT=t'
-    if no_reload:
-        DOCKER_NO_RELOAD = 'DOCKER_NO_RELOAD=t'
+    cmd = []
 
-    if no_search:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} up {SCALE}', pty=True)
-    else:
-        c.run(f'{INIT} {DOCKER_NO_RELOAD} {DOCKER_COMPOSE_COMMAND} up {SCALE}', pty=True)
+    cmd.append('INIT=t' if init else 'INIT=')
+    cmd.append('DOCKER_NO_RELOAD=t' if not reload else 'DOCKER_NO_RELOAD=')
+
+    cmd.append('docker-compose')
+    cmd.append(f'-f {DOCKER_COMPOSE}')
+    cmd.append(f'-f {DOCKER_COMPOSE_OVERRIDE}')
+
+    if search:
+        cmd.append(f'-f {DOCKER_COMPOSE_SEARCH}')
+    if webpack:
+        # This option implies the theme is enabled automatically
+        ext_theme = True
+        cmd.append(f'-f {DOCKER_COMPOSE_WEBPACK}')
+        cmd.insert(0, 'RTD_EXT_THEME_DEV_SERVER_ENABLED=t')
+    if ext_theme:
+        cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
+
+    cmd.append('up')
+
+    cmd.append(f'--scale build={scale_build}')
+
+    c.run(' '.join(cmd), pty=True)
+
 
 @task
 def shell(c, running=False, container='web'):
