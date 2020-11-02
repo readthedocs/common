@@ -64,7 +64,7 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
 
 
 @task
-def shell(c, running=False, container='web'):
+def shell(c, running=True, container='web'):
     """Run a shell inside a container."""
     if running:
         c.run(f'{DOCKER_COMPOSE_COMMAND} exec {container} /bin/bash', pty=True)
@@ -72,7 +72,7 @@ def shell(c, running=False, container='web'):
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm {container} /bin/bash', pty=True)
 
 @task
-def manage(c, command, running=False):
+def manage(c, command, running=True):
     """Run manage.py with a specific command."""
     subcmd = 'run --rm'
     if running:
@@ -120,6 +120,9 @@ def pull(c, only_latest=False):
         c.run(f'docker tag readthedocs/build:{image} readthedocs/build:{tag}', pty=True)
 
 @task
-def test(c, arguments=''):
+def test(c, arguments='', running=True):
     """Run all test suite."""
-    c.run(f'{DOCKER_COMPOSE_COMMAND} run -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --no-deps web tox {arguments}', pty=True)
+    if running:
+        c.run(f'{DOCKER_COMPOSE_COMMAND} exec -e GITHUB_TOKEN=$GITHUB_TOKEN web tox {arguments}', pty=True)
+    else:
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --no-deps web tox {arguments}', pty=True)
