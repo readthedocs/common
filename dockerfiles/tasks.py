@@ -14,12 +14,16 @@ def build(c, cache=False):
     cache_opt = '' if cache else '--no-cache'
     c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
 
-@task
+@task(help={
+    'command': 'Command to pass directly to "docker-compose"',
+})
 def compose(c, command):
     """Pass the command to docker-compose directly."""
     c.run(f'{DOCKER_COMPOSE_COMMAND} {command}', pty=True)
 
-@task
+@task(help={
+    'volumes': 'Delete all the data storaged in volumes as well (default: False)',
+})
 def down(c, volumes=False):
     """Stop and remove all the docker containers."""
     if volumes:
@@ -63,7 +67,10 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
     c.run(' '.join(cmd), pty=True)
 
 
-@task
+@task(help={
+    'running': 'Open the shell in a running container',
+    'container': 'Container to open the shell (default: web)'
+})
 def shell(c, running=True, container='web'):
     """Run a shell inside a container."""
     if running:
@@ -71,7 +78,10 @@ def shell(c, running=True, container='web'):
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm {container} /bin/bash', pty=True)
 
-@task
+@task(help={
+    'command': 'Command to pass directly to "django-admin" inside the container'
+    'running': 'Execute "django-admin" in a running container',
+})
 def manage(c, command, running=True):
     """Run manage.py with a specific command."""
     subcmd = 'run --rm'
@@ -79,13 +89,17 @@ def manage(c, command, running=True):
         subcmd = 'exec'
     c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} web python3 manage.py {command}', pty=True)
 
-@task
+@task(help={
+    'container': 'Container to attach',
+})
 def attach(c, container):
     """Attach a tty to a running container (useful for pdb)."""
     prefix = c['container_prefix'] # readthedocsorg or readthedocs-corporate
     c.run(f'docker attach --sig-proxy=false {prefix}_{container}_1', pty=True)
 
-@task
+@task(help={
+    'containers': 'Container(s) to restart (it may restart "nginx" container if required)',
+})
 def restart(c, containers):
     """Restart one or more containers."""
     c.run(f'{DOCKER_COMPOSE_COMMAND} restart {containers}', pty=True)
@@ -119,9 +133,12 @@ def pull(c, only_latest=False):
         c.run(f'docker pull readthedocs/build:{image}', pty=True)
         c.run(f'docker tag readthedocs/build:{image} readthedocs/build:{tag}', pty=True)
 
-@task
+@task(help={
+    'arguments': 'Arguments to pass directly to "tox" command'
+    'running': 'Run all tests in a running container',
+})
 def test(c, arguments='', running=True):
-    """Run all test suite."""
+    """Run all test suite using ``tox``."""
     if running:
         c.run(f'{DOCKER_COMPOSE_COMMAND} exec -e GITHUB_TOKEN=$GITHUB_TOKEN web tox {arguments}', pty=True)
     else:
