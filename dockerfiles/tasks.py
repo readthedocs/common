@@ -79,7 +79,7 @@ def shell(c, running=True, container='web'):
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm {container} /bin/bash', pty=True)
 
 @task(help={
-    'command': 'Command to pass directly to "django-admin" inside the container'
+    'command': 'Command to pass directly to "django-admin" inside the container',
     'running': 'Execute "django-admin" in a running container',
 })
 def manage(c, command, running=True):
@@ -134,7 +134,7 @@ def pull(c, only_latest=False):
         c.run(f'docker tag readthedocs/build:{image} readthedocs/build:{tag}', pty=True)
 
 @task(help={
-    'arguments': 'Arguments to pass directly to "tox" command'
+    'arguments': 'Arguments to pass directly to "tox" command',
     'running': 'Run all tests in a running container',
 })
 def test(c, arguments='', running=True):
