@@ -81,12 +81,17 @@ def shell(c, running=True, container='web'):
 @task(help={
     'command': 'Command to pass directly to "django-admin" inside the container',
     'running': 'Execute "django-admin" in a running container',
+    'backupdb': 'Backup postgres database before running Django "manage" command',
 })
-def manage(c, command, running=True):
+def manage(c, command, running=True, backupdb=False):
     """Run manage.py with a specific command."""
     subcmd = 'run --rm'
     if running:
         subcmd = 'exec'
+
+    if backupdb:
+        c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} database pg_dumpall -c -U docs_user > dump_`date +%d-%m-%Y"_"%H_%M_%S`__`git rev-parse HEAD`.sql', pty=True)
+
     c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} web python3 manage.py {command}', pty=True)
 
 @task(help={
