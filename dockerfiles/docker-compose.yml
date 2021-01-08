@@ -144,5 +144,14 @@ services:
       readthedocs:
 
   storage:
+    image: minio/minio
+    ports:
+      - "9000:9000"
     environment:
-      - INIT=${INIT:-}
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=password
+    volumes:
+      - storage_data:/data
+    networks:
+      readthedocs:
+    command: ["server", "/data"]
