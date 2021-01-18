@@ -100,7 +100,7 @@ def manage(c, command, running=True, backupdb=False):
 def attach(c, container):
     """Attach a tty to a running container (useful for pdb)."""
     prefix = c['container_prefix'] # readthedocsorg or readthedocs-corporate
-    c.run(f'docker attach --sig-proxy=false {prefix}_{container}_1', pty=True)
+    c.run(f'docker attach --sig-proxy=false --detach-keys="ctrl-p,ctrl-p" {prefix}_{container}_1', pty=True)
 
 @task(help={
     'containers': 'Container(s) to restart (it may restart "nginx" container if required)',
