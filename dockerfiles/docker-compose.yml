@@ -132,7 +132,7 @@ services:
       readthedocs:
 
   database:
-    image: postgres:11.1
+    image: postgres:12.5
     environment:
       - POSTGRES_USER=docs_user
       - POSTGRES_PASSWORD=docs_pwd
