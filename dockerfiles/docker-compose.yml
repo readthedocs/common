@@ -127,7 +127,7 @@ services:
     command: ["../../docker/build.sh"]
 
   cache:
-    image: redis:3.2.7
+    image: redis:6.0.5
     networks:
       readthedocs:
 
