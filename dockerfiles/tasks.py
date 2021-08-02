@@ -13,7 +13,7 @@ DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE
 def build(c, cache=False):
     """Build docker image for servers."""
     cache_opt = '' if cache else '--no-cache'
-    c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} --project-name {c["container_prefix"]} build {cache_opt}', pty=True)
 
 @task(help={
     'command': 'Command to pass directly to "docker-compose"',
