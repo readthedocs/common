@@ -7,10 +7,10 @@ uses:
   - django
   - celery
 
-ignore-paths:
-  - docs/
-  - settings/
-  - common/
+#ignore-paths:
+#  - docs/
+#  - settings/
+#  - common/
 
 ignore-patterns:
   - rtd_tests/
