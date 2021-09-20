@@ -33,8 +33,12 @@ pylint:
     # We do this for circular imports
     - import-outside-toplevel
     - inconsistent-return-statements
-    # We need to adapt our isot config
+    # We need to adapt our isort config
     - relative-beyond-top-level
+    # We don't use a custom User model.
+    - imported-auth-user
+    # Too many to update for now.
+    - consider-using-f-string
 
 mccabe:
   run: false
