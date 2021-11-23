@@ -24,6 +24,10 @@ services:
       - storage
     volumes:
       - ${PWD}/dockerfiles/nginx:/etc/nginx/conf.d
+    # Disable logs for NGINX by default because they are too noisy and we have
+    # better logs in our application code
+    logging:
+      driver: "none"
 
   proxito:
     volumes:
