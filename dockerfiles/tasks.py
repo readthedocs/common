@@ -7,6 +7,7 @@ DOCKER_COMPOSE_ASSETS = 'dockerfiles/docker-compose-assets.yml'
 DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
 DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
 
+
 @task(help={
     'cache': 'Build Docker image using cache (default: False)',
 })
@@ -15,12 +16,14 @@ def build(c, cache=False):
     cache_opt = '' if cache else '--no-cache'
     c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
 
+
 @task(help={
     'command': 'Command to pass directly to "docker-compose"',
 })
 def compose(c, command):
     """Pass the command to docker-compose directly."""
     c.run(f'{DOCKER_COMPOSE_COMMAND} {command}', pty=True)
+
 
 @task(help={
     'volumes': 'Delete all the data storaged in volumes as well (default: False)',
@@ -31,6 +34,7 @@ def down(c, volumes=False):
         c.run(f'{DOCKER_COMPOSE_COMMAND} down -v', pty=True)
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} down', pty=True)
+
 
 @task(help={
     'search': 'Start search container (default: True)',
@@ -79,6 +83,7 @@ def shell(c, running=True, container='web'):
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm {container} /bin/bash', pty=True)
 
+
 @task(help={
     'command': 'Command to pass directly to "django-admin" inside the container',
     'running': 'Execute "django-admin" in a running container',
@@ -95,13 +100,16 @@ def manage(c, command, running=True, backupdb=False):
 
     c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} web python3 manage.py {command}', pty=True)
 
+
 @task(help={
     'container': 'Container to attach',
 })
 def attach(c, container):
     """Attach a tty to a running container (useful for pdb)."""
-    prefix = c['container_prefix'] # readthedocsorg or readthedocs-corporate
-    c.run(f'docker attach --sig-proxy=false --detach-keys="ctrl-p,ctrl-p" {prefix}_{container}_1', pty=True)
+    prefix = c['container_prefix']  # readthedocsorg or readthedocs-corporate
+    c.run(
+        f'docker attach --sig-proxy=false --detach-keys="ctrl-p,ctrl-p" {prefix}_{container}_1', pty=True)
+
 
 @task(help={
     'containers': 'Container(s) to restart (it may restart "nginx" container if required)',
@@ -122,6 +130,7 @@ def restart(c, containers):
             c.run(f'{DOCKER_COMPOSE_COMMAND} restart nginx', pty=True)
             break
 
+
 @task(help={
     'only_latest': 'Only pull the latest tag. Use if you don\'t need all images (default: False)',
 })
@@ -137,7 +146,9 @@ def pull(c, only_latest=False):
         ])
     for image, tag in images:
         c.run(f'docker pull readthedocs/build:{image}', pty=True)
-        c.run(f'docker tag readthedocs/build:{image} readthedocs/build:{tag}', pty=True)
+        c.run(
+            f'docker tag readthedocs/build:{image} readthedocs/build:{tag}', pty=True)
+
 
 @task(help={
     'arguments': 'Arguments to pass directly to "tox" command',
@@ -146,12 +157,35 @@ def pull(c, only_latest=False):
 def test(c, arguments='', running=True):
     """Run all test suite using ``tox``."""
     if running:
-        c.run(f'{DOCKER_COMPOSE_COMMAND} exec -e GITHUB_TOKEN=$GITHUB_TOKEN web tox {arguments}', pty=True)
+        c.run(
+            f'{DOCKER_COMPOSE_COMMAND} exec -e GITHUB_TOKEN=$GITHUB_TOKEN web tox {arguments}', pty=True)
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} run -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --no-deps web tox {arguments}', pty=True)
+
 
 @task
 def buildassets(c):
     """Build all assets for the application and push them to backend storage"""
     c.run(f'docker-compose -f {DOCKER_COMPOSE_ASSETS} run --rm assets bash -c "npm ci && node_modules/bower/bin/bower --allow-root update && npm run build"', pty=True)
     c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py collectstatic --noinput', pty=True)
+
+
+@task(help={
+    'file': 'SQL File that should be use to go back old state',
+    'running': 'Execute in a running container',
+})
+def restoredb(c, file, running=True):
+    """Restore to old db state when running --backupdb migrate"""
+    subcmd = 'run --rm'
+    if running:
+        subcmd = 'exec'
+
+    c.run(f"{DOCKER_COMPOSE_COMMAND} 'start database'", pty=True)
+
+    c.run(f"docker cp {file} community_database_1:/tmp/dump.sql")
+
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} database /bin/bash', pty=True)
+
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} dropdb -U docs_user docs_db', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} createdb -U docs_user docs_db', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} psql -U docs_user docs_db < /tmp/dump.sql', pty=True)
