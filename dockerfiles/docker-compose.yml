@@ -54,6 +54,7 @@ services:
   web:
     volumes:
       - ${PWD}/common/dockerfiles/scripts/createsuperuser.py:/usr/src/app/docker/createsuperuser.py
+      - ${PWD}/common/dockerfiles/scripts/createbuckets.sh:/usr/src/app/docker/createbuckets.sh
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/web.sh:/usr/src/app/docker/web.sh
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
