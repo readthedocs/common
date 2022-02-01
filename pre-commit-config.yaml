@@ -2,7 +2,7 @@ exclude: '^$|settings|scripts'
 fail_fast: false
 repos:
 
-- repo: git@github.com:pre-commit/pre-commit-hooks
+- repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.1.0
   hooks:
     # Disabled because yapf is better for our purpose
@@ -27,14 +27,14 @@ repos:
     - id: mixed-line-ending
       args: ['--fix=lf']
 
-- repo: git@github.com:humitos/mirrors-autoflake.git
+- repo: https://github.com/humitos/mirrors-autoflake.git
   rev: v1.1
   hooks:
     - id: autoflake
       args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
 
 # TODO: re-enable it and use `--range` to select the modified lines
-# - repo: git@github.com:myint/docformatter.git
+# - repo: https://github.com/myint/docformatter.git
 #   rev: v1.4
 #   hooks:
 #     - id: docformatter
