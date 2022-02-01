@@ -67,6 +67,8 @@ repos:
   rev: 1.3.2
   hooks:
     - id: darker
+      # TODO: find a way to pass `--check` only when running via `tox -e
+      # pre-commit`
       args: ['--isort']
       additional_dependencies:
         - isort==5.10.1
