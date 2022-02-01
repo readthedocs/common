@@ -16,7 +16,6 @@ repos:
     - id: check-toml
     - id: check-vcs-permalinks
     - id: debug-statements
-    - id: double-quote-string-fixer
     - id: fix-byte-order-marker
     - id: end-of-file-fixer
       exclude: 'static'
@@ -34,46 +33,43 @@ repos:
     - id: autoflake
       args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
 
-# TODO: check changelog from previous version v0.26.0 and update our style.yapf file
-- repo: git@github.com:pre-commit/mirrors-yapf.git
-  rev: v0.32.0
-  hooks:
-    - id: yapf
-      exclude: 'migrations|tests'
-      args: ['--style=.style.yapf', '--parallel', '--in-place']
+# TODO: re-enable it and use `--range` to select the modified lines
+# - repo: git@github.com:myint/docformatter.git
+#   rev: v1.4
+#   hooks:
+#     - id: docformatter
+#       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
 
-# When calling `pre-commit autoupdate`, this repo needs to be commented because it fails
-- repo: git@github.com:FalconSocial/pre-commit-python-sorter.git
-  rev: b57ce61dbbeff813cc8786584d3c98c885ac3e14
-  hooks:
-    - id: python-import-sorter
-      args: ['--silent-overwrite']
-      exclude: 'wsgi.py'
+# TODO: re-enable when we can make it behave in the same way than in CircleCI
+# - repo: https://github.com/PyCQA/prospector
+#   rev: 1.3.1
+#   hooks:
+#     - id: prospector
+#       args: ['--profile=/home/humitos/rtfd/code/readthedocs.org/prospector.yml']
+#       additional_dependencies: [
+#       # TODO: use an environment variable to decide this PATH here?
+#       '-r/home/humitos/rtfd/code/readthedocs.org/requirements/lint.txt',
+#       ]
+#       # NOTE: copied from prospector YAML configuration because pre-commit does
+#       # not load them from there and runs prospector over these files
+#       exclude: |
+#             (?x)^(
+#                 docs/.*|
+#                 readthedocs/settings/.*|
+#                 common/.*|
+#                 readthedocs/rtd_tests/.*|
+#                 readthedocs/.*tests.*/.*|
+#                 .*/migrations/.*|
+#                 .*conftest.py
+#             )$
 
-- repo: git@github.com:myint/docformatter.git
-  rev: v1.4
+- repo: https://github.com/akaihola/darker
+  rev: 1.3.2
   hooks:
-    - id: docformatter
-      args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
-
-- repo: https://github.com/PyCQA/prospector
-  rev: 1.3.1
-  hooks:
-    - id: prospector
-      args: ['--profile=/home/humitos/rtfd/code/readthedocs.org/prospector.yml']
-      additional_dependencies: [
-      # TODO: use an environment variable to decide this PATH here?
-      '-r/home/humitos/rtfd/code/readthedocs.org/requirements/lint.txt',
-      ]
-      # NOTE: copied from prospector YAML configuration because pre-commit does
-      # not load them from there and runs prospector over these files
-      exclude: |
-            (?x)^(
-                docs/.*|
-                readthedocs/settings/.*|
-                common/.*|
-                readthedocs/rtd_tests/.*|
-                readthedocs/.*tests.*/.*|
-                .*/migrations/.*|
-                .*conftest.py
-            )$
+    - id: darker
+      args: ['--isort']
+      additional_dependencies:
+        - isort==5.10.1
+        # darker is not compatible with v22.1.0
+        # https://github.com/akaihola/darker/issues/264
+        - black==21.12b0
