@@ -30,6 +30,12 @@ pylint:
     dummy-variables-rgx: '_$|__$|dummy'
     max-line-length: 100
   disable:
+    # I wasn't able to find the cyclic imported reported by pylint. However,
+    # Python code works fine an there is no exception risen. I suspect this is a
+    # pylint bug or something. I also found that we are using an old version of
+    # pylint (v2.5.3) when there is a much newer one (v2.12.2). If this is a
+    # bug, it may be fixed in newer pylint version.
+    - cyclic-import
     # We do this for circular imports
     - import-outside-toplevel
     - inconsistent-return-statements
