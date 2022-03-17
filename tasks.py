@@ -124,11 +124,11 @@ def release(ctx, version):
 
     Do this after prepare task and manual cleanup/commit
     """
-    # Ensure we're on the master branch first
+    # Ensure we're on the main branch first
     git_rev_parse = ctx.run('git rev-parse --abbrev-ref HEAD', hide=True)
     current_branch = git_rev_parse.stdout.strip()
-    if current_branch != 'master':
-        print('You must be on master branch!')
+    if current_branch != 'main':
+        print('You must be on main branch!')
         raise Exit(1)
     ctx.run(
         ('git tag {version} && '
