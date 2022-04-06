@@ -146,9 +146,9 @@ def pull(c, only_latest=False):
 def test(c, arguments='', running=True):
     """Run all test suite using ``tox``."""
     if running:
-        c.run(f'{DOCKER_COMPOSE_COMMAND} exec -e GITHUB_TOKEN=$GITHUB_TOKEN web tox {arguments}', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} exec -e GITHUB_USER=$GITHUB_USER -e GITHUB_TOKEN=$GITHUB_TOKEN web tox {arguments}', pty=True)
     else:
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --no-deps web tox {arguments}', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run -e GITHUB_USER=$GITHUB_USER -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --no-deps web tox {arguments}', pty=True)
 
 @task
 def buildassets(c):
