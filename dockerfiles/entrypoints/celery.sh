@@ -12,12 +12,11 @@ if [ -n "${DOCKER_NO_RELOAD}" ]; then
 else
   echo "Running Docker with reload"
   watchmedo auto-restart \
-  --patterns="./readthedocs/*.py;./readthedocsinc/*.py" \
+  --patterns="*.py" \
   --ignore-patterns="*.#*.py;*.pyo;*.pyc;*flycheck*.py;*test*;*migrations*;*management/commands*" \
   --ignore-directories \
   --recursive \
   --signal=SIGTERM \
-  --kill-after=5 \
   --interval=5 \
   -- \
   $CMD
