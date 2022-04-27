@@ -143,6 +143,7 @@ services:
       - POSTGRES_PASSWORD=docs_pwd
       - POSTGRES_DB=docs_db
     volumes:
+      - ${PWD}/common/dockerfiles/entrypoints/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
       - postgres_data:/var/lib/postgresql/data
       - postgres_backups_data:/backups
     networks:
