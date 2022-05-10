@@ -123,17 +123,19 @@ def restart(c, containers):
             break
 
 @task(help={
-    'only_latest': 'Only pull the latest tag. Use if you don\'t need all images (default: False)',
+    'only_required': 'Only pull the required image (used by default for clonning). Use it if you don\'t need all images (default: False)',
 })
-def pull(c, only_latest=False):
+def pull(c, only_required=False):
     """Pull all docker images required for build servers."""
     images = [
-        ('7.0', 'latest')
+        ('ubuntu-20.04-2022.02.16', 'ubuntu-20.04'),
     ]
-    if not only_latest:
+    if not only_required:
         images.extend([
             ('6.0', 'stable'),
+            ('7.0', 'latest'),
             ('8.0', 'testing'),
+            ('ubuntu-22.04-2022.03.15', 'ubuntu-22.04'),
         ])
     for image, tag in images:
         c.run(f'docker pull readthedocs/build:{image}', pty=True)
