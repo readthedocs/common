@@ -6,6 +6,7 @@ if [ -n "$INIT" ];
 then
     echo "Performing initial tasks..."
     python3 manage.py migrate
+    python3 manage.py migrate --database telemetry
     cat ../../docker/createsuperuser.py | python3 manage.py shell
     bash ../../docker/createbuckets.sh
     python3 manage.py collectstatic --no-input
