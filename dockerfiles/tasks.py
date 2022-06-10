@@ -8,11 +8,11 @@ DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
 DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
 
 @task(help={
-    'cache': 'Build Docker image using cache (default: False)',
+    'no-cache': 'Build Docker image without cache (default: False)',
 })
-def build(c, cache=False):
+def build(c, no_cache=False):
     """Build docker image for servers."""
-    cache_opt = '' if cache else '--no-cache'
+    cache_opt = '--no-cache' if no_cache else ''
     c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
 
 @task(help={
