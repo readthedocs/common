@@ -1,3 +1,4 @@
+import os
 from invoke import task
 
 DOCKER_COMPOSE = 'common/dockerfiles/docker-compose.yml'
@@ -5,7 +6,9 @@ DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
 DOCKER_COMPOSE_WEBPACK = 'common/dockerfiles/docker-compose-webpack.yml'
 DOCKER_COMPOSE_ASSETS = 'dockerfiles/docker-compose-assets.yml'
 DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
-DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
+DOCKER_COMPOSE_PROJECT_NAME = os.environ.get('COMPOSE_PROJECT_NAME', 'community')
+# NB! This is not used by inv docker.up - up()
+DOCKER_COMPOSE_COMMAND = f'COMPOSE_PROJECT_NAME={DOCKER_COMPOSE_PROJECT_NAME} docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
 
 @task(help={
     'cache': 'Build Docker image using cache (default: False)',
@@ -45,6 +48,7 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
     cmd = []
 
     cmd.append('INIT=t' if init else 'INIT=')
+    cmd.append(f'COMPOSE_PROJECT_NAME={DOCKER_COMPOSE_PROJECT_NAME}')
     cmd.append('DOCKER_NO_RELOAD=t' if not reload else 'DOCKER_NO_RELOAD=')
 
     cmd.append('docker-compose')
