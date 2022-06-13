@@ -176,15 +176,9 @@ def translations(c, action):
         print('You need to export TRANSIFEX_TOKEN environment variable.')
         sys.exit(1)
 
-    if sys.platform in ('linux', 'linux2'):
-        download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-linux-amd64.tar.gz'
-    elif sys.platform == 'darwin':
-        download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-darwin-amd64.tar.gz'
-    else:
-        print(f'Platform ({sys.platform}) not supported.')
-        sys.exit(1)
 
     # Install Transifex Client in Docker container
+    download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-linux-amd64.tar.gz'
     c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "curl --silent --location {download_file} | tar --extract -z --file=- tx"', pty=True)
 
     if action == 'pull':
