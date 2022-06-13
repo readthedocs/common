@@ -8,7 +8,7 @@ DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
 DOCKER_COMPOSE_WEBPACK = 'common/dockerfiles/docker-compose-webpack.yml'
 DOCKER_COMPOSE_ASSETS = 'dockerfiles/docker-compose-assets.yml'
 DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
-DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
+DOCKER_COMPOSE_COMMAND = f'docker-compose -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
 
 @task(help={
     'cache': 'Build Docker image using cache (default: False)',
