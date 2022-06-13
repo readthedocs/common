@@ -1,3 +1,6 @@
+import os
+import sys
+
 from invoke import task
 
 DOCKER_COMPOSE = 'common/dockerfiles/docker-compose.yml'
@@ -157,3 +160,39 @@ def buildassets(c):
     """Build all assets for the application and push them to backend storage"""
     c.run(f'docker-compose -f {DOCKER_COMPOSE_ASSETS} run --rm assets bash -c "npm ci && node_modules/bower/bin/bower --allow-root update && npm run build"', pty=True)
     c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py collectstatic --noinput', pty=True)
+
+
+@task(help={
+    'action': 'Action to realize on Transifex ("pull" or "push")',
+})
+def translations(c, action):
+
+    if action not in ('pull', 'push'):
+        print(f'Action passed ("{action}") not supported. Use "pull" or "push".')
+        sys.exit(1)
+
+    transifex_token = os.environ.get('TRANSIFEX_TOKEN', None)
+    if not transifex_token:
+        print('You need to export TRANSIFEX_TOKEN environment variable.')
+        sys.exit(1)
+
+    if sys.platform in ('linux', 'linux2'):
+        download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-linux-amd64.tar.gz'
+    elif sys.platform == 'darwin':
+        download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-darwin-amd64.tar.gz'
+    else:
+        print(f'Platform ({sys.platform}) not supported.')
+        sys.exit(1)
+
+    # Install Transifex Client in Docker container
+    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "curl --silent --location {download_file} | tar --extract -z --file=- tx"', pty=True)
+
+    if action == 'pull':
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} pull --force', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py makemessages --all', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py compilemessages', pty=True)
+
+    elif action == 'push':
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py makemessages --locale en', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} push --source', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py compilemessages --locale en', pty=True)
