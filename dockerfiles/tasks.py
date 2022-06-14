@@ -179,7 +179,7 @@ def translations(c, action):
 
     # Install Transifex Client in Docker container
     download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-linux-amd64.tar.gz'
-    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "curl --silent --location {download_file} | tar --extract -z --file=- tx"', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "curl --location {download_file} | tar --extract -z --file=- tx"', pty=True)
 
     if action == 'pull':
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} pull --force', pty=True)
