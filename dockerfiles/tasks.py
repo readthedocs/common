@@ -177,16 +177,17 @@ def translations(c, action):
         sys.exit(1)
 
 
-    # Install Transifex Client in Docker container
-    download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-linux-amd64.tar.gz'
-    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "curl --location {download_file} | tar --extract -z --file=- tx"', pty=True)
+    # Download Transifex Client to be used from inside the container
+    if not os.path.exists('tx'):
+        download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-linux-amd64.tar.gz'
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "curl --location {download_file} | tar --extract -z --file=- tx"', pty=True)
 
     if action == 'pull':
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} pull --force', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py makemessages --all', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py compilemessages', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py makemessages --all"', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py compilemessages"', pty=True)
 
     elif action == 'push':
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py makemessages --locale en', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py makemessages --locale en"', pty=True)
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} push --source', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py compilemessages --locale en', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py compilemessages --locale en"', pty=True)
