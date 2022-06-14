@@ -68,7 +68,6 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
 
     c.run(' '.join(cmd), pty=True)
 
-
 @task(help={
     'running': 'Open the shell in a running container',
     'container': 'Container to open the shell (default: web)'
@@ -101,7 +100,7 @@ def manage(c, command, running=True, backupdb=False):
 })
 def attach(c, container):
     """Attach a tty to a running container (useful for pdb)."""
-    prefix = c['container_prefix'] # readthedocsorg or readthedocs-corporate
+    prefix = c['container_prefix']  # readthedocsorg or readthedocs-corporate
     c.run(f'docker attach --sig-proxy=false --detach-keys="ctrl-p,ctrl-p" {prefix}_{container}_1', pty=True)
 
 @task(help={
@@ -158,3 +157,23 @@ def buildassets(c):
     """Build all assets for the application and push them to backend storage"""
     c.run(f'docker-compose -f {DOCKER_COMPOSE_ASSETS} run --rm assets bash -c "npm ci && node_modules/bower/bin/bower --allow-root update && npm run build"', pty=True)
     c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py collectstatic --noinput', pty=True)
+
+@task(help={
+    'file': 'SQL File that should be use to go back old state',
+    'running': 'Execute in a running container',
+})
+def restoredb(c, file, running=True):
+    """Restore to old db state when running --backupdb migrate"""
+    subcmd = 'run --rm'
+    if running:
+        subcmd = 'exec'
+
+    c.run(f"{DOCKER_COMPOSE_COMMAND} 'start database'", pty=True)
+
+    c.run(f"docker cp {file} community_database_1:/tmp/dump.sql")
+
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} database /bin/bash', pty=True)
+
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} dropdb -U docs_user docs_db', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} createdb -U docs_user docs_db', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} psql -U docs_user docs_db < /tmp/dump.sql', pty=True)
