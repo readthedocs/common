@@ -54,9 +54,10 @@ services:
   web:
     volumes:
       - ${PWD}/common/dockerfiles/scripts/createsuperuser.py:/usr/src/app/docker/createsuperuser.py
-      - ${PWD}/common/dockerfiles/scripts/createbuckets.sh:/usr/src/app/docker/createbuckets.sh
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/web.sh:/usr/src/app/docker/web.sh
+      - ${PWD}/common/dockerfiles/entrypoints/createbuckets.sh:/usr/src/app/docker/createbuckets.sh
+      - ${PWD}/common/dockerfiles/entrypoints/wait-for-it.sh:/usr/src/app/docker/wait-for-it.sh
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
     links:
@@ -70,17 +71,19 @@ services:
       - DOCKER_NO_RELOAD
       - RTD_EXT_THEME_ENABLED
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
     stdin_open: true
     tty: true
     networks:
       readthedocs:
-    command: ["../../docker/web.sh"]
+    command: ["../../docker/wait-for-it.sh", "database:5432", "--timeout=60", "--strict", "--", "../../docker/web.sh"]
 
   celery:
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/celery.sh:/usr/src/app/docker/celery.sh
-      - ${PWD}/common/dockerfiles/scripts/wait_for_search.py:/usr/src/app/docker/scripts/wait_for_search.py
+      - ${PWD}/common/dockerfiles/entrypoints/wait-for-it.sh:/usr/src/app/docker/wait-for-it.sh
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
     links:
@@ -98,6 +101,7 @@ services:
     tty: true
     networks:
       readthedocs:
+    # NB! Overwritten by docker-compose-search.yml
     command: ["../../docker/celery.sh"]
 
   build:
