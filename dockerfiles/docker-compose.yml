@@ -101,7 +101,6 @@ services:
     tty: true
     networks:
       readthedocs:
-    # NB! Overwritten by docker-compose-search.yml
     command: ["../../docker/celery.sh"]
 
   build:
