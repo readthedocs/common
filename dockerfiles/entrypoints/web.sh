@@ -4,8 +4,8 @@
 
 if [ -n "$INIT" ];
 then
-    ../../docker/createbuckets.sh
     echo "Performing initial tasks..."
+    ../../docker/createbuckets.sh
     python3 manage.py migrate
     python3 manage.py migrate --database telemetry
     cat ../../docker/createsuperuser.py | python3 manage.py shell
