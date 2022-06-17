@@ -23,7 +23,7 @@ services:
       - proxito
       - storage
     volumes:
-      - ${PWD}/dockerfiles/nginx:/etc/nginx/conf.d
+      - ${PWD}/dockerfiles/nginx:/etc/nginx/templates
     # Disable logs for NGINX by default because they are too noisy and we have
     # better logs in our application code
     logging:
@@ -41,6 +41,7 @@ services:
       - cache
     environment:
       - DOCKER_NO_RELOAD
+      - RTD_PRODUCTION_DOMAIN
 
     # Allow us to run `docker attach readthedocsorg_proxito_1` and get
     # control on STDIN and be able to debug our code with interactive pdb
@@ -70,6 +71,7 @@ services:
       - DOCKER_NO_RELOAD
       - RTD_EXT_THEME_ENABLED
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
+      - RTD_PRODUCTION_DOMAIN
     stdin_open: true
     tty: true
     networks:
@@ -95,6 +97,7 @@ services:
       # https://github.com/celery/celery/issues/5761
       - COLUMNS=80
       - DOCKER_NO_RELOAD
+      - RTD_PRODUCTION_DOMAIN
     stdin_open: true
     tty: true
     networks:
@@ -127,6 +130,7 @@ services:
       # https://github.com/celery/celery/issues/5761
       - COLUMNS=80
       - DOCKER_NO_RELOAD
+      - RTD_PRODUCTION_DOMAIN
     stdin_open: true
     tty: true
     networks:
