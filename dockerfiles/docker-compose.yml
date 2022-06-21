@@ -84,6 +84,7 @@ services:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/celery.sh:/usr/src/app/docker/celery.sh
       - ${PWD}/common/dockerfiles/entrypoints/wait-for-it.sh:/usr/src/app/docker/wait-for-it.sh
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
     links:
@@ -107,6 +108,7 @@ services:
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/build.sh:/usr/src/app/docker/build.sh
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
 
