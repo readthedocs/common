@@ -42,7 +42,7 @@ def down(c, volumes=False):
     'webpack': 'Start webpack development server (default: False)',
     'ext-theme': 'Enable new theme from ext-theme (default: False)',
     'scale-build': 'Add additional build instances (default: 1)',
-    'ngrok': 'Start environment to be accessed via NGROK (default: False)',
+    'ngrok': 'ngrok domain to serve the application. Example: "17b5-139-47-118-243.ngrok.io"',
 })
 def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, ngrok=""):
     """Start all the docker containers for a Read the Docs instance"""
