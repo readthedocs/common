@@ -98,6 +98,7 @@ services:
       # https://github.com/celery/celery/issues/5761
       - COLUMNS=80
       - DOCKER_NO_RELOAD
+      - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
     stdin_open: true
     tty: true
     networks:
@@ -130,6 +131,7 @@ services:
       # https://github.com/celery/celery/issues/5761
       - COLUMNS=80
       - DOCKER_NO_RELOAD
+      - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
     stdin_open: true
     tty: true
     networks:
