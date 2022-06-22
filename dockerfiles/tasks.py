@@ -42,8 +42,9 @@ def down(c, volumes=False):
     'webpack': 'Start webpack development server (default: False)',
     'ext-theme': 'Enable new theme from ext-theme (default: False)',
     'scale-build': 'Add additional build instances (default: 1)',
+    'ngrok': 'ngrok domain to serve the application. Example: "17b5-139-47-118-243.ngrok.io"',
 })
-def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1):
+def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, ngrok=""):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
@@ -64,6 +65,10 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
         cmd.insert(0, 'RTD_EXT_THEME_DEV_SERVER_ENABLED=t')
     if ext_theme:
         cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
+    if ngrok:
+        cmd.insert(0, f'RTD_PRODUCTION_DOMAIN={ngrok}')
+        cmd.insert(0, f'NGINX_WEB_SERVER_NAME={ngrok}')
+        cmd.insert(0, f'NGINX_PROXITO_SERVER_NAME=*.{ngrok}')
 
     cmd.append('up')
 
