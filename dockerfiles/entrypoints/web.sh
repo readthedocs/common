@@ -10,7 +10,7 @@ then
     python3 manage.py migrate --database telemetry
     cat ../../docker/createsuperuser.py | python3 manage.py shell
     python3 manage.py collectstatic --no-input
-    python3 manage.py loaddata test_data
+    python3 manage.py fixtures_projects
 fi
 
 if [ -n "${DOCKER_NO_RELOAD}" ];
