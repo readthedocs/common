@@ -15,7 +15,7 @@ services:
       dockerfile: ${PWD}/dockerfiles/Dockerfile
 
   nginx:
-    image: nginx
+    image: nginx:1.22
     ports:
       - "80:80"
     links:
