@@ -38,5 +38,9 @@
     "space-unary-ops": "error",
     "spaced-comment": "off",
     "vars-on-top": "off",
+  },
+  "env": {
+    "browser": true,
+    "es6": true
   }
 }
