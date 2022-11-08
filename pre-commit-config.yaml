@@ -27,8 +27,8 @@ repos:
     - id: mixed-line-ending
       args: ['--fix=lf']
 
-- repo: https://github.com/humitos/mirrors-autoflake.git
-  rev: v1.1
+- repo: https://github.com/PyCQA/autoflake
+  rev: v1.7.7
   hooks:
     - id: autoflake
       args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
@@ -64,7 +64,7 @@ repos:
 #             )$
 
 - repo: https://github.com/akaihola/darker
-  rev: 1.3.2
+  rev: 1.5.1
   hooks:
     - id: darker
       # TODO: find a way to pass `--check` only when running via `tox -e
@@ -72,9 +72,7 @@ repos:
       args: ['--isort']
       additional_dependencies:
         - isort==5.10.1
-        # darker is not compatible with v22.1.0
-        # https://github.com/akaihola/darker/issues/264
-        - black==21.12b0
+        - black==22.10.0
 
 - repo: https://github.com/asottile/blacken-docs
   rev: v1.12.1
