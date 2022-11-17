@@ -27,7 +27,7 @@ repos:
     - id: mixed-line-ending
       args: ['--fix=lf']
 
-- repo: https://github.com/humitos/mirrors-autoflake.git
+- repo: https://github.com/PyCQA/autoflake
   rev: v1.1
   hooks:
     - id: autoflake
