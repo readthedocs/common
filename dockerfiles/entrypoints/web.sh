@@ -13,7 +13,7 @@ then
     python3 manage.py loaddata test_data
 fi
 
-CMD="python3 manage.py runserver 0.0.0.0:8000"
+CMD="python3 manage.py runserver --noreload 0.0.0.0:8000"
 
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
   echo "Running process with no reload"
