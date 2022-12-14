@@ -12,9 +12,9 @@ mkdir -p $CELERY_STATE_DIR
 CMD="python3 -m celery -A ${CELERY_APP_NAME}.worker worker -Ofair -c 1 -Q builder,celery,default,build01,build:default,build:large -l ${CELERY_LOG_LEVEL} --statedb=${CELERY_STATE_DIR}worker.state"
 
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
-  echo "Running Docker with no reload"
+  echo "Running process with no reload"
   $CMD
 else
-  echo "Running Docker with reload"
+  echo "Running process with reload"
   nodemon --config ../nodemon.json --exec $CMD
 fi
