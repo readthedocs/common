@@ -48,6 +48,10 @@ services:
     # control on STDIN and be able to debug our code with interactive pdb
     stdin_open: true
     tty: true
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
 
     networks:
       readthedocs:
@@ -79,6 +83,11 @@ services:
       - MINIO_ROOT_PASSWORD=password
     stdin_open: true
     tty: true
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
+
     networks:
       readthedocs:
     command: ["../../docker/wait-for-it.sh", "database:5432", "--timeout=60", "--strict", "--", "../../docker/web.sh"]
