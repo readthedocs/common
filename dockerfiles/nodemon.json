@@ -1,8 +1,8 @@
 {
-    "verbose": true,
-    "delay": 2500,
+    "verbose": false,
+    "delay": 2000,
     "ext": "py",
     "watch": ["readthedocs", "readthedocsinc"],
-    "ignore": [".tox/*", ".direnv/*", "user_builds/*", "*/management/commands*", "*migrations/*", "*test*", "*.pyc", "*.pyo"],
+    "ignore": [".tox/*", ".direnv/*", "user_builds/*", "*/management/commands*", "*migrations/*", "*test*", "*.pyc", "*.pyo", "logs/*"],
     "signal": "SIGTERM"
 }

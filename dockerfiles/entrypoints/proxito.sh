@@ -2,13 +2,12 @@
 
 ../../docker/common.sh
 
-if [ -n "${DOCKER_NO_RELOAD}" ];
-then
-    RELOAD='--noreload'
-    echo "Running Docker with no reload"
-else
-    RELOAD=''
-    echo "Running Docker with reload"
-fi
+CMD="gunicorn readthedocs.wsgi:application -w 3 -b 0.0.0.0:8000 --max-requests=10000"
 
-python3 manage.py runserver 0.0.0.0:8000 $RELOAD
+if [ -n "${DOCKER_NO_RELOAD}" ]; then
+  echo "Running process with no reload"
+  $CMD
+else
+  echo "Running process with reload"
+  nodemon --config ../nodemon.json --exec "${CMD}"
+fi
