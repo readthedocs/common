@@ -2,7 +2,7 @@
 
 ../../docker/common.sh
 
-CMD="python3 manage.py runserver --noreload 0.0.0.0:8000"
+CMD="gunicorn readthedocs.wsgi:application -w 2 -b 0.0.0.0:8000 --max-requests=10000"
 
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
   echo "Running process with no reload"
