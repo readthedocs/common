@@ -146,6 +146,8 @@ services:
 
   cache:
     image: redis:6.0.5
+    command: >
+          --requirepass "redispassword"
     networks:
       readthedocs:
 
