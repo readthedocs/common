@@ -110,6 +110,25 @@ services:
       readthedocs:
     command: ["../../docker/celery.sh"]
 
+  celery-beat:
+    volumes:
+      - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
+      - ${PWD}/common/dockerfiles/entrypoints/celery-beat.sh:/usr/src/app/docker/celery-beat.sh
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
+      - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
+    links:
+      - cache
+    environment:
+      - DOCKER_NO_RELOAD
+      - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
+      - RTD_PRODUCTION_DOMAIN
+    stdin_open: true
+    tty: true
+    networks:
+      readthedocs:
+    command: ["../../docker/celery-beat.sh"]
+
   build:
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
