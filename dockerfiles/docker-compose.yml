@@ -145,7 +145,7 @@ services:
     command: ["../../docker/build.sh"]
 
   cache:
-    image: redis:6.0.5
+    image: redis:6.2.6  # Match production version
     command: >
           --requirepass "redispassword"
     networks:
