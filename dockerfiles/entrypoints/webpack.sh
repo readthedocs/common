@@ -1,6 +1,6 @@
 #! /bin/sh
 
-npm install
+npm ci
 
 $(npm bin)/webpack-dev-server \
   --mode=development \

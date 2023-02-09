@@ -5,7 +5,7 @@ version: '3'
 services:
 
   webpack:
-    image: node:12
+    image: node:16
     working_dir: /usr/src/app/checkouts/ext-theme
     ports:
       - "10001:10001"
