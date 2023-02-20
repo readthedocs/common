@@ -20,6 +20,10 @@ services:
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
     stdin_open: true
     tty: true
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
     networks:
       readthedocs:
     command: ["../../docker/webpack.sh"]
