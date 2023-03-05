@@ -40,28 +40,18 @@ repos:
 #     - id: docformatter
 #       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
 
-# TODO: re-enable when we can make it behave in the same way than in CircleCI
-# - repo: https://github.com/PyCQA/prospector
-#   rev: 1.3.1
-#   hooks:
-#     - id: prospector
-#       args: ['--profile=/home/humitos/rtfd/code/readthedocs.org/prospector.yml']
-#       additional_dependencies: [
-#       # TODO: use an environment variable to decide this PATH here?
-#       '-r/home/humitos/rtfd/code/readthedocs.org/requirements/lint.txt',
-#       ]
-#       # NOTE: copied from prospector YAML configuration because pre-commit does
-#       # not load them from there and runs prospector over these files
-#       exclude: |
-#             (?x)^(
-#                 docs/.*|
-#                 readthedocs/settings/.*|
-#                 common/.*|
-#                 readthedocs/rtd_tests/.*|
-#                 readthedocs/.*tests.*/.*|
-#                 .*/migrations/.*|
-#                 .*conftest.py
-#             )$
+- repo: https://github.com/PyCQA/prospector
+  rev: 1.3.1
+  hooks:
+    - id: prospector
+      args:
+        - --profile=prospector.yml
+        - --die-on-tool-error
+      # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
+      additional_dependencies:
+        - -r
+        - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/pip.txt
+        - flake8==3.8.4
 
 - repo: https://github.com/akaihola/darker
   rev: 1.3.2

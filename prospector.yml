@@ -1,4 +1,4 @@
-strictness: low
+strictness: high
 
 test-warnings: false
 doc-warnings: true
@@ -7,16 +7,39 @@ uses:
   - django
   - celery
 
+# TODO: review these paths and try to remove them from here
 ignore-paths:
   - docs/
   - settings/
   - common/
+  - constants.py
+  - urls.py
+  - wsgi.py
+  - acl
+  - builds
+  - cdn
+  - core
+  - doc_builder
+  - donate
+  - gold
+  - integrations
+  - locale
+  - notifications
+  - oauth
+  - payments
+  - profiles
+  - projects
+  - redirects
+  - api
+  - rtd_tests
+  - search
+  - settings
+  - templates
+  - vcs_support
 
 ignore-patterns:
   - rtd_tests/
   - /migrations/
-  - local_settings.py
-  - settings/
   - conftest.py
 
 pep8:
@@ -39,6 +62,8 @@ pylint:
     - imported-auth-user
     # Too many to update for now.
     - consider-using-f-string
+    - logging-format-interpolation
+    - too-many-arguments
 
 mccabe:
   run: false
