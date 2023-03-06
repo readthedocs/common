@@ -43,13 +43,15 @@ def down(c, volumes=False):
     'ext-theme': 'Enable new theme from ext-theme (default: False)',
     'scale-build': 'Add additional build instances (default: 1)',
     'ngrok': 'ngrok domain to serve the application. Example: "17b5-139-47-118-243.ngrok.io"',
+    'log-level': 'Logging level for the Django application (default: INFO)',
 })
-def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, ngrok=""):
+def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, ngrok="", log_level='INFO'):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
     cmd.append('INIT=t' if init else 'INIT=')
     cmd.append('DOCKER_NO_RELOAD=t' if not reload else 'DOCKER_NO_RELOAD=')
+    cmd.append(f'RTD_LOGGING_LEVEL={log_level}')
 
     cmd.append('docker-compose')
     cmd.append('--project-directory=.')
