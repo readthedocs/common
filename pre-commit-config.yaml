@@ -47,6 +47,14 @@ repos:
       args:
         - --profile=prospector.yml
         - --die-on-tool-error
+      exclude: |
+        (?x)^(
+            .*/docs/.*|
+            .*/settings/.*|
+            .*/common/.*|
+            .*/rtd_tests/.*|
+            .*/migrations/.*
+        )$
       # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
       additional_dependencies:
         - -r
