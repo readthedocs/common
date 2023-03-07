@@ -53,6 +53,7 @@ repos:
             .*/settings/.*|
             .*/common/.*|
             .*/rtd_tests/.*|
+            .*/tests/.*|
             .*/migrations/.*
         )$
       # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
