@@ -7,38 +7,14 @@ uses:
   - django
   - celery
 
-# TODO: review these paths and try to remove them from here
 ignore-paths:
   - docs/
   - settings/
   - common/
-  - constants.py
-  - urls.py
-  - wsgi.py
-  - acl
-  - builds
-  - cdn
-  - core
-  - doc_builder
-  - donate
-  - gold
-  - integrations
-  - locale
-  - notifications
-  - oauth
-  - payments
-  - profiles
-  - projects
-  - redirects
-  - api
-  - rtd_tests
-  - search
-  - settings
-  - templates
-  - vcs_support
+  - readthedocs/rtd_tests/
+  - readthedocs/templates/
 
 ignore-patterns:
-  - rtd_tests/
   - /migrations/
   - conftest.py
 
