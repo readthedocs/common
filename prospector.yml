@@ -16,6 +16,7 @@ ignore-paths:
 
 ignore-patterns:
   - /migrations/
+  - /tests/
   - conftest.py
 
 pep8:
