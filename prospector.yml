@@ -1,4 +1,4 @@
-strictness: low
+strictness: medium
 
 test-warnings: false
 doc-warnings: true
@@ -11,12 +11,12 @@ ignore-paths:
   - docs/
   - settings/
   - common/
+  - readthedocs/rtd_tests/
+  - readthedocs/templates/
 
 ignore-patterns:
-  - rtd_tests/
-  - /migrations/
-  - local_settings.py
-  - settings/
+  - ^.*/migrations/.*\.py$
+  - ^.*/tests/.*\.py$
   - conftest.py
 
 pep8:
@@ -39,6 +39,8 @@ pylint:
     - imported-auth-user
     # Too many to update for now.
     - consider-using-f-string
+    - logging-format-interpolation
+    - too-many-arguments
 
 mccabe:
   run: false
