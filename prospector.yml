@@ -15,8 +15,8 @@ ignore-paths:
   - readthedocs/templates/
 
 ignore-patterns:
-  - /migrations/
-  - /tests/
+  - ^.*/migrations/.*\.py$
+  - ^.*/tests/.*\.py$
   - conftest.py
 
 pep8:
