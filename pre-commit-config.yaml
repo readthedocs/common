@@ -18,12 +18,22 @@ repos:
     - id: debug-statements
     - id: fix-byte-order-marker
     - id: end-of-file-fixer
-      exclude: 'static'
     - id: fix-encoding-pragma
+      exclude: |
+        (?x)^(
+            readthedocs/rtd_tests/files/conf.py|
+        )$
       args: ['--remove']
     - id: check-merge-conflict
     - id: check-symlinks
     - id: trailing-whitespace
+      exclude: |
+        (?x)^(
+            docs/.+/locale/.*\.po|
+            .+\.svg|
+            .+\.js|
+            .+\.css|
+        )$
     - id: mixed-line-ending
       args: ['--fix=lf']
 
@@ -49,9 +59,9 @@ repos:
         - --die-on-tool-error
       exclude: |
         (?x)^(
-            .*/docs/.*|
+            docs/.*|
+            common/.*|
             .*/settings/.*|
-            .*/common/.*|
             .*/rtd_tests/.*|
             .*/tests/.*|
             .*/migrations/.*
@@ -74,6 +84,10 @@ repos:
         # darker is not compatible with v22.1.0
         # https://github.com/akaihola/darker/issues/264
         - black==21.12b0
+      exclude: |
+        (?x)^(
+            readthedocs/rtd_tests/files/conf.py|
+        )$
 
 - repo: https://github.com/asottile/blacken-docs
   rev: v1.12.1
