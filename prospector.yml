@@ -4,6 +4,8 @@ test-warnings: false
 doc-warnings: true
 
 uses:
+  # We have issues with FKs as strings and failure with astroid
+  # However, leaving out Django causes other linting issues
   - django
   - celery
 
@@ -26,6 +28,8 @@ pep8:
 
 pylint:
   options:
+    # Required for the Django plugin
+    django-settings-module: readthedocs.settings.base
     docstring-min-length: 20
     dummy-variables-rgx: '_$|__$|dummy'
     max-line-length: 100
