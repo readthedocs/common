@@ -66,11 +66,14 @@ repos:
             .*/tests/.*|
             .*/migrations/.*
         )$
+      # Because of an issue with pylint's Django utils and PATH environment, we add PYTHONPATH.
+      # This was used as a hack when running on Circle CI as well
+      # Once we upgrade to prospector >=1.9, we can remove it again.
+      entry: env PYTHONPATH=readthedocs prospector
       # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
       additional_dependencies:
         - -r
         - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/pip.txt
-        - flake8==3.8.4
 
 - repo: https://github.com/akaihola/darker
   rev: 1.3.2
