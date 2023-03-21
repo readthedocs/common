@@ -11,5 +11,7 @@ test "${INIT}" || exit 0
 /usr/bin/mc policy set public myminio/media;
 /usr/bin/mc mb myminio/build-tools;
 /usr/bin/mc policy set public myminio/build-tools;
+/usr/bin/mc mb myminio/builds;
+/usr/bin/mc policy set public myminio/builds;
 exit 0;
 
