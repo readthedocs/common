@@ -13,7 +13,7 @@ then
     python3 manage.py loaddata test_data
 fi
 
-CMD="gunicorn readthedocs.wsgi:application -w 3 -b 0.0.0.0:8000 --max-requests=10000"
+CMD="gunicorn readthedocs.wsgi:application -w 3 -b 0.0.0.0:8000 --max-requests=10000 --timeout=0"
 
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
   echo "Running process with no reload"
