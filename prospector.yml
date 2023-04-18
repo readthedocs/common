@@ -19,12 +19,14 @@ ignore-paths:
 ignore-patterns:
   - ^.*/migrations/.*\.py$
   - ^.*/tests/.*\.py$
-  - conftest.py
+  - conftest\.py
 
 pep8:
   full: true
-  options:
-    max-line-length: 100
+# Commented out because it causes errors that aren't silenced by ignore-patterns
+# max-line-length is defined for pylint below.
+#  options:
+#    max-line-length: 100
 
 pylint:
   options:
