@@ -44,6 +44,8 @@ services:
       - DOCKER_NO_RELOAD
       - RTD_PRODUCTION_DOMAIN
       - RTD_LOGGING_LEVEL
+      - RTD_FORCE_HTTPS
+      - RTD_DJANGO_DEBUG
 
     # Allow us to run `docker attach readthedocsorg_proxito_1` and get
     # control on STDIN and be able to debug our code with interactive pdb
@@ -79,6 +81,8 @@ services:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=password
       - RTD_LOGGING_LEVEL
+      - RTD_FORCE_HTTPS
+      - RTD_DJANGO_DEBUG
     stdin_open: true
     tty: true
     networks:
@@ -107,6 +111,8 @@ services:
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
       - RTD_PRODUCTION_DOMAIN
       - RTD_LOGGING_LEVEL
+      - RTD_FORCE_HTTPS
+      - RTD_DJANGO_DEBUG
     stdin_open: true
     tty: true
     networks:
@@ -127,6 +133,8 @@ services:
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
       - RTD_PRODUCTION_DOMAIN
       - RTD_LOGGING_LEVEL
+      - RTD_FORCE_HTTPS
+      - RTD_DJANGO_DEBUG
     stdin_open: true
     tty: true
     networks:
@@ -162,6 +170,8 @@ services:
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
       - RTD_PRODUCTION_DOMAIN
       - RTD_LOGGING_LEVEL
+      - RTD_FORCE_HTTPS
+      - RTD_DJANGO_DEBUG
     stdin_open: true
     tty: true
     networks:

@@ -42,10 +42,15 @@ def down(c, volumes=False):
     'webpack': 'Start webpack development server (default: False)',
     'ext-theme': 'Enable new theme from ext-theme (default: False)',
     'scale-build': 'Add additional build instances (default: 1)',
-    'ngrok': 'ngrok domain to serve the application. Example: "17b5-139-47-118-243.ngrok.io"',
+    'http-domain': 'Configure a production domain for HTTP traffic. Subdomains included, '
+                   'example.dev implies *.examples.dev for proxito. Example: '
+                   '"17b5-139-47-118-243.ngrok.io"',
+    'https': 'Forces HTTPS settings that are otherwise undetected when a :443 HTTPS proxy is in '
+             'front of the :80 Nginx container (default: False).',
     'log-level': 'Logging level for the Django application (default: INFO)',
+    'django-debug': 'Sets the DEBUG Django setting (default: True)',
 })
-def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, ngrok="", log_level='INFO'):
+def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, http_domain="", django_debug=True, https=False, log_level='INFO'):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
@@ -67,10 +72,18 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
         cmd.insert(0, 'RTD_EXT_THEME_DEV_SERVER_ENABLED=t')
     if ext_theme:
         cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
-    if ngrok:
-        cmd.insert(0, f'RTD_PRODUCTION_DOMAIN={ngrok}')
-        cmd.insert(0, f'NGINX_WEB_SERVER_NAME={ngrok}')
-        cmd.insert(0, f'NGINX_PROXITO_SERVER_NAME=*.{ngrok}')
+    if django_debug:
+        cmd.insert(0, 'RTD_DJANGO_DEBUG=t')
+    if http_domain:
+        cmd.insert(0, f'RTD_PRODUCTION_DOMAIN={http_domain}')
+        cmd.insert(0, f'NGINX_WEB_SERVER_NAME={http_domain}')
+        cmd.insert(0, f'NGINX_PROXITO_SERVER_NAME=*.{http_domain}')
+    # This setting was introduced to a new kind of reverse Proxy.
+    # It might be removed and automatically switched on, this depends on how
+    # it works with ngrok, which was previously the only usecase for https
+    # proxies.
+    if https:
+        cmd.insert(0, f'RTD_FORCE_HTTPS=t')
 
     cmd.append('up')
 
