@@ -2,7 +2,7 @@
     "verbose": false,
     "delay": 2000,
     "ext": "py",
-    "watch": ["readthedocs", "readthedocsinc"],
+    "watch": ["readthedocs", "readthedocsinc", "../readthedocs.org/readthedocs"],
     "ignore": [".tox/*", ".direnv/*", "user_builds/*", "*/management/commands*", "*migrations/*", "*test*", "*.pyc", "*.pyo", "logs/*"],
     "signal": "SIGTERM"
 }
