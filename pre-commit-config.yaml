@@ -3,7 +3,7 @@ fail_fast: false
 repos:
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.1.0
+  rev: v4.4.0
   hooks:
     # Disabled because yapf is better for our purpose
     # - id: autopep8-wrapper
@@ -38,7 +38,7 @@ repos:
       args: ['--fix=lf']
 
 - repo: https://github.com/PyCQA/autoflake
-  rev: v1.7.7
+  rev: v2.1.1
   hooks:
     - id: autoflake
       args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
@@ -51,7 +51,7 @@ repos:
 #       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
 
 - repo: https://github.com/akaihola/darker
-  rev: 1.3.2
+  rev: 1.7.1
   hooks:
     - id: darker
       # TODO: find a way to pass `--check` only when running via `tox -e
@@ -68,13 +68,13 @@ repos:
         )$
 
 - repo: https://github.com/asottile/blacken-docs
-  rev: v1.12.1
+  rev: 1.13.0
   hooks:
     - id: blacken-docs
       additional_dependencies: [black==22.10.0]
 
 - repo: https://github.com/PyCQA/prospector
-  rev: 1.3.1
+  rev: 1.10.2
   hooks:
     - id: prospector
       args:
@@ -92,7 +92,7 @@ repos:
       # Because of an issue with pylint's Django utils and PATH environment, we add PYTHONPATH.
       # This was used as a hack when running on Circle CI as well
       # Once we upgrade to prospector >=1.9, we can remove it again.
-      entry: env PYTHONPATH=readthedocs prospector
+      entry: env PYTHONPATH=readthedocs:./ DJANGO_SETTINGS_MODULE=readthedocs.settings.test prospector
       # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
       additional_dependencies:
         - -r
