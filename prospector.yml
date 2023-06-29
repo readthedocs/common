@@ -46,6 +46,8 @@ pylint:
     - consider-using-f-string
     - logging-format-interpolation
     - too-many-arguments
+    # Super spammy on every PR
+    - raise-missing-from
 
 mccabe:
   run: false
