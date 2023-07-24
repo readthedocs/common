@@ -209,19 +209,19 @@ def compilebuildtool(c, tool, version, os='ubuntu-22.04'):
     """Compile a ``build.tools`` to be able to use that tool/version from a build in a quick way."""
     from readthedocs.builds._docker import RTD_DOCKER_BUILD_SETTINGS
 
-    oss = RTD_DOCKER_BUILD_SETTINGS['os'].keys()
-    if os not in oss:
-        print(f'Invalid os. You must specify one of {", ".join(oss)}')
+    valid_oss = RTD_DOCKER_BUILD_SETTINGS['os'].keys()
+    if os not in valid_oss:
+        print(f'Invalid os. You must specify one of {", ".join(valid_oss)}')
         sys.exit(1)
 
-    tools = RTD_DOCKER_BUILD_SETTINGS['tools'].keys()
-    if tool not in tools:
-        print(f'Invalid tool. You must specify one of {", ".join(tools)}')
+    valid_tools = RTD_DOCKER_BUILD_SETTINGS['tools'].keys()
+    if tool not in valid_tools:
+        print(f'Invalid tool. You must specify one of {", ".join(valid_tools)}')
         sys.exit(1)
 
-    versions = RTD_DOCKER_BUILD_SETTINGS['tools'][tool].keys()
-    if version not in versions:
-        print(f'Invalid version for the specified tool. You must specify one of {", ".join(versions)}')
+    valid_versions = RTD_DOCKER_BUILD_SETTINGS['tools'][tool].keys()
+    if version not in valid_versions:
+        print(f'Invalid version for the specified tool. You must specify one of {", ".join(valid_versions)}')
         sys.exit(1)
 
     final_version = RTD_DOCKER_BUILD_SETTINGS['tools'][tool][version]
