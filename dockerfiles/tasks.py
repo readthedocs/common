@@ -207,50 +207,7 @@ def translations(c, action):
 })
 def compilebuildtool(c, tool, version, os='ubuntu-22.04'):
     """Compile a ``build.tools`` to be able to use that tool/version from a build in a quick way."""
-    DOCKER_DEFAULT_IMAGE = 'readthedocs/build'
-    # Copy&paste from ``readthedocs/settings/base.py``
-    # We cannot import it directly because it has a bunch of depedencies that are not installed.
-    # I tried using ``ast``, but it was too complex
-    RTD_DOCKER_BUILD_SETTINGS = {
-        # Mapping of build.os options to docker image.
-        'os': {
-            'ubuntu-20.04': f'{DOCKER_DEFAULT_IMAGE}:ubuntu-20.04',
-            'ubuntu-22.04': f'{DOCKER_DEFAULT_IMAGE}:ubuntu-22.04',
-        },
-        # Mapping of build.tools options to specific versions.
-        'tools': {
-            'python': {
-                '2.7': '2.7.18',
-                '3.6': '3.6.15',
-                '3.7': '3.7.17',
-                '3.8': '3.8.17',
-                '3.9': '3.9.17',
-                '3.10': '3.10.12',
-                '3.11': '3.11.4',
-                'miniconda3-4.7': 'miniconda3-4.7.12',
-                'mambaforge-4.10': 'mambaforge-4.10.3-10',
-            },
-            'nodejs': {
-                '14': '14.20.1',
-                '16': '16.18.1',
-                '18': '18.16.1',  # LTS
-                '19': '19.0.1',
-                '20': '20.3.1',
-            },
-            'rust': {
-                '1.55': '1.55.0',
-                '1.61': '1.61.0',
-                '1.64': '1.64.0',
-                '1.70': '1.70.0',
-            },
-            'golang': {
-                '1.17': '1.17.13',
-                '1.18': '1.18.10',
-                '1.19': '1.19.10',
-                '1.20': '1.20.5',
-            },
-        },
-    }
+    from readthedocs.builds._docker import RTD_DOCKER_BUILD_SETTINGS
 
     oss = RTD_DOCKER_BUILD_SETTINGS['os'].keys()
     if os not in oss:
