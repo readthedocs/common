@@ -207,7 +207,7 @@ def translations(c, action):
 })
 def compilebuildtool(c, tool, version, os='ubuntu-22.04'):
     """Compile a ``build.tools`` to be able to use that tool/version from a build in a quick way."""
-    from readthedocs.builds._docker import RTD_DOCKER_BUILD_SETTINGS
+    from readthedocs.builds.constants_docker import RTD_DOCKER_BUILD_SETTINGS
 
     valid_oss = RTD_DOCKER_BUILD_SETTINGS['os'].keys()
     if os not in valid_oss:
