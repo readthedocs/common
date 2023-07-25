@@ -198,3 +198,32 @@ def translations(c, action):
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py makemessages --locale en"', pty=True)
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} push --source', pty=True)
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py compilemessages --locale en"', pty=True)
+
+
+@task(help={
+    'tool': 'build.tool to compile (python, nodejs, rust, golang)',
+    'version': 'specific version for the tool',
+    'os': 'ubuntu-20.04 or ubuntu-22.04 (default)',
+})
+def compilebuildtool(c, tool, version, os='ubuntu-22.04'):
+    """Compile a ``build.tools`` to be able to use that tool/version from a build in a quick way."""
+    from readthedocs.builds.constants_docker import RTD_DOCKER_BUILD_SETTINGS
+
+    valid_oss = RTD_DOCKER_BUILD_SETTINGS['os'].keys()
+    if os not in valid_oss:
+        print(f'Invalid os. You must specify one of {", ".join(valid_oss)}')
+        sys.exit(1)
+
+    valid_tools = RTD_DOCKER_BUILD_SETTINGS['tools'].keys()
+    if tool not in valid_tools:
+        print(f'Invalid tool. You must specify one of {", ".join(valid_tools)}')
+        sys.exit(1)
+
+    valid_versions = RTD_DOCKER_BUILD_SETTINGS['tools'][tool].keys()
+    if version not in valid_versions:
+        print(f'Invalid version for the specified tool. You must specify one of {", ".join(valid_versions)}')
+        sys.exit(1)
+
+    final_version = RTD_DOCKER_BUILD_SETTINGS['tools'][tool][version]
+
+    c.run(f'OS={os} ./scripts/compile_version_upload_s3.sh {tool} {final_version}')
