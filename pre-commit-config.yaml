@@ -94,5 +94,5 @@ repos:
       # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
       additional_dependencies:
         - -r
-        - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/pip.txt
+        - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/testing.txt
 
