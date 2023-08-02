@@ -50,6 +50,12 @@ repos:
 #     - id: docformatter
 #       args: ['--in-place', '--wrap-summaries=80', '--wrap-descriptions=80', '--pre-summary-newline']
 
+- repo: https://github.com/adamchainz/django-upgrade
+  rev: "1.14.0"
+  hooks:
+  - id: django-upgrade
+    args: [--target-version, "4.2"]
+
 - repo: https://github.com/akaihola/darker
   rev: 1.7.1
   hooks:
@@ -87,12 +93,7 @@ repos:
             .*/tests/.*|
             .*/migrations/.*
         )$
-      # Because of an issue with pylint's Django utils and PATH environment, we add PYTHONPATH.
-      # This was used as a hack when running on Circle CI as well
-      # Once we upgrade to prospector >=1.9, we can remove it again.
-      entry: env PYTHONPATH=readthedocs:../readthedocs.org:./ DJANGO_SETTINGS_MODULE=readthedocs.settings.test prospector
-      # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
       additional_dependencies:
         - -r
-        - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/pip.txt
+        - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/testing.txt
 
