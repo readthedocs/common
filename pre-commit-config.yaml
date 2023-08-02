@@ -93,11 +93,6 @@ repos:
             .*/tests/.*|
             .*/migrations/.*
         )$
-      # Because of an issue with pylint's Django utils and PATH environment, we add PYTHONPATH.
-      # This was used as a hack when running on Circle CI as well
-      # Once we upgrade to prospector >=1.9, we can remove it again.
-      entry: env PYTHONPATH=readthedocs:../readthedocs.org:./ DJANGO_SETTINGS_MODULE=readthedocs.settings.test prospector
-      # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
       additional_dependencies:
         - -r
         - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/testing.txt
