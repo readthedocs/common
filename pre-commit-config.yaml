@@ -93,6 +93,9 @@ repos:
             .*/tests/.*|
             .*/migrations/.*
         )$
+      # This PYTHONPATH environment variable is required for readthedocs-corporate when running `tox -e pre-commit`
+      entry: env PYTHONPATH=readthedocs:../readthedocs.org:./ DJANGO_SETTINGS_MODULE=readthedocs.settings.test prospector
+      # We have to install the dependencies from an URL since we don't have access to this file easily from pre-commit
       additional_dependencies:
         - -r
         - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/testing.txt
