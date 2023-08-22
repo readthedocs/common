@@ -56,16 +56,15 @@ repos:
   - id: django-upgrade
     args: [--target-version, "4.2"]
 
-- repo: https://github.com/akaihola/darker
-  rev: 1.7.1
+- repo: https://github.com/psf/black
+  rev: 23.7.0
   hooks:
-    - id: darker
-      # TODO: find a way to pass `--check` only when running via `tox -e
-      # pre-commit`
-      args: ['--isort']
-      additional_dependencies:
-        - isort==5.12.0
-        - black==23.7.0
+    - id: black
+      # It is recommended to specify the latest version of Python
+      # supported by your project here, or alternatively use
+      # pre-commit's default_language_version, see
+      # https://pre-commit.com/#top_level-default_language_version
+      language_version: python3.10
       exclude: |
         (?x)^(
             readthedocs/rtd_tests/files/conf.py|
