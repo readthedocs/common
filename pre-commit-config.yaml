@@ -70,6 +70,13 @@ repos:
             readthedocs/rtd_tests/files/conf.py|
         )$
 
+# NOTE: run `isort` after `black` to keep the format of isort finally
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+    - id: isort
+      name: isort (python)
+
 - repo: https://github.com/asottile/blacken-docs
   rev: 1.13.0
   hooks:
