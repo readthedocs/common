@@ -83,6 +83,7 @@ services:
       - RTD_DJANGO_DEBUG
       - RTD_STRIPE_SECRET
       - RTD_STRIPE_PUBLISHABLE
+      - RTD_DJSTRIPE_WEBHOOK_SECRET
     stdin_open: true
     tty: true
     networks:
