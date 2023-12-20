@@ -22,12 +22,35 @@ services:
       - web
       - proxito
       - storage
+      - wrangler
+    networks:
+      readthedocs:
     volumes:
       - ${PWD}/dockerfiles/nginx:/etc/nginx/templates
     # Disable logs for NGINX by default because they are too noisy and we have
     # better logs in our application code
     logging:
       driver: "none"
+
+  wrangler:
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/dockerfiles/Dockerfile.wrangler
+    volumes:
+      - ${PWD}/../readthedocs-ops/terraform/prod/cloudflare/workers/force-readthedocs-addons.js:/usr/src/app/docker/force-readthedocs-addons.js
+    networks:
+      readthedocs:
+    command: [
+      "wrangler",
+      "dev",
+      "/usr/src/app/docker/force-readthedocs-addons.js",
+      "--name=force-addons",
+      "--latest",
+      "--log-level=info",
+      "--host=nginx:8080",
+      "--ip=0.0.0.0",
+      "--port=8000",
+    ]
 
   proxito:
     volumes:
