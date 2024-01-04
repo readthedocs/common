@@ -8,7 +8,7 @@ DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
 DOCKER_COMPOSE_WEBPACK = 'common/dockerfiles/docker-compose-webpack.yml'
 DOCKER_COMPOSE_ASSETS = 'dockerfiles/docker-compose-assets.yml'
 DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
-DOCKER_COMPOSE_COMMAND = f'docker-compose --project-directory=. -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
+DOCKER_COMPOSE_COMMAND = f'docker compose --project-directory=. -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
 
 @task(help={
     'cache': 'Build Docker image using cache (default: False)',
@@ -19,10 +19,10 @@ def build(c, cache=False):
     c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
 
 @task(help={
-    'command': 'Command to pass directly to "docker-compose"',
+    'command': 'Command to pass directly to "docker compose"',
 })
 def compose(c, command):
-    """Pass the command to docker-compose directly."""
+    """Pass the command to docker compose directly."""
     c.run(f'{DOCKER_COMPOSE_COMMAND} {command}', pty=True)
 
 @task(help={
@@ -56,7 +56,7 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
     cmd.append('DOCKER_NO_RELOAD=t' if not reload else 'DOCKER_NO_RELOAD=')
     cmd.append(f'RTD_LOGGING_LEVEL={log_level}')
 
-    cmd.append('docker-compose')
+    cmd.append('docker compose')
     cmd.append('--project-directory=.')
     cmd.append(f'-f {DOCKER_COMPOSE}')
     cmd.append(f'-f {DOCKER_COMPOSE_OVERRIDE}')
@@ -165,7 +165,7 @@ def test(c, arguments='', running=True):
 @task
 def buildassets(c):
     """Build all assets for the application and push them to backend storage"""
-    c.run(f'docker-compose -f {DOCKER_COMPOSE_ASSETS} run --rm assets bash -c "npm ci && node_modules/bower/bin/bower --allow-root update && npm run build"', pty=True)
+    c.run(f'docker compose -f {DOCKER_COMPOSE_ASSETS} run --rm assets bash -c "npm ci && node_modules/bower/bin/bower --allow-root update && npm run build"', pty=True)
     c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py collectstatic --noinput', pty=True)
 
 
