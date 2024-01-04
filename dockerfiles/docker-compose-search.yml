@@ -26,6 +26,8 @@ services:
       - cluster.info.update.interval=30m
       - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
       - ELASTIC_PASSWORD=password
+      # Disable HTTPS on development.
+      - xpack.security.transport.ssl.enabled=false
     ports:
       - "9200:9200"
     links:
