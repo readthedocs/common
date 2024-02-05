@@ -100,3 +100,7 @@ repos:
         - -r
         - https://raw.githubusercontent.com/readthedocs/readthedocs.org/main/requirements/testing.txt
 
+- repo: https://github.com/aspiredu/django-safemigrate
+  rev: "4.2"
+  hooks:
+    - id: check
