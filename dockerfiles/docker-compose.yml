@@ -25,6 +25,8 @@ services:
       - wrangler
     networks:
       readthedocs:
+    environment:
+      - NGINX_ADDONS_GITHUB_TAG=0.9.5
     volumes:
       - ${PWD}/dockerfiles/nginx:/etc/nginx/templates
     # Disable logs for NGINX by default because they are too noisy and we have
