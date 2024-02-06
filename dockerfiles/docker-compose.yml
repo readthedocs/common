@@ -47,7 +47,7 @@ services:
       "--name=force-addons",
       "--latest",
       "--log-level=info",
-      "--host=wrangler:8080",
+      "--host=proxito:8080",
       "--ip=0.0.0.0",
       "--port=8000",
     ]
