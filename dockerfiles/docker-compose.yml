@@ -22,12 +22,37 @@ services:
       - web
       - proxito
       - storage
+      - wrangler
+    networks:
+      readthedocs:
+    environment:
+      - NGINX_ADDONS_GITHUB_TAG=0.9.5
     volumes:
       - ${PWD}/dockerfiles/nginx:/etc/nginx/templates
     # Disable logs for NGINX by default because they are too noisy and we have
     # better logs in our application code
     logging:
       driver: "none"
+
+  wrangler:
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/dockerfiles/Dockerfile.wrangler
+    volumes:
+      - ${PWD}/dockerfiles/force-readthedocs-addons.js:/usr/src/app/docker/force-readthedocs-addons.js
+    networks:
+      readthedocs:
+    command: [
+      "wrangler",
+      "dev",
+      "/usr/src/app/docker/force-readthedocs-addons.js",
+      "--name=force-addons",
+      "--latest",
+      "--log-level=error",
+      "--host=nginx:8080",  # El Proxito on NGINX configuration
+      "--ip=0.0.0.0",
+      "--port=8000",
+    ]
 
   proxito:
     volumes:
