@@ -37,7 +37,7 @@ services:
   wrangler:
     build:
       context: ${PWD}
-      dockerfile: ${PWD}/dockerfiles/Dockerfile.wrangler
+      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.wrangler
     volumes:
       - ${PWD}/dockerfiles/force-readthedocs-addons.js:/usr/src/app/docker/force-readthedocs-addons.js
     networks:
