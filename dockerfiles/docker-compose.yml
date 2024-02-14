@@ -39,7 +39,7 @@ services:
       context: ${PWD}
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.wrangler
     volumes:
-      - ${PWD}/dockerfiles/force-readthedocs-addons.js:/usr/src/app/docker/force-readthedocs-addons.js
+      - ${PWD}/common/dockerfiles/force-readthedocs-addons.js:/usr/src/app/docker/force-readthedocs-addons.js
     networks:
       readthedocs:
     command: [
