@@ -32,10 +32,13 @@ const docEmbedJsAssets =
   'script[src="https://assets.readthedocs.org/static/javascript/readthedocs-doc-embed.js"]';
 const docEmbedJsAssetsCore =
   'script[src="https://assets.readthedocs.org/static/core/js/readthedocs-doc-embed.js"]';
+const docEmbedJsAssetsProxied =
+  'script[src="/_/static/core/js/readthedocs-doc-embed.js"]';
 const badgeOnlyCssAssets =
   'link[href="https://assets.readthedocs.org/static/css/badge_only.css"]';
 const badgeOnlyCssAssetsProxied = 'link[href="/_/static/css/badge_only.css"]';
-const readthedocsExternalVersionWarning = "[role=main] > div:first-child > div:first-child.admonition.warning";
+const readthedocsExternalVersionWarning =
+  "[role=main] > div:first-child > div:first-child.admonition.warning";
 const readthedocsFlyout = "div.rst-versions";
 
 // "readthedocsDataParse" is the "<script>" that calls:
@@ -93,6 +96,7 @@ async function handleRequest(request) {
           .on(docEmbedCssAssets, new removeElement())
           .on(docEmbedJsAssets, new removeElement())
           .on(docEmbedJsAssetsCore, new removeElement())
+          .on(docEmbedJsAssetsProxied, new removeElement())
           .on(badgeOnlyCssAssets, new removeElement())
           .on(badgeOnlyCssAssetsProxied, new removeElement())
           .on(readthedocsExternalVersionWarning, new removeElement())
