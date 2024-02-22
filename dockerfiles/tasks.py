@@ -70,8 +70,7 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
         cmd.insert(0, 'RTD_EXT_THEME_DEV_SERVER_ENABLED=t')
     if ext_theme:
         cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
-    if django_debug:
-        cmd.insert(0, 'RTD_DJANGO_DEBUG=t')
+    cmd.insert(0, 'RTD_DJANGO_DEBUG=t' if django_debug else 'RTD_DJANGO_DEBUG=')
     if http_domain:
         cmd.insert(0, f'RTD_PRODUCTION_DOMAIN={http_domain}')
         cmd.insert(0, f'NGINX_WEB_SERVER_NAME={http_domain}')
