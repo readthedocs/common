@@ -39,6 +39,10 @@ const badgeOnlyCssAssets =
 const badgeOnlyCssAssetsProxied = 'link[href="/_/static/css/badge_only.css"]';
 const readthedocsExternalVersionWarning =
   "[role=main] > div:first-child > div:first-child.admonition.warning";
+const readthedocsExternalVersionWarningFuroTheme =
+  "[role=main] > div:first-child.admonition.warning";
+const readthedocsExternalVersionWarningBookTheme =
+  "#main-content > div > div > article > div:first-child.admonition.warning";
 const readthedocsFlyout = "div.rst-versions";
 
 // "readthedocsDataParse" is the "<script>" that calls:
@@ -100,6 +104,8 @@ async function handleRequest(request) {
           .on(badgeOnlyCssAssets, new removeElement())
           .on(badgeOnlyCssAssetsProxied, new removeElement())
           .on(readthedocsExternalVersionWarning, new removeElement())
+          .on(readthedocsExternalVersionWarningFuroTheme, new removeElement())
+          .on(readthedocsExternalVersionWarningBookTheme, new removeElement())
           .on(readthedocsFlyout, new removeElement())
           // NOTE: I wasn't able to reliably remove the "<script>" that parses
           // the "READTHEDOCS_DATA" defined previously, so we are keeping it for now.
