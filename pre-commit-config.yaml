@@ -1,4 +1,4 @@
-exclude: '^$|settings|scripts'
+exclude: '^$|settings|scripts|vendor|\.(min\.js|svg)$|static/.*\.js$'
 fail_fast: false
 repos:
 
