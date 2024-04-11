@@ -74,6 +74,7 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
         cmd.insert(0, 'RTD_DJANGO_DEBUG=t')
     if http_domain:
         cmd.insert(0, f'RTD_PRODUCTION_DOMAIN={http_domain}')
+        cmd.insert(0, f'RTD_PUBLIC_DOMAIN={http_domain}')
         cmd.insert(0, f'NGINX_WEB_SERVER_NAME={http_domain}')
         cmd.insert(0, f'NGINX_PROXITO_SERVER_NAME=*.{http_domain}')
 

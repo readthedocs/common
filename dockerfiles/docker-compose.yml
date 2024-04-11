@@ -68,6 +68,7 @@ services:
     environment:
       - DOCKER_NO_RELOAD
       - RTD_PRODUCTION_DOMAIN
+      - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
 
@@ -102,6 +103,7 @@ services:
       - RTD_EXT_THEME_ENABLED
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
       - RTD_PRODUCTION_DOMAIN
+      - RTD_PUBLIC_DOMAIN
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=password
       - RTD_LOGGING_LEVEL
@@ -136,6 +138,7 @@ services:
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
       - RTD_PRODUCTION_DOMAIN
+      - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
     stdin_open: true
@@ -157,6 +160,7 @@ services:
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
       - RTD_PRODUCTION_DOMAIN
+      - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
     stdin_open: true
@@ -193,6 +197,7 @@ services:
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
       - RTD_PRODUCTION_DOMAIN
+      - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
     stdin_open: true
