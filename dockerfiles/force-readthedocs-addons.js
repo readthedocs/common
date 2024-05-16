@@ -49,7 +49,7 @@ const readthedocsFlyout = "div.rst-versions";
 //
 //   READTHEDOCS_DATA = JSON.parse(document.getElementById('READTHEDOCS_DATA').innerHTML);
 //
-const readthedocsDataParse = "script[id=READTHEDOCS_DATA]:first-of-type";
+const readthedocsDataParse = "script[id=READTHEDOCS_DATA] + script";
 const readthedocsData = "script[id=READTHEDOCS_DATA]";
 
 // do this on a fetch
@@ -108,11 +108,8 @@ async function handleRequest(request) {
           .on(readthedocsExternalVersionWarningFuroTheme, new removeElement())
           .on(readthedocsExternalVersionWarningBookTheme, new removeElement())
           .on(readthedocsFlyout, new removeElement())
-          // NOTE: I wasn't able to reliably remove the "<script>" that parses
-          // the "READTHEDOCS_DATA" defined previously, so we are keeping it for now.
-          //
-          // .on(readthedocsDataParse, new removeElement())
-          // .on(readthedocsData, new removeElement())
+          .on(readthedocsDataParse, new removeElement())
+          .on(readthedocsData, new removeElement())
           .on("head", new addPreloads())
           .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename))
           .transform(originalResponse)
