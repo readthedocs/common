@@ -1,5 +1,3 @@
-version: '3'
-
 volumes:
   build-user-builds:
   storage_data:
@@ -217,7 +215,7 @@ services:
       readthedocs:
 
   database:
-    image: postgres:12.5
+    image: postgres:12.17
     environment:
       - POSTGRES_USER=docs_user
       - POSTGRES_PASSWORD=docs_pwd
