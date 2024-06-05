@@ -1,6 +1,5 @@
 # docker-compose-search.yml starts "search" service and override some
 # services to link them so they can use the "search" as well.
-version: '3'
 
 volumes:
   search_data:
