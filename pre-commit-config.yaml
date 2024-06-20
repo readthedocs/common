@@ -110,3 +110,13 @@ repos:
   rev: "4.2"
   hooks:
     - id: check
+
+- repo: https://github.com/codespell-project/codespell
+  # Configuration for codespell is in setup.cfg
+  rev: v2.2.6
+  hooks:
+  - id: codespell
+    exclude: |
+        (?x)^(
+            .*/locale/.*
+        )$
