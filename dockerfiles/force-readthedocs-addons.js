@@ -81,7 +81,7 @@ async function handleRequest(request) {
   // the user will see the page rendering properly, but without any of the addons injected
   // this is an intermediate workaround/solution for
   // https://github.com/readthedocs/readthedocs-ops/issues/1513
-  if (contentLength && contentLength >= 1000000) {
+  if (contentLength && parseInt(contentLength) >= 1000000) {
     console.log("Skipping running Cloudflare Worker because the response's body is bigger than 1Mb.");
     return originalResponse;
   }
