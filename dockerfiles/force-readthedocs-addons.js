@@ -64,6 +64,7 @@ async function handleRequest(request) {
 
   // get the content type of the response to manipulate the content only if it's HTML
   const contentType = originalResponse.headers.get("content-type") || "";
+  const contentLength = originalResponse.headers.get("content-length") || "";
   const injectHostingIntegrations =
     originalResponse.headers.get("x-rtd-hosting-integrations") || "false";
   const forceAddons =
@@ -73,6 +74,17 @@ async function handleRequest(request) {
   console.log(`ContentType: ${contentType}`);
   console.log(`X-RTD-Force-Addons: ${forceAddons}`);
   console.log(`X-RTD-Hosting-Integrations: ${injectHostingIntegrations}`);
+  console.log(`ContentLength: ${contentLength}`);
+
+  // skip executing the Cloudflare Worker if the response's body is bigger than 1Mb
+  //
+  // the user will see the page rendering properly, but without any of the addons injected
+  // this is an intermediate workaround/solution for
+  // https://github.com/readthedocs/readthedocs-ops/issues/1513
+  if (contentLength && contentLength >= 1000000) {
+    console.log("Skipping running Cloudflare Worker because the response's body is bigger than 1Mb.");
+    return originalResponse;
+  }
 
   // get project/version slug from headers inject by El Proxito
   const projectSlug = originalResponse.headers.get("x-rtd-project") || "";
