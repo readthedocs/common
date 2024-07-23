@@ -65,6 +65,8 @@ services:
       - cache
     environment:
       - DOCKER_NO_RELOAD
+      - RTD_EXT_THEME_ENABLED
+      - RTD_EXT_THEME_DEV_SERVER_ENABLED
       - RTD_PRODUCTION_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
