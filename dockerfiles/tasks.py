@@ -142,10 +142,8 @@ def restart(c, containers):
 def pull(c):
     """Pull all docker images required for build servers."""
     images = [
-        # TODO: remove Ubuntu 20.04 once we start cloning with Ubuntu 22.04
-        # https://github.com/readthedocs/readthedocs.org/blob/c166379bfe48d6757920848bbd49286057b945c1/readthedocs/doc_builder/director.py#L138-L140
-        ('ubuntu-20.04-2022.02.16', 'ubuntu-20.04'),
         ('ubuntu-22.04-2023.03.09', 'ubuntu-22.04'),
+        ('ubuntu-24.04-2024.06.17', 'ubuntu-24.04'),
     ]
     for image, tag in images:
         c.run(f'docker pull readthedocs/build:{image}', pty=True)
