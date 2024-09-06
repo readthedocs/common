@@ -69,6 +69,7 @@ services:
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
       - RTD_EXT_THEME_ENABLED
+      - RTD_EXT_THEME_DEV_SERVER_ENABLED
 
     # Allow us to run `docker attach readthedocsorg_proxito_1` and get
     # control on STDIN and be able to debug our code with interactive pdb
