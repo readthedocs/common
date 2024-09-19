@@ -68,11 +68,13 @@ async function handleRequest(request) {
     originalResponse.headers.get("x-rtd-hosting-integrations") || "false";
   const forceAddons =
     originalResponse.headers.get("x-rtd-force-addons") || "false";
+  const httpStatus = originalResponse.status;
 
   // Log some debugging data
   console.log(`ContentType: ${contentType}`);
   console.log(`X-RTD-Force-Addons: ${forceAddons}`);
   console.log(`X-RTD-Hosting-Integrations: ${injectHostingIntegrations}`);
+  console.log(`HTTP status: ${httpStatus}`);
 
   // get project/version slug from headers inject by El Proxito
   const projectSlug = originalResponse.headers.get("x-rtd-project") || "";
@@ -114,7 +116,7 @@ async function handleRequest(request) {
           // .on(readthedocsDataParse, new removeElement())
           // .on(readthedocsData, new removeElement())
           .on("head", new addPreloads())
-          .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename))
+          .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus))
           .transform(originalResponse)
       );
     }
@@ -127,7 +129,7 @@ async function handleRequest(request) {
     if (forceAddons === "false" && injectHostingIntegrations === "true") {
       return new HTMLRewriter()
         .on("head", new addPreloads())
-        .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename))
+        .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus))
         .transform(originalResponse);
     }
   }
@@ -167,10 +169,11 @@ class addPreloads {
 }
 
 class addMetaTags{
-  constructor(projectSlug, versionSlug, resolverFilename) {
+  constructor(projectSlug, versionSlug, resolverFilename, httpStatus) {
     this.projectSlug = projectSlug;
     this.versionSlug = versionSlug;
     this.resolverFilename = resolverFilename;
+    this.httpStatus = httpStatus;
   }
 
   element(element) {
@@ -181,10 +184,12 @@ class addMetaTags{
       const metaProject = `<meta name="readthedocs-project-slug" content="${this.projectSlug}" />`;
       const metaVersion = `<meta name="readthedocs-version-slug" content="${this.versionSlug}" />`;
       const metaResolverFilename = `<meta name="readthedocs-resolver-filename" content="${this.resolverFilename}" />`;
+      const metaHttpStatus = `<meta name="readthedocs-http-status" content="${this.httpStatus}" />`;
 
       element.append(metaProject, { html: true });
       element.append(metaVersion, { html: true });
       element.append(metaResolverFilename, { html: true });
+      element.append(metaHttpStatus, { html: true });
     }
   }
 }
