@@ -64,8 +64,6 @@ async function handleRequest(request) {
 
   // get the content type of the response to manipulate the content only if it's HTML
   const contentType = originalResponse.headers.get("content-type") || "";
-  const injectHostingIntegrations =
-    originalResponse.headers.get("x-rtd-hosting-integrations") || "false";
   const forceAddons =
     originalResponse.headers.get("x-rtd-force-addons") || "false";
   const httpStatus = originalResponse.status;
@@ -73,7 +71,6 @@ async function handleRequest(request) {
   // Log some debugging data
   console.log(`ContentType: ${contentType}`);
   console.log(`X-RTD-Force-Addons: ${forceAddons}`);
-  console.log(`X-RTD-Hosting-Integrations: ${injectHostingIntegrations}`);
   console.log(`HTTP status: ${httpStatus}`);
 
   // get project/version slug from headers inject by El Proxito
@@ -91,9 +88,8 @@ async function handleRequest(request) {
     // Remove old implementation of our flyout and inject the new addons if the following conditions are met:
     //
     // - header `X-RTD-Force-Addons` is present (user opted-in into new beta addons)
-    // - header `X-RTD-Hosting-Integrations` is not present (added automatically when using `build.commands`)
     //
-    if (forceAddons === "true" && injectHostingIntegrations === "false") {
+    if (forceAddons === "true") {
       return (
         new HTMLRewriter()
           .on(analyticsJs, new removeElement())
@@ -119,18 +115,6 @@ async function handleRequest(request) {
           .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus))
           .transform(originalResponse)
       );
-    }
-
-    // Inject the new addons if the following conditions are met:
-    //
-    // - header `X-RTD-Hosting-Integrations` is present (added automatically when using `build.commands`)
-    // - header `X-RTD-Force-Addons` is not present (user opted-in into new beta addons)
-    //
-    if (forceAddons === "false" && injectHostingIntegrations === "true") {
-      return new HTMLRewriter()
-        .on("head", new addPreloads())
-        .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus))
-        .transform(originalResponse);
     }
   }
 
