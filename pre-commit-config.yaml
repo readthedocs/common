@@ -1,4 +1,4 @@
-exclude: '^$|settings|scripts'
+exclude: '^$|settings|scripts|vendor|\.(min\.js|svg)$|static/.*\.js$'
 fail_fast: false
 repos:
 
@@ -33,6 +33,7 @@ repos:
             .+\.svg|
             .+\.js|
             .+\.css|
+            .*/migrations/.*|
         )$
     - id: mixed-line-ending
       args: ['--fix=lf']
@@ -68,6 +69,7 @@ repos:
       exclude: |
         (?x)^(
             readthedocs/rtd_tests/files/conf.py|
+            .*/migrations/.*
         )$
 
 # NOTE: run `isort` after `black` to keep the format of isort finally
@@ -76,6 +78,10 @@ repos:
   hooks:
     - id: isort
       name: isort (python)
+      exclude: |
+        (?x)^(
+            .*/migrations/.*
+        )
 
 - repo: https://github.com/asottile/blacken-docs
   rev: 1.16.0
