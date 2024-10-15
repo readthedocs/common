@@ -86,39 +86,49 @@ async function handleRequest(request) {
   // - content type has to be "text/html"
   // when all these conditions are met, we remove all the old JS/CSS files and inject the new beta flyout JS
 
-  // check if the Content-Type is HTML, otherwise do nothing
-  if (contentType.includes("text/html")) {
-    // Remove old implementation of our flyout and inject the new addons if the following conditions are met:
-    //
-    // - header `X-RTD-Force-Addons` is present (user opted-in into new beta addons)
-    // - header `X-RTD-Hosting-Integrations` is not present (added automatically when using `build.commands`)
-    //
-    if (forceAddons === "true" && injectHostingIntegrations === "false") {
-      return (
-        new HTMLRewriter()
-          .on(analyticsJs, new removeElement())
-          .on(docEmbedCss, new removeElement())
-          .on(docEmbedJs, new removeElement())
-          .on(analyticsJsAssets, new removeElement())
-          .on(docEmbedCssAssets, new removeElement())
-          .on(docEmbedJsAssets, new removeElement())
-          .on(docEmbedJsAssetsCore, new removeElement())
-          .on(docEmbedJsAssetsProxied, new removeElement())
-          .on(badgeOnlyCssAssets, new removeElement())
-          .on(badgeOnlyCssAssetsProxied, new removeElement())
-          .on(readthedocsExternalVersionWarning, new removeElement())
-          .on(readthedocsExternalVersionWarningFuroTheme, new removeElement())
-          .on(readthedocsExternalVersionWarningBookTheme, new removeElement())
-          .on(readthedocsFlyout, new removeElement())
-          // NOTE: I wasn't able to reliably remove the "<script>" that parses
-          // the "READTHEDOCS_DATA" defined previously, so we are keeping it for now.
-          //
-          // .on(readthedocsDataParse, new removeElement())
-          // .on(readthedocsData, new removeElement())
-          .on("head", new addPreloads())
-          .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus))
-          .transform(originalResponse)
-      );
+  try {
+    // check if the Content-Type is HTML, otherwise do nothing
+    if (contentType.includes("text/html")) {
+      // Remove old implementation of our flyout and inject the new addons if the following conditions are met:
+      //
+      // - header `X-RTD-Force-Addons` is present (user opted-in into new beta addons)
+      // - header `X-RTD-Hosting-Integrations` is not present (added automatically when using `build.commands`)
+      //
+      if (forceAddons === "true" && injectHostingIntegrations === "false") {
+        return (
+          new HTMLRewriter()
+            .on(analyticsJs, new removeElement())
+            .on(docEmbedCss, new removeElement())
+            .on(docEmbedJs, new removeElement())
+            .on(analyticsJsAssets, new removeElement())
+            .on(docEmbedCssAssets, new removeElement())
+            .on(docEmbedJsAssets, new removeElement())
+            .on(docEmbedJsAssetsCore, new removeElement())
+            .on(docEmbedJsAssetsProxied, new removeElement())
+            .on(badgeOnlyCssAssets, new removeElement())
+            .on(badgeOnlyCssAssetsProxied, new removeElement())
+            .on(readthedocsExternalVersionWarning, new removeElement())
+            .on(readthedocsExternalVersionWarningFuroTheme, new removeElement())
+            .on(readthedocsExternalVersionWarningBookTheme, new removeElement())
+            .on(readthedocsFlyout, new removeElement())
+            // NOTE: I wasn't able to reliably remove the "<script>" that parses
+            // the "READTHEDOCS_DATA" defined previously, so we are keeping it for now.
+            //
+            // .on(readthedocsDataParse, new removeElement())
+            // .on(readthedocsData, new removeElement())
+            .on("head", new addPreloads())
+            .on(
+              "head",
+              new addMetaTags(
+                projectSlug,
+                versionSlug,
+                resolverFilename,
+                httpStatus
+              )
+            )
+            .transform(originalResponse)
+        );
+      }
     }
 
     // Inject the new addons if the following conditions are met:
@@ -129,20 +139,31 @@ async function handleRequest(request) {
     if (forceAddons === "false" && injectHostingIntegrations === "true") {
       return new HTMLRewriter()
         .on("head", new addPreloads())
-        .on("head", new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus))
+        .on(
+          "head",
+          new addMetaTags(
+            projectSlug,
+            versionSlug,
+            resolverFilename,
+            httpStatus
+          )
+        )
         .transform(originalResponse);
     }
-  }
 
-  // Modify `_static/searchtools.js` to re-enable Sphinx's default search
-  if (
-    (contentType.includes("text/javascript") ||
-      contentType.includes("application/javascript")) &&
-    (injectHostingIntegrations === "true" || forceAddons === "true") &&
-    originalResponse.url.endsWith("_static/searchtools.js")
-  ) {
-    console.log("Modifying _static/searchtools.js");
-    return handleSearchToolsJSRequest(originalResponse);
+    // Modify `_static/searchtools.js` to re-enable Sphinx's default search
+    if (
+      (contentType.includes("text/javascript") ||
+       contentType.includes("application/javascript")) &&
+        (injectHostingIntegrations === "true" || forceAddons === "true") &&
+        originalResponse.url.endsWith("_static/searchtools.js")
+    ) {
+      console.log("Modifying _static/searchtools.js");
+      return handleSearchToolsJSRequest(originalResponse);
+    }
+  } catch (e) {
+    console.error("There was an error executing our script. Returning the original response.");
+    return originalResponse;
   }
 
   // if none of the previous conditions are met,
@@ -168,7 +189,7 @@ class addPreloads {
   }
 }
 
-class addMetaTags{
+class addMetaTags {
   constructor(projectSlug, versionSlug, resolverFilename, httpStatus) {
     this.projectSlug = projectSlug;
     this.versionSlug = versionSlug;
@@ -178,8 +199,9 @@ class addMetaTags{
 
   element(element) {
     console.log(
-      `addProjectVersionSlug. projectSlug=${this.projectSlug} versionSlug=${this.versionSlug} resolverFilename=${this.resolverFilename}`,
+      `addProjectVersionSlug. projectSlug=${this.projectSlug} versionSlug=${this.versionSlug} resolverFilename=${this.resolverFilename}`
     );
+    throw new Error("This is an issue");
     if (this.projectSlug && this.versionSlug) {
       const metaProject = `<meta name="readthedocs-project-slug" content="${this.projectSlug}" />`;
       const metaVersion = `<meta name="readthedocs-version-slug" content="${this.versionSlug}" />`;
@@ -232,7 +254,7 @@ else {
 async function handleSearchToolsJSRequest(originalResponse) {
   const content = await originalResponse.text();
   const modifiedResponse = new Response(
-    content.replace(textToReplace, textReplacement),
+    content.replace(textToReplace, textReplacement)
   );
   return modifiedResponse;
 }
