@@ -35,18 +35,15 @@ services:
   wrangler:
     build:
       context: ${PWD}
-      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.wrangler
+      dockerfile: ${PWD}/common/packages/addons-inject/Dockerfile
     volumes:
-      - ${PWD}/common/dockerfiles/force-readthedocs-addons.js:/usr/src/app/docker/force-readthedocs-addons.js
+      - ${PWD}/common/packages/addons-inject/:/usr/src/app/packages/addons-inject/
     networks:
       readthedocs:
+    working_dir: /usr/src/app/packages/addons-inject/
     command: [
       "wrangler",
       "dev",
-      "/usr/src/app/docker/force-readthedocs-addons.js",
-      "--name=force-addons",
-      "--latest",
-      "--log-level=error",
       "--host=nginx:8080",  # El Proxito on NGINX configuration
       "--ip=0.0.0.0",
       "--port=8000",
