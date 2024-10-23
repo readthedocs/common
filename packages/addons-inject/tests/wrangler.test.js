@@ -194,11 +194,11 @@ describe("Addons when enabled", async () => {
       "http://test-builds.devthedocs.org/en/latest/_static/searchtools.js",
     );
     expect(response.status).toBe(200);
+    expect(response.headers.get("Content-type")).toBe("application/javascript");
+    expect(response.headers.get("X-RTD-Test-Passthrough")).toBe("42");
     expect(await response.text()).toContain(
       AddonsConstants.replacements.searchtools.replacement,
     );
-    expect(response.headers.get("Content-type")).toBe("application/javascript");
-    expect(response.headers.get("X-RTD-Test-Passthrough")).toBe("42");
   });
 
   it("handles error gracefully", async () => {
@@ -223,5 +223,34 @@ describe("Addons when enabled", async () => {
       `<html><head></head><body></body></html>`,
     );
     expect(response.headers.get("X-RTD-Test-Passthrough")).toBe("42");
+  });
+
+  it("handles binary content", async () => {
+    // It's not clear if this test is helpful. Some operations that were
+    // previously using `Response.text()` were choking on the binary data. This
+    // test may not be catching those points anymore.
+    const binaryData = Buffer.from([
+      137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82,
+    ]);
+    fetchMock
+      .get("http://test-builds.devthedocs.org")
+      .intercept({ path: "/en/latest/_/static/images/test.png" })
+      .reply(200, binaryData, {
+        headers: {
+          "Content-type": "image/png",
+          "X-RTD-Force-Addons": true,
+          "X-RTD-Hosting-Integrations": false,
+          "X-RTD-Project": "test-builds",
+          "X-RTD-Version": "latest",
+        },
+      });
+    let response = await SELF.fetch(
+      "http://test-builds.devthedocs.org/en/latest/_/static/images/test.png",
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Content-Type")).toBe("image/png");
+    const buffer = await response.arrayBuffer();
+    expect(buffer.byteLength).toBe(16);
+    expect(new Uint8Array(buffer)).toEqual(new Uint8Array(binaryData));
   });
 });

@@ -11,9 +11,9 @@
 
 /** Class to wrap all module constants, reused in tests
  *
- * This is a slightly silly hack because Workers can't export consts, though
- * exported classes seem to be fine. This should really be a separate import,
- * but this complicates the Worker deployment a little.
+ * This is a slightly silly hack because Workers can't export strings, though
+ * exported classes seem to be fine. These should really be strings in a
+ * separate import, but this complicates the Worker deployment a little.
  **/
 export class AddonsConstants {
   // Add "readthedocs-addons.js" inside the "<head>"
@@ -91,35 +91,47 @@ async function onFetch(request, env, context) {
     return response;
   }
 
-  const responseFallback = response.clone();
-
   try {
     const transformed = await transformResponse(response);
-    // Wait on the transformed text for force errors to evaluate. Timeout errors
-    // and errors thrown during transform aren't actually raised until the body
-    // is read
-    return new Response(await transformed.text(), transformed);
+    // Wait on the transformed body for errors to evaluate. Timeout errors and
+    // errors thrown during transform aren't actually raised until the body is
+    // read. If there was no return, we should return the original response.
+    if (transformed !== undefined) {
+      return new Response(await transformed.arrayBuffer(), transformed);
+    }
   } catch (error) {
     console.error("Discarding error:", error);
+    console.debug("Returning original response to avoid blank page");
   }
 
-  console.debug("Returning original response to avoid blank page");
-  return responseFallback;
+  return response;
 }
 
 export default {
   fetch: onFetch,
 };
 
-async function transformResponse(originalResponse) {
-  const { headers } = originalResponse;
+/** Transform HTTP reponses
+ *
+ * This supports several versions of element removal and transformation of some
+ * content that was previously injected into project builds.
+ *
+ * Important: wait until the last minute to use a `response.clone()`, as if you
+ * create a clone and do not use the body, this consumes extra memory in the
+ * worker.
+ *
+ * @param response {Response} - The origin response
+ * @returns {Response} - If transformed, return a response, otherwise `null`.
+ **/
+async function transformResponse(response) {
+  const { headers } = response;
 
   // Get the content type of the response to manipulate the content only if it's HTML
   const contentType = headers.get("content-type") || "";
   const injectHostingIntegrations =
     headers.get("x-rtd-hosting-integrations") || "false";
   const forceAddons = headers.get("x-rtd-force-addons") || "false";
-  const httpStatus = originalResponse.status;
+  const httpStatus = response.status;
 
   // Log some debugging data
   console.log(`ContentType: ${contentType}`);
@@ -127,23 +139,21 @@ async function transformResponse(originalResponse) {
   console.log(`X-RTD-Hosting-Integrations: ${injectHostingIntegrations}`);
   console.log(`HTTP status: ${httpStatus}`);
 
-  // Debug mode test operations
+  // Debug mode for some test cases. This is just for triggering an exception
+  // from tests. There might be a way to conditionally enable this, but I had
+  // trouble getting Wrangler vars to work at all.
   const throwError = headers.get("X-RTD-Throw-Error");
   if (throwError) {
     console.log(`Throw error: ${throwError}`);
   }
 
-  // get project/version slug from headers inject by El Proxito
-  const projectSlug = headers.get("x-rtd-project") || "";
-  const versionSlug = headers.get("x-rtd-version") || "";
-  const resolverFilename = headers.get("x-rtd-resolver-filename") || "";
+  // Get project/version slug from headers inject by El Proxito
+  const projectSlug = headers.get("X-RTD-Project") || "";
+  const versionSlug = headers.get("X-RTD-Version") || "";
+  const resolverFilename = headers.get("X-RTD-Resolver-Filename") || "";
 
-  // Check to decide whether or not inject the new beta addons:
-  //
-  // - content type has to be "text/html"
-  // when all these conditions are met, we remove all the old JS/CSS files and inject the new beta flyout JS
-
-  // check if the Content-Type is HTML, otherwise do nothing
+  // Check to decide whether or not inject Addons library. We only do this for
+  // `text/html` content types.
   if (contentType.includes("text/html")) {
     // Remove old implementation of our flyout and inject the new addons if the following conditions are met:
     //
@@ -153,7 +163,7 @@ async function transformResponse(originalResponse) {
     if (forceAddons === "true" && injectHostingIntegrations === "false") {
       let rewriter = new HTMLRewriter();
 
-      // Remove by selectors
+      // Remove by selector lookup
       for (const script of AddonsConstants.removalScripts) {
         rewriter.on(script, new removeElement());
       }
@@ -183,20 +193,21 @@ async function transformResponse(originalResponse) {
           ),
         )
         .on("*", {
-          // This mimics a number of exceptions that can occur in the inner
-          // request to origin, but mostly a hard to replicate timeout due to
-          // a large page size.
+          // This is only used for testing purposes. This is used to mimic an
+          // error being thrown during the request to origin. There are cases
+          // that are difficult to model here, like a large page size timing out
+          // the request.
           element(element) {
             if (throwError) {
               throw new Error("Manually triggered error in transform");
             }
           },
         })
-        .transform(originalResponse);
+        .transform(await response.clone());
     }
   }
 
-  // Inject the new addons if the following conditions are met:
+  // Inject Addons if the following conditions are met:
   //
   // - header `X-RTD-Hosting-Integrations` is present (added automatically when using `build.commands`)
   // - header `X-RTD-Force-Addons` is not present (user opted-in into new beta addons)
@@ -208,7 +219,7 @@ async function transformResponse(originalResponse) {
         "head",
         new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus),
       )
-      .transform(originalResponse);
+      .transform(await response.clone());
   }
 
   // Modify `_static/searchtools.js` to re-enable Sphinx's default search
@@ -216,15 +227,16 @@ async function transformResponse(originalResponse) {
     (contentType.includes("text/javascript") ||
       contentType.includes("application/javascript")) &&
     (injectHostingIntegrations === "true" || forceAddons === "true") &&
-    originalResponse.url.endsWith("_static/searchtools.js")
+    response.url.endsWith("_static/searchtools.js")
   ) {
-    console.log("Modifying _static/searchtools.js");
-    return handleSearchToolsJSRequest(originalResponse);
+    console.debug("Modifying _static/searchtools.js");
+    // Note, not a `clone()` call here on purpose, as we create a new Response
+    // in the function already.
+    return handleSearchToolsJSRequest(response);
   }
 
-  // if none of the previous conditions are met,
-  // we return the response without modifying it
-  return originalResponse;
+  // Return null response, don't continue transforming this response
+  return;
 }
 
 class removeElement {
@@ -287,11 +299,11 @@ class addMetaTags {
  * initialization of the default Sphinx search. This reverts manipulation and
  * restores the original Sphinx search initialization.
  *
- * @param originalResponse {Response} - Response from origin
+ * @param response {Response} - Response from origin
  * @returns {Response}
  **/
-async function handleSearchToolsJSRequest(originalResponse) {
+async function handleSearchToolsJSRequest(response) {
   const { pattern, replacement } = AddonsConstants.replacements.searchtools;
-  const content = await originalResponse.text();
-  return new Response(content.replace(pattern, replacement), originalResponse);
+  const content = await response.text();
+  return new Response(content.replace(pattern, replacement), response);
 }
