@@ -118,7 +118,11 @@ export default {
  *
  * Important: wait until the last minute to use a `response.clone()`, as if you
  * create a clone and do not use the body, this consumes extra memory in the
- * worker.
+ * worker. Response cloning is required because `transform()` evaluates the
+ * response body, which closes the read stream from any future reading. So, to
+ * allow the original response to return when `transform()` fails, we clone the
+ * response as we are calling transform and we know the cloned response body
+ * will be evaluated.
  *
  * @param response {Response} - The origin response
  * @returns {Response} - If transformed, return a response, otherwise `null`.
@@ -203,7 +207,10 @@ async function transformResponse(response) {
             }
           },
         })
-        .transform(await response.clone());
+        .transform(
+          // Cloning is required. See function docs above.
+          await response.clone(),
+        );
     }
   }
 
@@ -219,7 +226,10 @@ async function transformResponse(response) {
         "head",
         new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus),
       )
-      .transform(await response.clone());
+      .transform(
+        // Cloning is required. See function docs above.
+        await response.clone(),
+      );
   }
 
   // Modify `_static/searchtools.js` to re-enable Sphinx's default search
