@@ -142,7 +142,7 @@ async function transformResponse(response) {
   // Debug mode for some test cases. This is just for triggering an exception
   // from tests. There might be a way to conditionally enable this, but I had
   // trouble getting Wrangler vars to work at all.
-  const throwError = headers.get("X-RTD-Throw-Error");
+  const throwError = headers.get("X-RTD-Debug-Throw-Error");
   if (throwError) {
     console.log(`Throw error: ${throwError}`);
   }

@@ -211,7 +211,7 @@ describe("Addons when enabled", async () => {
           "X-RTD-Force-Addons": true,
           "X-RTD-Hosting-Integrations": false,
           "X-RTD-Test-Passthrough": 42,
-          "X-RTD-Throw-Error": true,
+          "X-RTD-Debug-Throw-Error": true,
         },
       });
     let response = await SELF.fetch(
