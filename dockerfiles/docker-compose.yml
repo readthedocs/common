@@ -42,7 +42,7 @@ services:
       readthedocs:
     working_dir: /usr/src/app/packages/addons-inject/
     command: [
-      "wrangler",
+      "node_modules/.bin/wrangler",
       "dev",
       "--log-level=error",
       "--host=nginx:8080",  # El Proxito on NGINX configuration
