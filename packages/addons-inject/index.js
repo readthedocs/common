@@ -185,7 +185,7 @@ async function transformResponse(response) {
       // rewriter.on(readthedocsDataParse, new removeElement())
       // rewriter.on(readthedocsData, new removeElement())
 
-      return rewriter
+      rewriter
         .on("head", new addPreloads())
         .on(
           "head",
@@ -195,22 +195,23 @@ async function transformResponse(response) {
             resolverFilename,
             httpStatus,
           ),
-        )
-        .on("*", {
-          // This is only used for testing purposes. This is used to mimic an
-          // error being thrown during the request to origin. There are cases
-          // that are difficult to model here, like a large page size timing out
-          // the request.
-          element(element) {
-            if (throwError) {
-              throw new Error("Manually triggered error in transform");
-            }
-          },
-        })
-        .transform(
-          // Cloning is required. See function docs above.
-          await response.clone(),
         );
+
+      // This is only used for testing purposes. This is used to mimic an error
+      // being thrown during the request to origin. There are cases that are
+      // difficult to model here, like a large data URL timing out the request.
+      if (throwError) {
+        rewriter.on("*", {
+          element(element) {
+            throw new Error("Manually triggered error in transform");
+          },
+        });
+      }
+
+      return rewriter.transform(
+        // Cloning is required. See function docs above.
+        await response.clone(),
+      );
     }
   }
 
