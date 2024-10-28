@@ -34,7 +34,7 @@ services:
 
   wrangler:
     build:
-      context: ${PWD}
+      context: ${PWD}/common/packages/addons-inject/
       dockerfile: ${PWD}/common/packages/addons-inject/Dockerfile
     volumes:
       - ${PWD}/common/packages/addons-inject/:/usr/src/app/packages/addons-inject/
