@@ -49,6 +49,8 @@ describe("Addons when enabled", async () => {
       "http://test-builds.devthedocs.org/en/latest/",
     );
     expect(response.status).toBe(200);
+    expect(response.headers.get("X-RTD-Force-Addons")).toBe("true");
+    expect(response.headers.get("X-RTD-Hosting-Integrations")).toBe("false");
     expect(await response.text()).toBe(
       `<html><head>${AddonsConstants.scriptAddons}</head><body></body></html>`,
     );
