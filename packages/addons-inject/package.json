@@ -1,0 +1,29 @@
+{
+  "name": "@readthedocs/addons-inject",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Read the Docs Addons injection worker",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler dev --env dev",
+    "test": "vitest run --config vitest.config.js --reporter basic",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/readthedocs/common.git"
+  },
+  "author": "Read the Docs, Inc",
+  "license": "MIT",
+  "dependencies": {
+    "wrangler": "^3.82.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.5.20",
+    "miniflare": "^3.20241011.0",
+    "prettier": "^3.3.3",
+    "vitest": "^2.1.3"
+  }
+}

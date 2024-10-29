@@ -1,0 +1,5 @@
+.direnv/
+.envrc
+.ropeproject/
+.tool-versions
+packages/addons-inject/node_modules
