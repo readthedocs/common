@@ -29,12 +29,17 @@ export class AddonsConstants {
     'script[src="https://assets.readthedocs.org/static/javascript/readthedocs-analytics.js"]',
     'script[src="https://assets.readthedocs.org/static/javascript/readthedocs-doc-embed.js"]',
     'script[src="https://assets.readthedocs.org/static/core/js/readthedocs-doc-embed.js"]',
+    'script[src="https://assets.readthedocs.com/javascript/readthedocs-analytics.js"]',
+    'script[src="https://assets.readthedocs.com/javascript/readthedocs-doc-embed.js"]',
+    'script[src="https://assets.readthedocs.com/core/js/readthedocs-doc-embed.js"]',
   ];
   static removalLinks = [
     'link[href="/_/static/css/readthedocs-doc-embed.css"]',
     'link[href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css"]',
+    'link[href="https://assets.readthedocs.com/css/readthedocs-doc-embed.css"]',
     // Badge only and proxied stylesheets
     'link[href="https://assets.readthedocs.org/static/css/badge_only.css"]',
+    'link[href="https://assets.readthedocs.com/css/badge_only.css"]',
     'link[href="/_/static/css/badge_only.css"]',
   ];
   static removalElements = [
