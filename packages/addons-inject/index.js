@@ -155,6 +155,7 @@ async function transformResponse(response) {
   const projectSlug = headers.get("X-RTD-Project") || "";
   const versionSlug = headers.get("X-RTD-Version") || "";
   const resolverFilename = headers.get("X-RTD-Resolver-Filename") || "";
+  const loadWhenEmbedded = headers.get("x-rtd-load-addons-when-embedded") || "false";
 
   // Check to decide whether or not inject Addons library. We only do this for
   // `text/html` content types.
@@ -194,6 +195,7 @@ async function transformResponse(response) {
             versionSlug,
             resolverFilename,
             httpStatus,
+            loadWhenEmbedded,
           ),
         );
 
@@ -225,7 +227,7 @@ async function transformResponse(response) {
       .on("head", new addPreloads())
       .on(
         "head",
-        new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus),
+        new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus, loadWhenEmbedded),
       )
       .transform(
         // Cloning is required. See function docs above.
@@ -269,11 +271,12 @@ class addPreloads {
 }
 
 class addMetaTags {
-  constructor(projectSlug, versionSlug, resolverFilename, httpStatus) {
+  constructor(projectSlug, versionSlug, resolverFilename, httpStatus, loadWhenEmbedded) {
     this.projectSlug = projectSlug;
     this.versionSlug = versionSlug;
     this.resolverFilename = resolverFilename;
     this.httpStatus = httpStatus;
+    this.loadWhenEmbedded = loadWhenEmbedded;
   }
 
   element(element) {
@@ -285,11 +288,13 @@ class addMetaTags {
       const metaVersion = `<meta name="readthedocs-version-slug" content="${this.versionSlug}" />`;
       const metaResolverFilename = `<meta name="readthedocs-resolver-filename" content="${this.resolverFilename}" />`;
       const metaHttpStatus = `<meta name="readthedocs-http-status" content="${this.httpStatus}" />`;
+      const metaLoadWhenEmbedded = `<meta name="readthedocs-load-addons-when-embedded content="${this.loadWhenEmbedded}" />`;
 
       element.append(metaProject, { html: true });
       element.append(metaVersion, { html: true });
       element.append(metaResolverFilename, { html: true });
       element.append(metaHttpStatus, { html: true });
+      element.append(metaLoadWhenEmbedded, { html: true });
     }
   }
 }
