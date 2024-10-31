@@ -89,11 +89,17 @@ describe("Addons when enabled", async () => {
       `<script src="https://assets.readthedocs.org/static/javascript/readthedocs-analytics.js"></script>`,
       `<script src="https://assets.readthedocs.org/static/javascript/readthedocs-doc-embed.js"></script>`,
       `<script src="https://assets.readthedocs.org/static/core/js/readthedocs-doc-embed.js"></script>`,
+      `<script src="https://assets.readthedocs.com/javascript/readthedocs-analytics.js"></script>`,
+      `<script src="https://assets.readthedocs.com/javascript/readthedocs-doc-embed.js"></script>`,
+      `<script src="https://assets.readthedocs.com/core/js/readthedocs-doc-embed.js"></script>`,
+
     ];
     const links = [
       `<link rel="stylesheet" href="/_/static/css/readthedocs-doc-embed.css" />`,
       `<link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" />`,
+      `<link rel="stylesheet" href="https://assets.readthedocs.com/css/readthedocs-doc-embed.css" />`,
       `<link rel="stylesheet" href="https://assets.readthedocs.org/static/css/badge_only.css" />`,
+      `<link rel="stylesheet" href="https://assets.readthedocs.com/css/badge_only.css" />`,
       `<link rel="stylesheet" href="/_/static/css/badge_only.css" />`,
     ];
     const elements = [
