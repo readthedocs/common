@@ -4,4 +4,4 @@ COPY index.js /usr/src/app/packages/addons-inject/
 COPY wrangler.toml /usr/src/app/packages/addons-inject/
 WORKDIR /usr/src/app/packages/addons-inject/
 RUN npm install --omit dev
-CMD ["node_modules/.bin/wrangler", "dev"]
+ENTRYPOINT ["node_modules/.bin/wrangler", "dev"]
