@@ -22,7 +22,6 @@ describe("Addons when disabled", async () => {
         headers: {
           "Content-type": "text/html",
           "X-RTD-Force-Addons": false,
-          "X-RTD-Hosting-Integrations": false,
         },
       });
     let response = await SELF.fetch(
@@ -42,7 +41,6 @@ describe("Addons when enabled", async () => {
         headers: {
           "Content-type": "text/html",
           "X-RTD-Force-Addons": true,
-          "X-RTD-Hosting-Integrations": false,
         },
       });
     let response = await SELF.fetch(
@@ -50,7 +48,6 @@ describe("Addons when enabled", async () => {
     );
     expect(response.status).toBe(200);
     expect(response.headers.get("X-RTD-Force-Addons")).toBe("true");
-    expect(response.headers.get("X-RTD-Hosting-Integrations")).toBe("false");
     expect(await response.text()).toBe(
       `<html><head>${AddonsConstants.scriptAddons}</head><body></body></html>`,
     );
@@ -64,7 +61,6 @@ describe("Addons when enabled", async () => {
         headers: {
           "Content-type": "text/html",
           "X-RTD-Force-Addons": true,
-          "X-RTD-Hosting-Integrations": false,
           "X-RTD-Project": "test-builds",
           "X-RTD-Version": "latest",
         },
@@ -135,7 +131,6 @@ describe("Addons when enabled", async () => {
           headers: {
             "Content-type": "text/html",
             "X-RTD-Force-Addons": true,
-            "X-RTD-Hosting-Integrations": false,
           },
         },
       );
@@ -186,7 +181,6 @@ describe("Addons when enabled", async () => {
           headers: {
             "Content-type": "text/html",
             "X-RTD-Force-Addons": false,
-            "X-RTD-Hosting-Integrations": true,
           },
         },
       );
@@ -211,7 +205,6 @@ describe("Addons when enabled", async () => {
         headers: {
           "Content-type": "application/javascript",
           "X-RTD-Force-Addons": true,
-          "X-RTD-Hosting-Integrations": true,
         },
       });
     let response = await SELF.fetch(
@@ -230,7 +223,6 @@ describe("Addons when enabled", async () => {
         headers: {
           "Content-type": "application/javascript",
           "X-RTD-Force-Addons": true,
-          "X-RTD-Hosting-Integrations": true,
           "X-RTD-Test-Passthrough": 42,
         },
       });
@@ -253,7 +245,6 @@ describe("Addons when enabled", async () => {
         headers: {
           "Content-type": "text/html",
           "X-RTD-Force-Addons": true,
-          "X-RTD-Hosting-Integrations": false,
           "X-RTD-Test-Passthrough": 42,
           "X-RTD-Debug-Throw-Error": true,
         },
@@ -283,7 +274,6 @@ describe("Addons when enabled", async () => {
         headers: {
           "Content-type": "image/png",
           "X-RTD-Force-Addons": true,
-          "X-RTD-Hosting-Integrations": false,
           "X-RTD-Project": "test-builds",
           "X-RTD-Version": "latest",
         },
