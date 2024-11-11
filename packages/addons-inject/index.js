@@ -137,15 +137,12 @@ async function transformResponse(response) {
 
   // Get the content type of the response to manipulate the content only if it's HTML
   const contentType = headers.get("content-type") || "";
-  const injectHostingIntegrations =
-    headers.get("x-rtd-hosting-integrations") || "false";
   const forceAddons = headers.get("x-rtd-force-addons") || "false";
   const httpStatus = response.status;
 
   // Log some debugging data
   console.log(`ContentType: ${contentType}`);
   console.log(`X-RTD-Force-Addons: ${forceAddons}`);
-  console.log(`X-RTD-Hosting-Integrations: ${injectHostingIntegrations}`);
   console.log(`HTTP status: ${httpStatus}`);
 
   // Debug mode for some test cases. This is just for triggering an exception
@@ -164,12 +161,9 @@ async function transformResponse(response) {
   // Check to decide whether or not inject Addons library. We only do this for
   // `text/html` content types.
   if (contentType.includes("text/html")) {
-    // Remove old implementation of our flyout and inject the new addons if the following conditions are met:
-    //
-    // - header `X-RTD-Force-Addons` is present (user opted-in into new beta addons)
-    // - header `X-RTD-Hosting-Integrations` is not present (added automatically when using `build.commands`)
-    //
-    if (forceAddons === "true" && injectHostingIntegrations === "false") {
+    // Remove old implementation of our flyout and inject the new addons if the
+    // HTTP header `X-RTD-Force-Addons` is present.
+    if (forceAddons === "true") {
       let rewriter = new HTMLRewriter();
 
       // Remove by selector lookup
@@ -220,29 +214,11 @@ async function transformResponse(response) {
     }
   }
 
-  // Inject Addons if the following conditions are met:
-  //
-  // - header `X-RTD-Hosting-Integrations` is present (added automatically when using `build.commands`)
-  // - header `X-RTD-Force-Addons` is not present (user opted-in into new beta addons)
-  //
-  if (forceAddons === "false" && injectHostingIntegrations === "true") {
-    return new HTMLRewriter()
-      .on("head", new addPreloads())
-      .on(
-        "head",
-        new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus),
-      )
-      .transform(
-        // Cloning is required. See function docs above.
-        await response.clone(),
-      );
-  }
-
   // Modify `_static/searchtools.js` to re-enable Sphinx's default search
   if (
     (contentType.includes("text/javascript") ||
       contentType.includes("application/javascript")) &&
-    (injectHostingIntegrations === "true" || forceAddons === "true") &&
+      forceAddons === "true" &&
     response.url.endsWith("_static/searchtools.js")
   ) {
     console.debug("Modifying _static/searchtools.js");
