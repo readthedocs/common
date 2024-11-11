@@ -140,12 +140,14 @@ async function transformResponse(response) {
   const injectHostingIntegrations =
     headers.get("x-rtd-hosting-integrations") || "false";
   const forceAddons = headers.get("x-rtd-force-addons") || "false";
+  const userJsFile = headers.get("x-rtd-user-js-file") || "";
   const httpStatus = response.status;
 
   // Log some debugging data
   console.log(`ContentType: ${contentType}`);
   console.log(`X-RTD-Force-Addons: ${forceAddons}`);
   console.log(`X-RTD-Hosting-Integrations: ${injectHostingIntegrations}`);
+  console.log(`X-RTD-User-Js-File: ${userJsFile}`);
   console.log(`HTTP status: ${httpStatus}`);
 
   // Debug mode for some test cases. This is just for triggering an exception
@@ -191,7 +193,7 @@ async function transformResponse(response) {
       // rewriter.on(readthedocsData, new removeElement())
 
       rewriter
-        .on("head", new addPreloads())
+        .on("head", new addPreloads(userJsFile))
         .on(
           "head",
           new addMetaTags(
@@ -227,7 +229,7 @@ async function transformResponse(response) {
   //
   if (forceAddons === "false" && injectHostingIntegrations === "true") {
     return new HTMLRewriter()
-      .on("head", new addPreloads())
+      .on("head", new addPreloads(userJsFile))
       .on(
         "head",
         new addMetaTags(projectSlug, versionSlug, resolverFilename, httpStatus),
@@ -267,9 +269,19 @@ class removeElement {
 }
 
 class addPreloads {
+  constructor(userJsFile) {
+    this.userJsFile = userJsFile;
+  }
+
   element(element) {
     console.log("addPreloads");
     element.append(AddonsConstants.scriptAddons, { html: true });
+
+    if (this.userJsFile) {
+      console.log("Adding userJsFile");
+      const userJsFileTag = `<script async type="text/javascript" src="${this.userJsFile}"></script>`;
+      element.append(userJsFileTag, { html: true });
+    }
   }
 }
 
