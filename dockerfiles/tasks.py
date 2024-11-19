@@ -208,11 +208,11 @@ def compilebuildtool(c, tool, version, os=None):
     """Compile a ``build.tools`` to be able to use that tool/version from a build in a quick way."""
     from readthedocs.builds.constants_docker import RTD_DOCKER_BUILD_SETTINGS
 
-    valid_oss = RTD_DOCKER_BUILD_SETTINGS['os'].keys()
-    # Default to the latest OS
+    valid_oss = list(RTD_DOCKER_BUILD_SETTINGS['os'].keys())
     if not os:
-        log.info("Defaulting to the latest OS")
-        os = valid_oss[-1]
+        # Skip `latest` version
+        # https://github.com/readthedocs/readthedocs.org/blob/7f9c8fd4f306479f228bb9aac02dd70f35270618/readthedocs/builds/constants_docker.py#L88
+        os = valid_oss[-2]
 
     if os not in valid_oss:
         print(f'Invalid os. You must specify one of {", ".join(valid_oss)}')
