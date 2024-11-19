@@ -202,13 +202,18 @@ def translations(c, action):
 @task(help={
     'tool': 'build.tool to compile (python, nodejs, rust, golang)',
     'version': 'specific version for the tool',
-    'os': 'ubuntu-20.04 or ubuntu-22.04 (default)',
+    'os': 'ubuntu-20.04, ubuntu-22.04, ubuntu-24.04 (default)',
 })
-def compilebuildtool(c, tool, version, os='ubuntu-22.04'):
+def compilebuildtool(c, tool, version, os=None):
     """Compile a ``build.tools`` to be able to use that tool/version from a build in a quick way."""
     from readthedocs.builds.constants_docker import RTD_DOCKER_BUILD_SETTINGS
 
     valid_oss = RTD_DOCKER_BUILD_SETTINGS['os'].keys()
+    # Default to the latest OS
+    if not os:
+        log.info("Defaulting to the latest OS")
+        os = valid_oss[-1]
+
     if os not in valid_oss:
         print(f'Invalid os. You must specify one of {", ".join(valid_oss)}')
         sys.exit(1)
