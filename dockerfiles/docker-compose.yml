@@ -42,6 +42,8 @@ services:
       readthedocs:
     working_dir: /usr/src/app/packages/addons-inject/
     command: [
+      "wrangler",
+      "dev",
       "--log-level=info",
       "--host=nginx:8080",  # El Proxito on NGINX configuration
       "--ip=0.0.0.0",
