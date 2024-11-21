@@ -18,7 +18,7 @@
 export class AddonsConstants {
   // Add "readthedocs-addons.js" inside the "<head>"
   static scriptAddons =
-  '<script async type="text/javascript" src="http://localhost:8000/readthedocs-addons.js"></script>';
+    '<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script>';
 
   // Selectors we want to remove
   // https://developers.cloudflare.com/workers/runtime-apis/html-rewriter/#selectors
