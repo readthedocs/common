@@ -1,0 +1,4 @@
+FROM node:18.15
+COPY package.json /usr/src/app/addons/
+WORKDIR /usr/src/app/addons/
+RUN npm install
