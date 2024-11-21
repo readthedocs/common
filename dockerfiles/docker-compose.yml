@@ -23,8 +23,6 @@ services:
       - wrangler
     networks:
       readthedocs:
-    environment:
-      - NGINX_ADDONS_GITHUB_TAG=0.21.0
     volumes:
       - ${PWD}/dockerfiles/nginx:/etc/nginx/templates
     # Disable logs for NGINX by default because they are too noisy and we have
@@ -46,6 +44,24 @@ services:
       "--host=nginx:8080",  # El Proxito on NGINX configuration
       "--ip=0.0.0.0",
       "--port=8000",
+    ]
+
+  addons:
+    build:
+      context: ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}
+      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.addons
+    networks:
+      readthedocs:
+    volumes:
+      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/src/:/usr/src/app/addons/src/
+      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/webpack.config.js/:/usr/src/app/addons/webpack.config.js
+    working_dir: /usr/src/app/addons/
+    ports:
+      - "8000:8000"
+    command: [
+      "npm",
+      "run",
+      "dev",
     ]
 
   proxito:
