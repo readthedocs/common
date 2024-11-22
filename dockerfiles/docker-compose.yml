@@ -77,6 +77,7 @@ services:
       - cache
     environment:
       - DOCKER_NO_RELOAD
+      - RTD_USE_PROMOS
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
