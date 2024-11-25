@@ -35,11 +35,14 @@ services:
       context: ${PWD}/common/packages/addons-inject/
       dockerfile: ${PWD}/common/packages/addons-inject/Dockerfile
     volumes:
-      - ${PWD}/common/packages/addons-inject/:/usr/src/app/packages/addons-inject/
+      - ${PWD}/common/packages/addons-inject/index.js:/usr/src/app/packages/addons-inject/index.js
+      - ${PWD}/common/packages/addons-inject/wrangler.toml:/usr/src/app/packages/addons-inject/wrangler.toml
     networks:
       readthedocs:
     working_dir: /usr/src/app/packages/addons-inject/
     command: [
+      "node_modules/.bin/wrangler",
+      "dev",
       "--log-level=info",
       "--host=nginx:8080",  # El Proxito on NGINX configuration
       "--ip=0.0.0.0",
