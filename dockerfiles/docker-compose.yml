@@ -61,6 +61,8 @@ services:
     working_dir: /usr/src/app/addons/
     ports:
       - "8000:8000"
+    environment:
+      - DOCKER_NPM_CI
     command: [
       "npm",
       "run",

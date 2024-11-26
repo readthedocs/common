@@ -1,6 +1,9 @@
 #! /bin/sh
 
-npm ci
+if [ -n "${DOCKER_NPM_CI}" ]; then
+    echo "Installing all NPM dependencies"
+    npm ci
+fi
 
 $(npm bin)/webpack-dev-server \
   --mode=development \

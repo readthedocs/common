@@ -12,11 +12,39 @@ DOCKER_COMPOSE_COMMAND = f'docker compose --project-directory=. -f {DOCKER_COMPO
 
 @task(help={
     'cache': 'Build Docker image using cache (default: False)',
+    'dependencies': 'Update all the dependencies without building a full image (default: False)',
 })
-def build(c, cache=False):
+def build(c, cache=False, dependencies=False):
     """Build docker image for servers."""
     cache_opt = '' if cache else '--no-cache'
-    c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
+
+    if dependencies:
+        container_prefix = c['container_prefix']
+
+        # Stop all the containers
+        c.run(f'{DOCKER_COMPOSE_COMMAND} stop', pty=True)
+        # Start the required containers
+        c.run(f'{DOCKER_COMPOSE_COMMAND} up --detach', pty=True)
+
+        # Update dependencies for all Python images
+        c.run(f'{DOCKER_COMPOSE_COMMAND} exec web pip install -r requirements/docker.txt', pty=True, echo=True)
+        container = c.run(f'docker ps | grep {container_prefix}_web_1 | cut -d " " -f 1', hide=True).stdout.strip()
+        c.run(f'docker commit -p {container} {container_prefix}_server', echo=True, pty=True)
+
+        # Update dependencies for ext-theme
+        c.run(f'{DOCKER_COMPOSE_COMMAND} exec webpack npm ci', pty=True, echo=True)
+        container = c.run(f'docker ps | grep {container_prefix}_webpack_1 | cut -d " " -f 1', echo=True).stdout.strip()
+        c.run(f'docker commit -p {container} {container_prefix}_server', echo=True, pty=True)
+
+        # Update dependencies for addons
+        c.run(f'{DOCKER_COMPOSE_COMMAND} exec addons npm ci', pty=True, echo=True)
+        container = c.run(f'docker ps | grep {container_prefix}_addons_1 | cut -d " " -f 1', hide=True).stdout.strip()
+        c.run(f'docker commit -p {container} {container_prefix}_server', echo=True, pty=True)
+
+        # Stop all the containers
+        c.run(f'{DOCKER_COMPOSE_COMMAND} down', pty=True, echo=True)
+    else:
+        c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
 
 @task(help={
     'command': 'Command to pass directly to "docker compose"',
@@ -47,13 +75,15 @@ def down(c, volumes=False):
                    '"17b5-139-47-118-243.ngrok.io"',
     'log-level': 'Logging level for the Django application (default: INFO)',
     'django-debug': 'Sets the DEBUG Django setting (default: True)',
+    'npm-ci': 'Run "npm ci" on webpack and addons containers (default: True)',
 })
-def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, http_domain="", django_debug=True, log_level='INFO'):
+def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, http_domain="", django_debug=True, log_level='INFO', npm_ci=False):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
     cmd.append('INIT=t' if init else 'INIT=')
     cmd.append('DOCKER_NO_RELOAD=t' if not reload else 'DOCKER_NO_RELOAD=')
+    cmd.append('DOCKER_NPM_CI=t' if npm_ci else 'DOCKER_NPM_CI=')
     cmd.append(f'RTD_LOGGING_LEVEL={log_level}')
 
     cmd.append('docker compose')
