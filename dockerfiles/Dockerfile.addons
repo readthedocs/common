@@ -1,4 +1,5 @@
 FROM node:18.15
-COPY package.json /usr/src/app/addons/
-WORKDIR /usr/src/app/addons/
-RUN npm install
+COPY package-lock.json /usr/src/app/checkouts/addons/
+COPY package.json /usr/src/app/checkouts/addons/
+WORKDIR /usr/src/app/checkouts/addons/
+RUN npm ci

@@ -56,9 +56,10 @@ services:
     networks:
       readthedocs:
     volumes:
-      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/src/:/usr/src/app/addons/src/
-      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/webpack.config.js/:/usr/src/app/addons/webpack.config.js
-    working_dir: /usr/src/app/addons/
+      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/src/:/usr/src/app/checkouts/addons/src/
+      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/webpack.config.js/:/usr/src/app/checkouts/addons/webpack.config.js
+    tty: true
+    working_dir: /usr/src/app/checkouts/addons/
     ports:
       - "8000:8000"
     command: [
