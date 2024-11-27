@@ -5,10 +5,9 @@ from invoke import task
 
 DOCKER_COMPOSE = 'common/dockerfiles/docker-compose.yml'
 DOCKER_COMPOSE_SEARCH = 'common/dockerfiles/docker-compose-search.yml'
-DOCKER_COMPOSE_WEBPACK = 'common/dockerfiles/docker-compose-webpack.yml'
 DOCKER_COMPOSE_ASSETS = 'dockerfiles/docker-compose-assets.yml'
 DOCKER_COMPOSE_OVERRIDE = 'docker-compose.override.yml'
-DOCKER_COMPOSE_COMMAND = f'docker compose --project-directory=. -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH} -f {DOCKER_COMPOSE_WEBPACK}'
+DOCKER_COMPOSE_COMMAND = f'docker compose --project-directory=. -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}'
 
 @task(help={
     'cache': 'Build Docker image using cache (default: False)',
@@ -39,8 +38,7 @@ def down(c, volumes=False):
     'search': 'Start search container (default: True)',
     'init': 'Perform initialization steps (default: False)',
     'reload': 'Enable automatic process reloading (default: True)',
-    'webpack': 'Start webpack development server (default: False)',
-    'ext-theme': 'Enable new theme from ext-theme (default: False)',
+    'legacy-dashboard': 'Use the old/legacy dashboard (default: False)',
     'scale-build': 'Add additional build instances (default: 1)',
     'http-domain': 'Configure a production domain for HTTP traffic. Subdomains included, '
                    'example.dev implies *.examples.dev for proxito. Example: '
@@ -48,7 +46,7 @@ def down(c, volumes=False):
     'log-level': 'Logging level for the Django application (default: INFO)',
     'django-debug': 'Sets the DEBUG Django setting (default: True)',
 })
-def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, scale_build=1, http_domain="", django_debug=True, log_level='INFO'):
+def up(c, search=True, init=False, reload=True, legacy_dashboard=False, scale_build=1, http_domain="", django_debug=True, log_level='INFO'):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
@@ -63,12 +61,9 @@ def up(c, search=True, init=False, reload=True, webpack=False, ext_theme=False, 
 
     if search:
         cmd.append(f'-f {DOCKER_COMPOSE_SEARCH}')
-    if webpack:
+    if not legacy_dashboard:
         # This option implies the theme is enabled automatically
-        ext_theme = True
-        cmd.append(f'-f {DOCKER_COMPOSE_WEBPACK}')
         cmd.insert(0, 'RTD_EXT_THEME_DEV_SERVER_ENABLED=t')
-    if ext_theme:
         cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
     if django_debug:
         cmd.insert(0, 'RTD_DJANGO_DEBUG=t')
