@@ -5,8 +5,12 @@ services:
 
   webpack:
     build:
-      context: ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}
+      context: ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.webpack
+    develop:
+      watch:
+        - action: rebuild
+          path: ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/package.json
     working_dir: /usr/src/app/checkouts/ext-theme
     ports:
       - "10001:10001"
