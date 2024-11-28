@@ -13,6 +13,7 @@ services:
       dockerfile: ${PWD}/dockerfiles/Dockerfile
 
   nginx:
+    stop_grace_period: 1s
     image: nginx:1.22
     ports:
       - "80:80"
@@ -31,6 +32,7 @@ services:
       driver: "none"
 
   wrangler:
+    stop_grace_period: 1s
     build:
       context: ${PWD}/common/packages/addons-inject/
       dockerfile: ${PWD}/common/packages/addons-inject/Dockerfile
@@ -50,6 +52,7 @@ services:
     ]
 
   addons:
+    stop_grace_period: 1s
     build:
       context: ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.addons
@@ -69,6 +72,7 @@ services:
     ]
 
   proxito:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/proxito.sh:/usr/src/app/docker/proxito.sh
@@ -99,6 +103,7 @@ services:
     command: ["../../docker/proxito.sh"]
 
   web:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/scripts/createsuperuser.py:/usr/src/app/docker/createsuperuser.py
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
@@ -143,6 +148,7 @@ services:
     command: ["../../docker/wait-for-it.sh", "database:5432", "--timeout=60", "--strict", "--", "../../docker/web.sh"]
 
   celery:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/celery.sh:/usr/src/app/docker/celery.sh
@@ -181,6 +187,7 @@ services:
     command: ["../../docker/celery.sh"]
 
   celery-beat:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/celery-beat.sh:/usr/src/app/docker/celery-beat.sh
@@ -211,6 +218,7 @@ services:
     command: ["../../docker/celery-beat.sh"]
 
   build:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/build.sh:/usr/src/app/docker/build.sh
