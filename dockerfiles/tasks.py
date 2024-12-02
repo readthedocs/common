@@ -62,7 +62,6 @@ def up(c, search=True, init=False, reload=True, legacy_dashboard=False, scale_bu
     if search:
         cmd.append(f'-f {DOCKER_COMPOSE_SEARCH}')
     if not legacy_dashboard:
-        # This option implies the theme is enabled automatically
         cmd.insert(0, 'RTD_EXT_THEME_DEV_SERVER_ENABLED=t')
         cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
     if django_debug:
