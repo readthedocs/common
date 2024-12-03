@@ -17,6 +17,7 @@ services:
           path: ${PWD}/requirements/docker.txt
 
   nginx:
+    stop_grace_period: 1s
     image: nginx:1.22
     ports:
       - "80:80"
@@ -35,6 +36,7 @@ services:
       driver: "none"
 
   wrangler:
+    stop_grace_period: 1s
     build:
       context: ${PWD}/common/packages/addons-inject/
       dockerfile: ${PWD}/common/packages/addons-inject/Dockerfile
@@ -58,6 +60,7 @@ services:
     ]
 
   addons:
+    stop_grace_period: 1s
     build:
       context: ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.addons
@@ -81,6 +84,7 @@ services:
     ]
 
   proxito:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/proxito.sh:/usr/src/app/docker/proxito.sh
@@ -111,6 +115,7 @@ services:
     command: ["../../docker/proxito.sh"]
 
   web:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/scripts/createsuperuser.py:/usr/src/app/docker/createsuperuser.py
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
@@ -154,7 +159,36 @@ services:
       readthedocs:
     command: ["../../docker/wait-for-it.sh", "database:5432", "--timeout=60", "--strict", "--", "../../docker/web.sh"]
 
+  webpack:
+    build:
+      context: ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}
+      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.webpack
+    working_dir: /usr/src/app/checkouts/ext-theme
+    ports:
+      - "10001:10001"
+    volumes:
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/src:/usr/src/app/checkouts/ext-theme/src
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/readthedocsext:/usr/src/app/checkouts/ext-theme/readthedocsext
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/webpack.config.mjs:/usr/src/app/checkouts/ext-theme/webpack.config.mjs
+    environment:
+      - INIT=${INIT:-}
+      - DOCKER_NO_RELOAD
+      - NODE_ENV=development
+      - RTD_EXT_THEME_ENABLED
+      - RTD_EXT_THEME_DEV_SERVER_ENABLED
+    stdin_open: true
+    tty: true
+    networks:
+      readthedocs:
+    command: [
+      "./node_modules/.bin/webpack-dev-server",
+      "--mode=development",
+      "--host=0.0.0.0",
+      "--port=10001",
+    ]
+
   celery:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/celery.sh:/usr/src/app/docker/celery.sh
@@ -193,6 +227,7 @@ services:
     command: ["../../docker/celery.sh"]
 
   celery-beat:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/celery-beat.sh:/usr/src/app/docker/celery-beat.sh
@@ -223,6 +258,7 @@ services:
     command: ["../../docker/celery-beat.sh"]
 
   build:
+    stop_grace_period: 1s
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/common.sh:/usr/src/app/docker/common.sh
       - ${PWD}/common/dockerfiles/entrypoints/build.sh:/usr/src/app/docker/build.sh
