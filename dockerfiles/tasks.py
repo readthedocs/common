@@ -1,5 +1,6 @@
 import os
 import sys
+import hashlib
 
 from invoke import task
 
@@ -14,8 +15,30 @@ DOCKER_COMPOSE_COMMAND = f'docker compose --project-directory=. -f {DOCKER_COMPO
 })
 def build(c, cache=False):
     """Build docker image for servers."""
-    cache_opt = '' if cache else '--no-cache'
-    c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt}', pty=True)
+    cache_opt = '--no-cache' if not cache else ""
+    cache_env_var = ""
+    if cache and not os.environ.get("PRUNE_PYTHON_PACKAGE_CACHE"):
+        files_to_cache = [
+            # Community
+            "requirements/docker.txt",
+
+            # Corporate
+            "../readthedocs.org/requirements/docker.txt",
+            "setup.cfg",
+
+            # Both
+            "../ext-theme/setup.cfg",
+            "../readthedocs-ext/setup.cfg",
+        ]
+
+        cache_hash = hashlib.md5()
+        for f in files_to_cache:
+            if os.path.exists(f):
+                cache_hash.update(open(f, mode="rb").read())
+        cache_hash = cache_hash.hexdigest()
+        cache_env_var = f"PRUNE_PYTHON_PACKAGE_CACHE={cache_hash}"
+
+    c.run(f'{cache_env_var} {DOCKER_COMPOSE_COMMAND} build {cache_opt}', echo=True, pty=True)
 
 @task(help={
     'command': 'Command to pass directly to "docker compose"',

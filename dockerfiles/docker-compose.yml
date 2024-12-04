@@ -11,6 +11,8 @@ services:
     build:
       context: ${PWD}
       dockerfile: ${PWD}/dockerfiles/Dockerfile
+      args:
+        PRUNE_PYTHON_PACKAGE_CACHE: ${PRUNE_PYTHON_PACKAGE_CACHE:-0}
 
   nginx:
     stop_grace_period: 1s
