@@ -15,10 +15,9 @@ DOCKER_COMPOSE_COMMAND = f'docker compose --project-directory=. -f {DOCKER_COMPO
 })
 def build(c, cache=False):
     """Build docker image for servers."""
-    cache_opt = '--no-cache'
-    build_arg = ""
-    if cache:
-        cache_opt = ""
+    cache_opt = '--no-cache' if not cache else ""
+    cache_env_var = ""
+    if cache and not os.environ.get("PRUNE_PYTHON_PACKAGE_CACHE"):
         files_to_cache = [
             # Community
             "requirements/docker.txt",
@@ -37,9 +36,9 @@ def build(c, cache=False):
             if os.path.exists(f):
                 cache_hash.update(open(f, mode="rb").read())
         cache_hash = cache_hash.hexdigest()
-        build_arg = f"--build-arg PRUNE_PYTHON_PACKAGE_CACHE={cache_hash}"
+        cache_env_var = f"PRUNE_PYTHON_PACKAGE_CACHE={cache_hash}"
 
-    c.run(f'{DOCKER_COMPOSE_COMMAND} build {cache_opt} {build_arg}', echo=True, pty=True)
+    c.run(f'{cache_env_var} {DOCKER_COMPOSE_COMMAND} build {cache_opt}', echo=True, pty=True)
 
 @task(help={
     'command': 'Command to pass directly to "docker compose"',
