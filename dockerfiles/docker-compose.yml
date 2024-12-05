@@ -61,6 +61,7 @@ services:
     networks:
       readthedocs:
     volumes:
+      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/public/:/usr/src/app/checkouts/addons/public/
       - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/src/:/usr/src/app/checkouts/addons/src/
       - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/webpack.config.js/:/usr/src/app/checkouts/addons/webpack.config.js
     tty: true
