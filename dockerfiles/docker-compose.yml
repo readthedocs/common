@@ -202,6 +202,7 @@ services:
       - COLUMNS=80
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
+      - RTD_EXT_THEME_ENABLED
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
@@ -233,6 +234,7 @@ services:
     environment:
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
+      - RTD_EXT_THEME_ENABLED
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
@@ -277,6 +279,7 @@ services:
       # If COLUMNS is not defined Celery fails at startup
       # https://github.com/celery/celery/issues/5761
       - COLUMNS=80
+      - RTD_EXT_THEME_ENABLED
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
       - RTD_PRODUCTION_DOMAIN
