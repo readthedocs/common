@@ -61,6 +61,8 @@ def down(c, volumes=False):
     'search': 'Start search container (default: True)',
     'init': 'Perform initialization steps (default: False)',
     'reload': 'Enable automatic process reloading (default: True)',
+    'build': 'Enable automatic building (default: False)',
+    'detach': 'Detach mode: run containers in the background (default: False)',
     'legacy-dashboard': 'Use the old/legacy dashboard (default: False)',
     'scale-build': 'Add additional build instances (default: 1)',
     'http-domain': 'Configure a production domain for HTTP traffic. Subdomains included, '
@@ -69,7 +71,7 @@ def down(c, volumes=False):
     'log-level': 'Logging level for the Django application (default: INFO)',
     'django-debug': 'Sets the DEBUG Django setting (default: True)',
 })
-def up(c, search=True, init=False, reload=True, legacy_dashboard=False, scale_build=1, http_domain="", django_debug=True, log_level='INFO'):
+def up(c, search=True, init=False, reload=True, build=False, detach=False, legacy_dashboard=False, scale_build=1, http_domain="", django_debug=True, log_level='INFO'):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
@@ -98,6 +100,11 @@ def up(c, search=True, init=False, reload=True, legacy_dashboard=False, scale_bu
     cmd.append('up')
 
     cmd.append(f'--scale build={scale_build}')
+
+    if detach:
+        cmd.append('--detach')
+    if build:
+        cmd.append('--build')
 
     c.run(' '.join(cmd), pty=True)
 
