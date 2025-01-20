@@ -96,6 +96,7 @@ services:
       - RTD_DJANGO_DEBUG
       - RTD_EXT_THEME_ENABLED
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
+      - RTD_FILETREEDIFF_ALL
 
     # Allow us to run `docker attach readthedocsorg_proxito_1` and get
     # control on STDIN and be able to debug our code with interactive pdb
@@ -145,6 +146,7 @@ services:
       - RTD_SOCIALACCOUNT_PROVIDERS_BITBUCKET_OAUTH2_SECRET
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_CLIENT_ID
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_SECRET
+      - RTD_FILETREEDIFF_ALL
     stdin_open: true
     tty: true
     networks:
@@ -215,6 +217,7 @@ services:
       - RTD_SOCIALACCOUNT_PROVIDERS_BITBUCKET_OAUTH2_SECRET
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_CLIENT_ID
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_SECRET
+      - RTD_FILETREEDIFF_ALL
     stdin_open: true
     tty: true
     networks:
@@ -247,6 +250,7 @@ services:
       - RTD_SOCIALACCOUNT_PROVIDERS_BITBUCKET_OAUTH2_SECRET
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_CLIENT_ID
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_SECRET
+      - RTD_FILETREEDIFF_ALL
     stdin_open: true
     tty: true
     networks:
@@ -286,6 +290,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_FILETREEDIFF_ALL
     stdin_open: true
     tty: true
     networks:
