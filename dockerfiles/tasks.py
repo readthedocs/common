@@ -131,6 +131,13 @@ def manage(c, command, running=True, backupdb=False):
     if running:
         subcmd = 'exec'
 
+    # After you run this and upgrade the DB:
+    # inv docker.shell --container database --no-running
+    # dropdb -U docs_user docs_db
+    # createdb -U docs_user docs_db
+    # psql -U docs_user docs_db < dump_*.sql
+    # If upgrading Postgres versions, you may need to run:
+    # ALTER USER docs_user WITH ENCRYPTED PASSWORD 'docs_pwd';
     if backupdb:
         c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} database pg_dumpall -c -U docs_user > dump_`date +%d-%m-%Y"_"%H_%M_%S`__`git rev-parse HEAD`.sql', pty=True)
 

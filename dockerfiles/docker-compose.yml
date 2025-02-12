@@ -1,7 +1,7 @@
 volumes:
   build-user-builds:
   storage_data:
-  postgres_data:
+  postgres_data_16:
   postgres_backups_data:
 
 services:
@@ -305,14 +305,14 @@ services:
       readthedocs:
 
   database:
-    image: postgres:12.17
+    image: postgres:16.3
     environment:
       - POSTGRES_USER=docs_user
       - POSTGRES_PASSWORD=docs_pwd
       - POSTGRES_DB=docs_db
     volumes:
       - ${PWD}/common/dockerfiles/entrypoints/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_16:/var/lib/postgresql/data
       - postgres_backups_data:/backups
     networks:
       readthedocs:
