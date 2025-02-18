@@ -10,3 +10,5 @@ echo 'Executing common.sh'
 
 # Reinstall all the dependencies without rebuilding the image
 # pip install -r requirements.txt
+
+uv pip install -U celery setuptools
