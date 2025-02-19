@@ -2,7 +2,7 @@
 
 ../../docker/common.sh
 
-CMD="python3 -m celery -A ${CELERY_APP_NAME}.worker beat -l ${CELERY_LOG_LEVEL}"
+CMD="uv run python3 -m celery -A ${CELERY_APP_NAME}.worker beat -l ${CELERY_LOG_LEVEL}"
 
 # Not sure why, but the db becomes corrupted at some point
 # and make the startup of this process to fail.

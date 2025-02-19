@@ -141,7 +141,7 @@ def manage(c, command, running=True, backupdb=False):
     if backupdb:
         c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} database pg_dumpall -c -U docs_user > dump_`date +%d-%m-%Y"_"%H_%M_%S`__`git rev-parse HEAD`.sql', pty=True)
 
-    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} web python3 manage.py {command}', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} {subcmd} web uv run python3 manage.py {command}', pty=True)
 
 @task(help={
     'container': 'Container to attach',
@@ -196,7 +196,7 @@ def test(c, arguments='', running=True):
 def buildassets(c):
     """Build all assets for the application and push them to backend storage"""
     c.run(f'docker compose -f {DOCKER_COMPOSE_ASSETS} run --rm assets bash -c "npm ci && node_modules/bower/bin/bower --allow-root update && npm run build"', pty=True)
-    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web python3 manage.py collectstatic --noinput', pty=True)
+    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web uv run python3 manage.py collectstatic --noinput', pty=True)
 
 
 @task(help={
@@ -221,13 +221,13 @@ def translations(c, action):
 
     if action == 'pull':
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} pull --force', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py makemessages --all"', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py compilemessages"', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && uv run python3 ../manage.py makemessages --all"', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && uv run python3 ../manage.py compilemessages"', pty=True)
 
     elif action == 'push':
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py makemessages --locale en"', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && uv run python3 ../manage.py makemessages --locale en"', pty=True)
         c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} push --source', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && python3 ../manage.py compilemessages --locale en"', pty=True)
+        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && uv run python3 ../manage.py compilemessages --locale en"', pty=True)
 
 
 @task(help={
