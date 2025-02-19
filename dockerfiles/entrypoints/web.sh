@@ -9,7 +9,7 @@ then
     uv run python3 manage.py migrate
     uv run python3 manage.py migrate --database telemetry
     cat ../../docker/createsuperuser.py | uv run python3 manage.py shell
-    uv python3 manage.py collectstatic --no-input
+    uv run python3 manage.py collectstatic --no-input
     uv run python3 manage.py loaddata test_data
 fi
 
