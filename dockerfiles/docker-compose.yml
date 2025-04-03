@@ -97,6 +97,16 @@ services:
       - RTD_EXT_THEME_ENABLED
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
       - RTD_FILETREEDIFF_ALL
+      # AWS related settings.
+      - RTD_S3_PROVIDER
+      - RTD_AWS_ACCESS_KEY_ID
+      - RTD_AWS_SECRET_ACCESS_KEY
+      - RTD_AWS_STS_ASSUME_ROLE_ARN
+      - RTD_S3_MEDIA_STORAGE_BUCKET
+      - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
+      - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
+      - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_AWS_S3_REGION_NAME
 
     # Allow us to run `docker attach readthedocsorg_proxito_1` and get
     # control on STDIN and be able to debug our code with interactive pdb
@@ -149,6 +159,16 @@ services:
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_CLIENT_ID
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_SECRET
       - RTD_FILETREEDIFF_ALL
+      # AWS related settings.
+      - RTD_S3_PROVIDER
+      - RTD_AWS_ACCESS_KEY_ID
+      - RTD_AWS_SECRET_ACCESS_KEY
+      - RTD_AWS_STS_ASSUME_ROLE_ARN
+      - RTD_S3_MEDIA_STORAGE_BUCKET
+      - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
+      - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
+      - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_AWS_S3_REGION_NAME
     stdin_open: true
     tty: true
     networks:
@@ -222,6 +242,16 @@ services:
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_CLIENT_ID
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_SECRET
       - RTD_FILETREEDIFF_ALL
+      # AWS related settings.
+      - RTD_S3_PROVIDER
+      - RTD_AWS_ACCESS_KEY_ID
+      - RTD_AWS_SECRET_ACCESS_KEY
+      - RTD_AWS_STS_ASSUME_ROLE_ARN
+      - RTD_S3_MEDIA_STORAGE_BUCKET
+      - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
+      - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
+      - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_AWS_S3_REGION_NAME
     stdin_open: true
     tty: true
     networks:
@@ -257,6 +287,16 @@ services:
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_CLIENT_ID
       - RTD_SOCIALACCOUNT_PROVIDERS_GOOGLE_SECRET
       - RTD_FILETREEDIFF_ALL
+      # AWS related settings.
+      - RTD_S3_PROVIDER
+      - RTD_AWS_ACCESS_KEY_ID
+      - RTD_AWS_SECRET_ACCESS_KEY
+      - RTD_AWS_STS_ASSUME_ROLE_ARN
+      - RTD_S3_MEDIA_STORAGE_BUCKET
+      - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
+      - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
+      - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_AWS_S3_REGION_NAME
     stdin_open: true
     tty: true
     networks:
@@ -297,6 +337,18 @@ services:
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
       - RTD_FILETREEDIFF_ALL
+      # TODO: remove these from here, as builders should not
+      # need to have these settings.
+      # AWS related settings.
+      - RTD_S3_PROVIDER
+      - RTD_AWS_ACCESS_KEY_ID
+      - RTD_AWS_SECRET_ACCESS_KEY
+      - RTD_AWS_STS_ASSUME_ROLE_ARN
+      - RTD_S3_MEDIA_STORAGE_BUCKET
+      - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
+      - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
+      - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_AWS_S3_REGION_NAME
     stdin_open: true
     tty: true
     networks:
