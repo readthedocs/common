@@ -192,44 +192,6 @@ def test(c, arguments='', running=True):
     else:
         c.run(f'{DOCKER_COMPOSE_COMMAND} run -e GITHUB_USER=$GITHUB_USER -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --no-deps web tox {arguments}', pty=True)
 
-@task
-def buildassets(c):
-    """Build all assets for the application and push them to backend storage"""
-    c.run(f'docker compose -f {DOCKER_COMPOSE_ASSETS} run --rm assets bash -c "npm ci && node_modules/bower/bin/bower --allow-root update && npm run build"', pty=True)
-    c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web uv run python3 manage.py collectstatic --noinput', pty=True)
-
-
-@task(help={
-    'action': 'Action to realize on Transifex ("pull" or "push")',
-})
-def translations(c, action):
-
-    if action not in ('pull', 'push'):
-        print(f'Action passed ("{action}") not supported. Use "pull" or "push".')
-        sys.exit(1)
-
-    transifex_token = os.environ.get('TRANSIFEX_TOKEN', None)
-    if not transifex_token:
-        print('You need to export TRANSIFEX_TOKEN environment variable.')
-        sys.exit(1)
-
-
-    # Download Transifex Client to be used from inside the container
-    if not os.path.exists('tx'):
-        download_file = 'https://github.com/transifex/cli/releases/download/v1.1.0/tx-linux-amd64.tar.gz'
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "curl --location {download_file} | tar --extract -z --file=- tx"', pty=True)
-
-    if action == 'pull':
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} pull --force', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && uv run python3 ../manage.py makemessages --all"', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && uv run python3 ../manage.py compilemessages"', pty=True)
-
-    elif action == 'push':
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && uv run python3 ../manage.py makemessages --locale en"', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web ./tx --token {transifex_token} push --source', pty=True)
-        c.run(f'{DOCKER_COMPOSE_COMMAND} run --rm web /bin/bash -c "cd readthedocs/ && uv run python3 ../manage.py compilemessages --locale en"', pty=True)
-
-
 @task(help={
     'tool': 'build.tool to compile (python, nodejs, rust, golang)',
     'version': 'specific version for the tool',
