@@ -3,7 +3,7 @@ fail_fast: false
 repos:
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v5.0.0
   hooks:
     # Disabled because yapf is better for our purpose
     # - id: autopep8-wrapper
@@ -45,19 +45,19 @@ repos:
     args: [--target-version, "5.2"]
 
 - repo: https://github.com/asottile/blacken-docs
-  rev: 1.16.0
+  rev: 1.19.1
   hooks:
     - id: blacken-docs
       additional_dependencies: [black==23.7.0]
 
 - repo: https://github.com/aspiredu/django-safemigrate
-  rev: "4.2"
+  rev: "5.3"
   hooks:
     - id: check
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ruff version.
-  rev: v0.9.9
+  rev: v0.11.5
   hooks:
     # Run the linter.
     - id: ruff
