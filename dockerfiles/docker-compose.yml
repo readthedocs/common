@@ -62,9 +62,9 @@ services:
       readthedocs:
     volumes:
       - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/src/:/usr/src/app/checkouts/addons/src/
-      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/package.json/:/usr/src/app/checkouts/addons/package.json
-      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/package-lock.json/:/usr/src/app/checkouts/addons/package-lock.json
-      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/webpack.config.js/:/usr/src/app/checkouts/addons/webpack.config.js
+      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/package.json:/usr/src/app/checkouts/addons/package.json
+      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/package-lock.json:/usr/src/app/checkouts/addons/package-lock.json
+      - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/webpack.config.js:/usr/src/app/checkouts/addons/webpack.config.js
     tty: true
     working_dir: /usr/src/app/checkouts/addons/
     ports:
