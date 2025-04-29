@@ -63,7 +63,6 @@ def down(c, volumes=False):
     'reload': 'Enable automatic process reloading (default: True)',
     'build': 'Enable automatic building (default: False)',
     'detach': 'Detach mode: run containers in the background (default: False)',
-    'legacy-dashboard': 'Use the old/legacy dashboard (default: False)',
     'scale-build': 'Add additional build instances (default: 1)',
     'http-domain': 'Configure a production domain for HTTP traffic. Subdomains included, '
                    'example.dev implies *.examples.dev for proxito. Example: '
@@ -71,7 +70,7 @@ def down(c, volumes=False):
     'log-level': 'Logging level for the Django application (default: INFO)',
     'django-debug': 'Sets the DEBUG Django setting (default: True)',
 })
-def up(c, search=True, init=False, reload=True, build=False, detach=False, legacy_dashboard=False, scale_build=1, http_domain="", django_debug=True, log_level='INFO'):
+def up(c, search=True, init=False, reload=True, build=False, detach=False, scale_build=1, http_domain="", django_debug=True, log_level='INFO'):
     """Start all the docker containers for a Read the Docs instance"""
     cmd = []
 
@@ -86,9 +85,6 @@ def up(c, search=True, init=False, reload=True, build=False, detach=False, legac
 
     if search:
         cmd.append(f'-f {DOCKER_COMPOSE_SEARCH}')
-    if not legacy_dashboard:
-        cmd.insert(0, 'RTD_EXT_THEME_DEV_SERVER_ENABLED=t')
-        cmd.insert(0, 'RTD_EXT_THEME_ENABLED=t')
     if django_debug:
         cmd.insert(0, 'RTD_DJANGO_DEBUG=t')
     if http_domain:

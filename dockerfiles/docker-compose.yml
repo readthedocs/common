@@ -94,7 +94,6 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
-      - RTD_EXT_THEME_ENABLED
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
       - RTD_FILETREEDIFF_ALL
       # AWS related settings.
@@ -137,7 +136,6 @@ services:
     environment:
       - INIT=${INIT:-}
       - DOCKER_NO_RELOAD
-      - RTD_EXT_THEME_ENABLED
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
@@ -196,7 +194,6 @@ services:
       - INIT=${INIT:-}
       - DOCKER_NO_RELOAD
       - NODE_ENV=development
-      - RTD_EXT_THEME_ENABLED
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
     stdin_open: true
     tty: true
@@ -230,7 +227,6 @@ services:
       - COLUMNS=80
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
-      - RTD_EXT_THEME_ENABLED
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
@@ -279,7 +275,6 @@ services:
     environment:
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
-      - RTD_EXT_THEME_ENABLED
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
@@ -341,7 +336,6 @@ services:
       # If COLUMNS is not defined Celery fails at startup
       # https://github.com/celery/celery/issues/5761
       - COLUMNS=80
-      - RTD_EXT_THEME_ENABLED
       - DOCKER_NO_RELOAD
       - CELERY_LOG_LEVEL=${CELERY_LOG_LEVEL:-INFO}
       - RTD_PRODUCTION_DOMAIN
