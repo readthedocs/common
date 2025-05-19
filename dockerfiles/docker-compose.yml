@@ -187,8 +187,8 @@ services:
     volumes:
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/src:/usr/src/app/checkouts/ext-theme/src
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/readthedocsext:/usr/src/app/checkouts/ext-theme/readthedocsext
-      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/packages.json:/usr/src/app/checkouts/ext-theme/packages.json
-      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/packages-lock.json:/usr/src/app/checkouts/ext-theme/packages-lock.json
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/package.json:/usr/src/app/checkouts/ext-theme/package.json
+      - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/package-lock.json:/usr/src/app/checkouts/ext-theme/package-lock.json
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/webpack.config.mjs:/usr/src/app/checkouts/ext-theme/webpack.config.mjs
     environment:
       - INIT=${INIT:-}
