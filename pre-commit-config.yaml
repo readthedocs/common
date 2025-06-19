@@ -1,5 +1,4 @@
-# It seems this file is only used on .org?
-# Not really sure why it's in `common`.
+# This file is used in both core application repos (.org and corporate)
 
 exclude: '^$|settings|scripts|vendor|\.(min\.js|svg)$|static/.*\.js$'
 fail_fast: false
