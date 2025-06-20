@@ -1,3 +1,5 @@
+# This file is used in both core application repos (.org and corporate)
+
 exclude: '^$|settings|scripts|vendor|\.(min\.js|svg)$|static/.*\.js$'
 fail_fast: false
 repos:
@@ -64,3 +66,9 @@ repos:
       args: [ --fix ]
     # Run the formatter.
     - id: ruff-format
+
+repos:
+  - repo: https://github.com/errata-ai/vale
+    rev: v3.12.0
+    hooks:
+      - id: vale
