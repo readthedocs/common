@@ -171,6 +171,7 @@ services:
       - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
       - RTD_S3_STATIC_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
+      - RTD_OPENAI_API_KEY
     stdin_open: true
     tty: true
     networks:
@@ -256,6 +257,7 @@ services:
       - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
       - RTD_S3_STATIC_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
+      - RTD_OPENAI_API_KEY
     stdin_open: true
     tty: true
     networks:
@@ -304,6 +306,7 @@ services:
       - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
       - RTD_S3_STATIC_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
+      - RTD_OPENAI_API_KEY
     stdin_open: true
     tty: true
     networks:
