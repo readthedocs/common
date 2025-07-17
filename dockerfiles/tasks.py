@@ -189,15 +189,33 @@ def test(c, arguments='', running=True):
         c.run(f'{DOCKER_COMPOSE_COMMAND} run -e GITHUB_USER=$GITHUB_USER -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --no-deps web uv run tox {arguments}', pty=True)
 
 @task(help={
+    'everything': 'compile all allowed build.tool',
     'tool': 'build.tool to compile (python, nodejs, rust, golang)',
     'version': 'specific version for the tool',
     'os': 'ubuntu-20.04, ubuntu-22.04, ubuntu-24.04 (default)',
 })
-def compilebuildtool(c, tool, version, os=None):
+def compilebuildtool(c, tool=None, version=None, everything=False, os=None):
     """Compile a ``build.tools`` to be able to use that tool/version from a build in a quick way."""
     from readthedocs.builds.constants_docker import RTD_DOCKER_BUILD_SETTINGS
 
+    if not everything and not tool and not version:
+        print("You need to specify either 'everything' or a 'tool' and 'version'.")
+        sys.exit(1)
+
     valid_oss = list(RTD_DOCKER_BUILD_SETTINGS['os'].keys())
+    valid_tools = RTD_DOCKER_BUILD_SETTINGS['tools'].keys()
+
+    if everything:
+        for os in valid_oss:
+            for tool in valid_tools:
+                valid_versions = RTD_DOCKER_BUILD_SETTINGS['tools'][tool].keys()
+                for version in valid_versions:
+                    print(f"{os=} {tool=} {version=}")
+                    final_version = RTD_DOCKER_BUILD_SETTINGS['tools'][tool][version]
+                    c.run(f'OS={os} ./scripts/compile_version_upload_s3.sh {tool} {final_version}')
+        print("All the versions were successfully compiled.")
+        return
+
     if not os:
         # Skip `latest` version
         # https://github.com/readthedocs/readthedocs.org/blob/7f9c8fd4f306479f228bb9aac02dd70f35270618/readthedocs/builds/constants_docker.py#L88
@@ -207,16 +225,13 @@ def compilebuildtool(c, tool, version, os=None):
         print(f'Invalid os. You must specify one of {", ".join(valid_oss)}')
         sys.exit(1)
 
-    valid_tools = RTD_DOCKER_BUILD_SETTINGS['tools'].keys()
     if tool not in valid_tools:
         print(f'Invalid tool. You must specify one of {", ".join(valid_tools)}')
         sys.exit(1)
 
-    valid_versions = RTD_DOCKER_BUILD_SETTINGS['tools'][tool].keys()
     if version not in valid_versions:
         print(f'Invalid version for the specified tool. You must specify one of {", ".join(valid_versions)}')
         sys.exit(1)
 
     final_version = RTD_DOCKER_BUILD_SETTINGS['tools'][tool][version]
-
     c.run(f'OS={os} ./scripts/compile_version_upload_s3.sh {tool} {final_version}')
