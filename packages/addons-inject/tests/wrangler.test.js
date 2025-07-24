@@ -49,11 +49,11 @@ describe("Addons when enabled", async () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("X-RTD-Force-Addons")).toBe("true");
     expect(await response.text()).toBe(
-      `<html><head>${AddonsConstants.scriptAddons}</head><body></body></html>`,
+      `<html><head>${AddonsConstants.scriptAddons}<meta name="readthedocs-http-status" content="200" /></head><body></body></html>`
     );
   });
 
-  it("injects project/version metadata", async () => {
+  it("injects project/version/filename/httpstatus metadata", async () => {
     fetchMock
       .get("http://test-builds.devthedocs.org")
       .intercept({ path: "/en/latest/" })
@@ -63,6 +63,7 @@ describe("Addons when enabled", async () => {
           "X-RTD-Force-Addons": true,
           "X-RTD-Project": "test-builds",
           "X-RTD-Version": "latest",
+          "X-RTD-Resolver-Filename": "index.html",
         },
       });
     let response = await SELF.fetch(
@@ -74,7 +75,9 @@ describe("Addons when enabled", async () => {
       .to.contain(
         `<meta name="readthedocs-project-slug" content="test-builds" />`,
       )
-      .to.contain(`<meta name="readthedocs-version-slug" content="latest" />`);
+      .to.contain(`<meta name="readthedocs-version-slug" content="latest" />`)
+      .to.contain(`<meta name="readthedocs-resolver-filename" content="index.html" />`)
+      .to.contain(`<meta name="readthedocs-http-status" content="200" />`);
   });
 
   it("removes old flyout doc embed assets", async () => {
