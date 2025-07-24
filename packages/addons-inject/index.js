@@ -259,17 +259,23 @@ class addMetaTags {
 
   element(element) {
     console.log(
-      `addProjectVersionSlug. projectSlug=${this.projectSlug} versionSlug=${this.versionSlug} resolverFilename=${this.resolverFilename}`,
+      `addProjectVersionSlug. projectSlug=${this.projectSlug} versionSlug=${this.versionSlug} resolverFilename=${this.resolverFilename} httpStatus=${this.httpStatus}`,
     );
-    if (this.projectSlug && this.versionSlug) {
+    if (this.projectSlug) {
       const metaProject = `<meta name="readthedocs-project-slug" content="${this.projectSlug}" />`;
-      const metaVersion = `<meta name="readthedocs-version-slug" content="${this.versionSlug}" />`;
-      const metaResolverFilename = `<meta name="readthedocs-resolver-filename" content="${this.resolverFilename}" />`;
-      const metaHttpStatus = `<meta name="readthedocs-http-status" content="${this.httpStatus}" />`;
-
       element.append(metaProject, { html: true });
+    }
+    if (this.versionSlug) {
+      const metaVersion = `<meta name="readthedocs-version-slug" content="${this.versionSlug}" />`;
       element.append(metaVersion, { html: true });
+    }
+    if (this.resolverFilename) {
+      const metaResolverFilename = `<meta name="readthedocs-resolver-filename" content="${this.resolverFilename}" />`;
       element.append(metaResolverFilename, { html: true });
+    }
+
+    if (this.httpStatus) {
+      const metaHttpStatus = `<meta name="readthedocs-http-status" content="${this.httpStatus}" />`;
       element.append(metaHttpStatus, { html: true });
     }
   }
