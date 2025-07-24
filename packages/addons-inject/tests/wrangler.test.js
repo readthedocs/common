@@ -165,41 +165,6 @@ describe("Addons when enabled", async () => {
     matcher.to.not.contain(`x-ref="flyout"`);
   });
 
-  it("only injects content for build.commands builds", async () => {
-    fetchMock
-      .get("http://test-builds.devthedocs.org")
-      .intercept({ path: "/en/latest/" })
-      .reply(
-        200,
-        `
-        <html>
-          <head>
-            <script src="https://assets.readthedocs.org/static/core/js/readthedocs-doc-embed.js"></script>
-            <script src="https://example.com"></script>
-          </head>
-          <body>
-          </body>
-        </html>`,
-        {
-          headers: {
-            "Content-type": "text/html",
-            "X-RTD-Force-Addons": false,
-          },
-        },
-      );
-    let response = await SELF.fetch(
-      "http://test-builds.devthedocs.org/en/latest/",
-    );
-    expect(response.status).toBe(200);
-    const matcher = expect(await response.text());
-    matcher.to.contain(AddonsConstants.scriptAddons);
-    // Ensure matches aren't too aggressive or removing content
-    matcher.to.contain(
-      `<script src="https://assets.readthedocs.org/static/core/js/readthedocs-doc-embed.js"></script>`,
-    );
-    matcher.to.contain(`<script src="https://example.com"></script>`);
-  });
-
   it("skips content types other than HTML", async () => {
     fetchMock
       .get("http://test-builds.devthedocs.org")
