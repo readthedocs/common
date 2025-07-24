@@ -76,8 +76,9 @@ repos:
   # Configuration for codespell is in setup.cfg
   rev: v2.4.1
   hooks:
-  - id: codespell
-    exclude: |
-        (?x)^(
-            .*/locale/.*
-        )$
+    - id: codespell
+      args: [ --write-changes ]
+      exclude: |
+          (?x)^(
+              .*/locale/.*
+          )$
