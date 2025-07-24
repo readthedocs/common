@@ -80,6 +80,29 @@ describe("Addons when enabled", async () => {
       .to.contain(`<meta name="readthedocs-http-status" content="200" />`);
   });
 
+  it("injects httpstatus metadata when no version", async () => {
+    fetchMock
+      .get("http://test-builds.devthedocs.org")
+      .intercept({ path: "/en/latest/" })
+      .reply(200, "<html><head></head><body></body></html>", {
+        headers: {
+          "Content-type": "text/html",
+          "X-RTD-Force-Addons": true,
+          "X-RTD-Project": "test-builds",
+        },
+      });
+    let response = await SELF.fetch(
+      "http://test-builds.devthedocs.org/en/latest/",
+    );
+    expect(response.status).toBe(200);
+    expect(await response.text())
+      .to.contain(AddonsConstants.scriptAddons)
+      .to.contain(
+        `<meta name="readthedocs-project-slug" content="test-builds" />`,
+      )
+      .to.contain(`<meta name="readthedocs-http-status" content="200" />`);
+  });
+
   it("removes old flyout doc embed assets", async () => {
     const scripts = [
       `<script src="/_/static/javascript/readthedocs-analytics.js"></script>`,
