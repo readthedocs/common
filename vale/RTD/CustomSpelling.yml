@@ -20,7 +20,7 @@ filters:
   # Technical terms
   - '(?i)\b(?:localhost|hostname|middleware|filesystem|metadata|analytics|backend|frontend|configs?)\b'
   # Additional technical terms
-  - '(?i)\b(?:html_css_files|pathspec|publickey|Beeceptor|minio|gVisor|gettext|knox|rollout|proxied)\b'
+  - '(?i)\b(?:html_css_files|pathspec|publickey|Beeceptor|minio|gVisor|gettext|knox|rollout|proxied|www|subclassing|trustable)\b'
   - '(?i)\b(?:lookups|tooltip|signup|repos?|Repo|rclone|posargs|msgctxt|golang|delist|authed|Allauth)\b'
   - '(?i)\b(?:fail_on_warning|systemd|spammy|Slycot|semver|rtd_xxx|rinoh|Revsys|Resync|pylint)\b'
   - '(?i)\b(?:numref|nsphinx|ngrams|NGram|nbdime|mockup|mkdir|mixin|Lumache|listout|kwargs)\b'
