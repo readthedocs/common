@@ -12,7 +12,7 @@ filters:
   # Documentation tools
   - '(?i)\b(?:reStructuredText|Intersphinx|mkdocs|Jupyter|pandoc|Doxygen|Antora|mdBook|Markdoc|Docsify)\b'
   # Read the Docs specific
-  - '(?i)\b(?:Addons?|Proxito|subprojects?|webhook|webhooks?|flyout|RTD|urlconf|toctree)\b'
+  - '(?i)\b(?:Addons?|Proxito|subprojects?|webhook|webhooks?|flyout|RTD|urlconfs?|toctree)\b'
   # Services and platforms
   - '(?i)\b(?:jQuery|Okta|Netlify|Transifex|Matomo|Disqus|Weblate|Crowdin|Gitea|Gitbook)\b'
   # File formats and protocols

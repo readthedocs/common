@@ -2,6 +2,7 @@ extends: substitution
 message: Use '%s' instead of '%s'
 level: warning
 ignorecase: true
+scope: ~heading
 exceptions:
   # Hacky way to match at the start and mid sentence. This will miss on:
   # "This is a Pull request build"
