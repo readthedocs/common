@@ -1,0 +1,20 @@
+# Copilot Instructions for Read the Docs
+
+## Package Management
+- Always use `uv` for Python package management and virtual environment operations
+- Use `uv pip install` instead of `pip install`
+- Use `uv run` to execute Python scripts in the virtual environment
+
+## Testing
+- Use `pytest` as the testing framework
+- Write succinct, focused tests that test one thing at a time
+- Follow the Arrange-Act-Assert pattern in tests
+- Use descriptive test names that explain what is being tested
+- Place tests in appropriate test files following the project structure
+
+## Code Quality
+- Follow PEP 8 style guidelines
+- Use type hints for function signatures
+- Write clear, concise docstrings for public functions and classes
+- Format all Python code with Black before committing
+- Run linting checks on all code changes before submitting
