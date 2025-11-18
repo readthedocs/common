@@ -8,7 +8,6 @@
 ## Testing
 - Use `pytest` as the testing framework
 - Write succinct, focused tests that test one thing at a time
-- Follow the Arrange-Act-Assert pattern in tests
 - Use descriptive test names that explain what is being tested
 - Place tests in appropriate test files following the project structure
 
