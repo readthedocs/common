@@ -15,5 +15,5 @@
 - Follow PEP 8 style guidelines
 - Use type hints for function signatures
 - Write clear, concise docstrings for public functions and classes
-- Format all Python code with Black before committing
+- Format all Python code with ruff before committing
 - Run linting checks on all code changes before submitting
