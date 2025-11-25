@@ -170,7 +170,7 @@ def restart(c, containers):
 def pull(c):
     """Pull all docker images required for build servers."""
     images = [
-        ('ubuntu-22.04-2023.03.09', 'ubuntu-22.04'),
+        ('ubuntu-22.04-2024.01.29', 'ubuntu-22.04'),
         ('ubuntu-24.04-2024.06.17', 'ubuntu-24.04'),
     ]
     for image, tag in images:
