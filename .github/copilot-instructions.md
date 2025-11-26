@@ -28,7 +28,7 @@
 - Write succinct, focused tests that test one thing at a time
 - Use descriptive test names that explain what is being tested
 - Place tests in appropriate test files following the project structure
-- Always keep the test db with ``--keepdb`` to speed up test runs
+- Always keep the test db with ``pytest --reuse-db`` to speed up test runs
 
 ## Code Quality
 - Follow PEP 8 style guidelines
