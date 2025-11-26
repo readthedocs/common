@@ -35,7 +35,7 @@ filters:
   - '(?i)\b(?:Metabase|hardcoded|doctools|docstrings?|docutils|delisting|delisted)\b'
   - '(?i)\b(?:cookiecutter|backlinks|timeframe|tastypie|readthedocs|Reachability)\b'
   - '(?i)\b(?:post_create|post_delete|nullable|Miniconda|mambaforge|linkcheck)\b'
-  - '(?i)\b(?:jupytext|ipyleaflet|djstripe|breakpoint|Asciidoctor|browsable|lowercased)\b'
+  - '(?i)\b(?:jupytext|ipyleaflet|djstripe|breakpoint|Asciidoctor|browsable|lowercased|Zensical)\b'
   - "(?i)\\b(?:doxing|else's)\\b"
   # More technical and programming terms
   - '(?i)\b(?:Sprintable|webservers|viewport|version_selector|vendorized|validator|user_config)\b'
