@@ -39,7 +39,7 @@ filters:
   - "(?i)\\b(?:doxing|else's)\\b"
   # More technical and programming terms
   - '(?i)\b(?:Sprintable|webservers|viewport|version_selector|vendorized|validator|user_config)\b'
-  - '(?i)\b(?:updated_at|Unshallow|unshallow|unresolver|unencrypted|uncrawlable)\b'
+  - '(?i)\b(?:updated_at|Unshallow|unshallow|unshallowing|unresolver|unencrypted|uncrawlable)\b'
   - '(?i)\b(?:Tooltips|tooltips|Tokenizer|textboxes|testsuite|templates_path)\b'
   - '(?i)\b(?:system_dependencies|Superset|SQLAlchemy|Shortlink|shortlink|setuptools|setuptools_scm)\b'
   - '(?i)\b(?:serializers|Sendgrid|sandboxed|retargeting|recommonmark|rebundle)\b'
