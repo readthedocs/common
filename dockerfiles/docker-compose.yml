@@ -139,8 +139,8 @@ services:
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=password
+      - RUSTFS_ROOT_USER=admin
+      - RUSTFS_ROOT_PASSWORD=password
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
       - RTD_GITHUB_APP_ID
@@ -382,15 +382,16 @@ services:
       readthedocs:
 
   storage:
-    image: minio/minio:RELEASE.2022-02-24T22-12-01Z.fips
+    image: rustfs/rustfs:1.0.0-alpha.83
     ports:
       - "9000:9000"
-      - "9009:9009"
+      - "9001:9001"
     environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=password
+      - RUSTFS_ADDRESS=:9000
+      - RUSTFS_ACCESS_KEY=admin
+      - RUSTFS_SECRET_KEY=password
+      - RUSTFS_CONSOLE_ENABLE=true
     volumes:
       - storage_data:/data
     networks:
       readthedocs:
-    command: ["server", "--console-address", ":9009", "/data"]
