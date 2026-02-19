@@ -392,6 +392,6 @@ services:
       - RUSTFS_SECRET_KEY=password
       - RUSTFS_CONSOLE_ENABLE=true
     volumes:
-      - storage_data:/data
+      - storage_rustfs_data:/data
     networks:
       readthedocs:
