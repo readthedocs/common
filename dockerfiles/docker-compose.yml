@@ -1,6 +1,7 @@
 volumes:
   build-user-builds:
   storage_data:
+  storage_rustfs_data:
   postgres_data_16:
   postgres_backups_data:
 
