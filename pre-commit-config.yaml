@@ -67,6 +67,12 @@ repos:
     # Run the formatter.
     - id: ruff-format
 
+- repo: https://github.com/codespell-project/codespell
+  # Configuration for codespell is in .codespellrc (symlinked from common/)
+  rev: v2.4.1
+  hooks:
+    - id: codespell
+
 - repo: https://github.com/errata-ai/vale
   rev: v3.13.0
   hooks:
