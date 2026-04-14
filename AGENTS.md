@@ -1,4 +1,4 @@
-# Copilot Instructions for Read the Docs
+# AI Instructions for Read the Docs
 
 ## Project Overview
 
