@@ -17,6 +17,7 @@ It supports multiple documentation tools (Sphinx, MkDocs, etc.) and automaticall
 
 * Use short descriptive commit messages
 * Only provide simple context, and don't be overly verbose
+* Always run `pre-commit run --files <changed files>` before committing to ensure code passes all checks
 
 ## Pull Requests
 
