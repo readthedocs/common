@@ -105,4 +105,3 @@ before they cause `IntegrityError` failures at deploy time.
 - Follow Django security best practices
 - Be aware of OWASP top 10 vulnerabilities
 - Use Django's built-in security features (CSRF, XSS protection, etc.)
-
