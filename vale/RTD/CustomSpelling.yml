@@ -5,7 +5,7 @@ level: error
 filters:
   # Core web technologies
   - '(?i)\b(?:APIs?|OAuth|HTML|CSS|JavaScript|TypeScript|JSON|YAML|XML|URLs?|HTTP|HTTPS|SSL|TLS|CDN)\b'
-  # Development tools and platforms  
+  # Development tools and platforms
   - '(?i)\b(?:GitHub|GitLab|Bitbucket|Docker|Dockerfile|nginx|Redis|PostgreSQL|MySQL|SQLite|AWS|S3|EC2)\b'
   # Python ecosystem
   - '(?i)\b(?:Python|pip|PyPI|conda|Conda|virtualenv|venv|Sphinx|Django|Celery|pytest|Pytest)\b'
