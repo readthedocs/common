@@ -16,7 +16,7 @@ filters:
   # Services and platforms
   - '(?i)\b(?:jQuery|Okta|Netlify|Transifex|Matomo|Disqus|Weblate|Crowdin|Gitea|Gitbook)\b'
   # File formats and protocols
-  - '(?i)\b(?:PDFs?|ePub|epub|RSS|CLI|API|SDK|CORS|CSRF)\b'
+  - '(?i)\b(?:PDFs?|ePub|epub|RSS|CLI|API|SDK|CORS|CSRF|ETags?)\b'
   # Technical terms
   - '(?i)\b(?:localhost|hostname|middleware|filesystem|metadata|analytics|backend|frontend|configs?)\b'
   # Additional technical terms
