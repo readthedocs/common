@@ -18,7 +18,8 @@
   "author": "Read the Docs, Inc",
   "license": "MIT",
   "dependencies": {
-    "wrangler": "^4.19.1"
+    "//": "wrangler is pinned: 4.20+ rewrites inbound Host and X-Forwarded-Host to the value of `dev --host`, which breaks subdomain-based project resolution in El Proxito for local development",
+    "wrangler": "4.19.1"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.6.12",
