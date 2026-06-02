@@ -11,7 +11,7 @@ Read the Docs is a documentation hosting platform that builds and hosts document
 It supports multiple documentation tools (Sphinx, MkDocs, etc.) and automatically builds documentation from Git repositories.
 
 **Technology Stack:**
-- Python 3.x
+- Python 3.12
 - Django web framework
 - Docker and Docker Compose for development
 - PostgreSQL database
@@ -97,7 +97,6 @@ before they cause `IntegrityError` failures at deploy time.
 - Use Django conventions and best practices
 - Use type hints for function signatures
 - Write clear, concise docstrings for public functions and classes
-- Run linters and formatters using `tox -e pre-commit` before committing code
 
 ## Front-end
 
