@@ -32,6 +32,7 @@ It supports multiple documentation tools (Sphinx, MkDocs, etc.) and automaticall
 * Use feature branches for all changes
 * Don't include a "Changes" section, since the PR content is self-explanatory
 * Write PR descriptions about the decisions and rationale (the "why"), not a restatement of what changed. Omit anything already obvious from the diff, such as field names, file lists, or an enumerated list of tests.
+* Keep the description in sync with the branch. When later commits add, drop, or rework what the PR does, update the description before review or merge — a stale description that describes a different change is worse than none.
 * Don't include Test Plan unless absolutely necessary.
 * Link related issues in the PR description, if there are any in the chat context
 * Prefix pull request titles, example `Api:`, `Builds:`, or `Docs:`.
