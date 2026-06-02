@@ -11,7 +11,7 @@ Read the Docs is a documentation hosting platform that builds and hosts document
 It supports multiple documentation tools (Sphinx, MkDocs, etc.) and automatically builds documentation from Git repositories.
 
 **Technology Stack:**
-- Python 3.12
+- Python 3.14
 - Django web framework
 - Docker and Docker Compose for development
 - PostgreSQL database
