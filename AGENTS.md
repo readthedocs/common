@@ -56,12 +56,8 @@ It supports multiple documentation tools (Sphinx, MkDocs, etc.) and automaticall
 
 ## Testing
 
-- Use `pytest` as the testing framework
-- Use the `assert foo == bar` style for assertions
-- Write succinct, focused tests that test one thing at a time
-- Use descriptive test names that explain what is being tested
-- Place tests in appropriate test files following the project structure
-- Always keep the test db with ``pytest --reuse-db`` to speed up test runs
+- Use `pytest` with the `assert foo == bar` assertion style
+- Keep the test DB warm with `pytest --reuse-db` to speed up runs
 
 ### Running tests locally
 
@@ -91,19 +87,6 @@ Always run `tox -e migrations` after adding or modifying migration files. This r
 `manage.py makemigrations --check --dry-run` and catches missing or inconsistent migrations
 before they cause `IntegrityError` failures at deploy time.
 
-## Code Quality
-
-- Follow PEP 8 style guidelines
-- Use Django conventions and best practices
-- Use type hints for function signatures
-- Write clear, concise docstrings for public functions and classes
-
 ## Front-end
 
 - Most templates/css/js are in a separate repository (https://github.com/readthedocs/ext-theme/).
-
-## Security
-
-- Follow Django security best practices
-- Be aware of OWASP top 10 vulnerabilities
-- Use Django's built-in security features (CSRF, XSS protection, etc.)
