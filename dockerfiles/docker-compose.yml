@@ -128,6 +128,9 @@ services:
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
+
+      # Docker in Docker: cancel running builds.
+      - /var/run/docker.sock:/var/run/docker.sock
     links:
       - storage
       - database
@@ -215,7 +218,7 @@ services:
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
 
-      # Docker in Docker
+      # Docker in Docker: Fargate (call `docker run` from inside `web` queue)
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - storage
@@ -331,7 +334,7 @@ services:
       # Because of this, we need to use a shared volume between them
       - build-user-builds:/usr/src/app/checkouts/readthedocs.org/user_builds
 
-      # Docker in Docker
+      # Docker in Docker: old implementation (`build-default` queue)
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - web
