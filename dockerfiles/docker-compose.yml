@@ -214,6 +214,9 @@ services:
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
+
+      # Docker in Docker
+      - /var/run/docker.sock:/var/run/docker.sock
     links:
       - storage
       - database
@@ -256,6 +259,7 @@ services:
       - RTD_S3_STATIC_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
+      - RTD_BUILDER_TOKEN
     stdin_open: true
     tty: true
     networks:
