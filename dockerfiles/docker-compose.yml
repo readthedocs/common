@@ -263,6 +263,7 @@ services:
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
       - RTD_BUILDER_TOKEN
+      - RTD_PATH_BUILDER
     stdin_open: true
     tty: true
     networks:
