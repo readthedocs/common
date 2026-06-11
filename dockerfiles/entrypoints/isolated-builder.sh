@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Dev entrypoint for the isolated-builders pattern.
+#
+# Emulates the production AMI's two systemd units —
+# ``readthedocs-builder-setup.service`` (clone + worker venv setup) and
+# then ``celery-readthedocs-builder.service`` (start the worker) — as
+# one foreground bash script. No systemd, no New Relic, no Sentry:
+# dev only.
+#
+# Compose wiring is in ``common/dockerfiles/docker-compose.yml`` under
+# the ``isolated-builder`` service.
+
+set -euo pipefail
+
+: "${RTD_BROKER_URL:?RTD_BROKER_URL must be set (e.g. redis://cache:6379/0)}"
+: "${RTD_BUILDS_QUEUE:=isolated-builds}"
+: "${RTD_BUILDER_REPO:=https://github.com/readthedocs/readthedocs-builder.git}"
+: "${RTD_BUILDER_REF:=celery-on-ec2}"
+: "${RTD_BUILDER_TOKEN:=}"
+
+SRC="/opt/readthedocs-builder"
+WORKER_VENV="/opt/worker-venv"
+
+# 1. Clone (or skip if the host's checkout is bind-mounted in).
+#    A bind-mount means $SRC is already populated; we skip ``git clone``
+#    so dev iteration on the runner code (edit on host, restart the
+#    container) doesn't blow the host checkout away.
+if [ -z "$(ls -A "$SRC" 2>/dev/null)" ]; then
+    echo "[isolated-builder] $SRC empty; cloning $RTD_BUILDER_REPO@$RTD_BUILDER_REF ..."
+    clone_url="$RTD_BUILDER_REPO"
+    if [ -n "$RTD_BUILDER_TOKEN" ] && [ "${RTD_BUILDER_REPO#https://}" != "$RTD_BUILDER_REPO" ]; then
+        clone_url="https://${RTD_BUILDER_TOKEN}@${RTD_BUILDER_REPO#https://}"
+    fi
+    git clone --depth=1 --branch "$RTD_BUILDER_REF" "$clone_url" "$SRC"
+else
+    echo "[isolated-builder] $SRC already populated; skipping clone (dev bind-mount)."
+fi
+
+cd "$SRC"
+
+# 2. Worker venv. Dev omits newrelic/sentry-sdk (no observability in
+#    dev). The runner's venv is NOT created here — the build container
+#    spawned by the worker creates its own venv at startup via
+#    ``uv sync``.
+echo "[isolated-builder] Creating worker venv at $WORKER_VENV ..."
+uv venv --clear "$WORKER_VENV"
+uv pip install --python "$WORKER_VENV/bin/python" -r "$SRC/worker/requirements.txt"
+
+# 3. Replace this process with the Celery worker. PYTHONPATH so
+#    ``-A worker.celery`` resolves; --max-tasks-per-child=1 so the
+#    worker exits after one task (matches prod's ephemeral pattern,
+#    even though there's no AWS API call to terminate anything in
+#    dev — the worker just exits and compose can be configured to
+#    restart or not).
+echo "[isolated-builder] Starting Celery worker on queue '$RTD_BUILDS_QUEUE' ..."
+export PYTHONPATH="$SRC"
+exec "$WORKER_VENV/bin/celery" -A worker.celery worker \
+    --loglevel=INFO \
+    --concurrency=1 \
+    --max-tasks-per-child=1 \
+    -Q "$RTD_BUILDS_QUEUE"

@@ -263,7 +263,6 @@ services:
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
       - RTD_BUILDER_TOKEN
-      - RTD_PATH_BUILDER
     stdin_open: true
     tty: true
     networks:
@@ -369,6 +368,55 @@ services:
     networks:
       readthedocs:
     command: ["../../docker/build.sh"]
+
+  isolated-builder:
+    # Dev emulation of the production isolated-builders AMI. Picks up
+    # tasks from the ``isolated-builds`` queue and spawns build
+    # containers on the host docker daemon (via the bind-mounted
+    # socket). The companion entrypoint clones readthedocs-builder (or
+    # skips if the host's checkout is bind-mounted in), creates the
+    # worker venv via uv, then runs Celery — no systemd, no New Relic,
+    # no Sentry. See readthedocs-builder/docs/architecture.md.
+    stop_grace_period: 1s
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/dockerfiles/Dockerfile.isolated-builder
+    volumes:
+      # Host's readthedocs-builder checkout. The entrypoint sees the
+      # mount as populated and skips ``git clone`` so you can iterate
+      # on the runner / worker code by editing on the host and
+      # restarting the container.
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/opt/readthedocs-builder
+
+      # The entrypoint script itself, bind-mounted so edits don't
+      # need a rebuild (matches how celery.sh / build.sh wire up).
+      - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/app/docker/isolated-builder.sh
+
+      # docker-out-of-docker: the worker calls ``docker run`` against
+      # the host daemon to spawn build containers.
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - cache
+      - storage
+      - web
+    environment:
+      - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
+      - RTD_BUILDS_QUEUE=isolated-builds
+      - RTD_BUILDER_REF=celery-on-ec2
+      # Host path the worker passes to ``docker run -v ...`` when
+      # spawning build containers. Must be a HOST-visible path because
+      # the daemon resolves it on the host. ``${PWD}`` here is the
+      # host's CWD (where ``docker compose`` runs), so this resolves
+      # to the same checkout the bind-mount above points at.
+      - RTD_HOST_BUILDER_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}
+      # Have build containers join the compose network so they can
+      # reach the API at ``http://web`` via service-name DNS.
+      - RTD_BUILD_NETWORK=community_readthedocs
+    stdin_open: true
+    tty: true
+    networks:
+      readthedocs:
+    command: ["/usr/src/app/docker/isolated-builder.sh"]
 
   cache:
     image: redis:6.2.6  # Match production version
