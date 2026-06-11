@@ -4,12 +4,6 @@ volumes:
   storage_rustfs_data:
   postgres_data_16:
   postgres_backups_data:
-  # Runner venv used by the isolated-builder service. Populated by
-  # that service's entrypoint via ``uv sync``, then bind-mounted into
-  # the build containers it spawns (the worker references it by its
-  # docker-compose-namespaced name ``community_runner-venv`` — see
-  # the isolated-builder service's RTD_HOST_RUNNER_VENV_PATH env).
-  runner-venv:
 
 services:
 
@@ -394,15 +388,6 @@ services:
       # restarting the container.
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/opt/readthedocs-builder
 
-      # Runner venv as a docker NAMED VOLUME. The entrypoint populates
-      # it via ``uv sync`` exactly like the prod systemd setup unit
-      # does on the EC2 instance. We use a named volume (instead of a
-      # bind-mounted host path) so the host docker daemon owns the
-      # storage — that's what lets the worker pass
-      # ``community_runner-venv`` to ``docker run -v`` when spawning
-      # build containers, and have the daemon recognize and mount it.
-      - runner-venv:/opt/runner-venv
-
       # The entrypoint script itself, bind-mounted so edits don't
       # need a rebuild (matches how celery.sh / build.sh wire up).
       - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/app/docker/isolated-builder.sh
@@ -424,13 +409,12 @@ services:
       # host's CWD (where ``docker compose`` runs), so this resolves
       # to the same checkout the bind-mount above points at.
       - RTD_HOST_BUILDER_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}
-      # Runner venv: the host-daemon-recognized name of the
-      # ``runner-venv`` named volume defined above. Compose prefixes
-      # it with the project name (``community`` for the default
-      # community-edition project). The worker passes this to
-      # ``docker run -v <name>:/opt/runner-venv:ro`` and the daemon
-      # resolves it as a named volume mount.
-      - RTD_HOST_RUNNER_VENV_PATH=community_runner-venv
+      # Host path to ``uv``. The build container's entrypoint runs
+      # ``uv sync`` to create its runner venv at startup, but the
+      # upstream readthedocs/build image doesn't have uv — the worker
+      # bind-mounts the host's binary in. Override per host if your
+      # uv lives somewhere other than /usr/local/bin/uv.
+      - RTD_HOST_UV_PATH=${RTDDEV_HOST_UV_PATH:-/usr/local/bin/uv}
       # Have build containers join the compose network so they can
       # reach the API at ``http://web`` via service-name DNS.
       - RTD_BUILD_NETWORK=community_readthedocs

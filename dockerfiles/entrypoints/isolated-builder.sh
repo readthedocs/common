@@ -19,7 +19,6 @@ set -euo pipefail
 : "${RTD_BUILDER_TOKEN:=}"
 
 SRC="/opt/readthedocs-builder"
-RUNNER_VENV="/opt/runner-venv"
 WORKER_VENV="/opt/worker-venv"
 
 # 1. Clone (or skip if the host's checkout is bind-mounted in).
@@ -39,27 +38,16 @@ fi
 
 cd "$SRC"
 
-# 2. Runner venv — mirrors the prod systemd setup unit's
-#    ``UV_PROJECT_ENVIRONMENT=/opt/runner-venv uv sync --frozen``.
-#    ``$RUNNER_VENV`` is backed by a docker NAMED VOLUME (not a path
-#    inside the container), so the venv lives on the host daemon's
-#    filesystem — that lets the worker bind-mount the same named
-#    volume into build containers it spawns.
-#
-#    Idempotent: if the venv already matches uv.lock from a previous
-#    container start, this is fast.
-echo "[isolated-builder] Syncing runner venv at $RUNNER_VENV ..."
-UV_PROJECT_ENVIRONMENT="$RUNNER_VENV" uv sync --frozen
-
-# 3. Worker venv. Dev omits newrelic/sentry-sdk (no observability in
-#    dev). The worker venv stays inside the dev container (no host
-#    visibility needed — the celery process here is the only one that
-#    uses it).
+# 2. Worker venv. Dev omits newrelic/sentry-sdk (no observability in
+#    dev). The runner venv is NOT created here — the build container
+#    spawned by the worker creates its own at startup, because a venv
+#    built on this host references this host's Python interpreter
+#    (won't resolve inside the spawned readthedocs/build container).
 echo "[isolated-builder] Creating worker venv at $WORKER_VENV ..."
 uv venv --clear "$WORKER_VENV"
 uv pip install --python "$WORKER_VENV/bin/python" -r "$SRC/worker/requirements.txt"
 
-# 4. Replace this process with the Celery worker. PYTHONPATH so
+# 3. Replace this process with the Celery worker. PYTHONPATH so
 #    ``-A worker.celery`` resolves; --max-tasks-per-child=1 so the
 #    worker exits after one task (matches prod's ephemeral pattern,
 #    even though there's no AWS API call to terminate anything in
