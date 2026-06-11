@@ -4,6 +4,12 @@ volumes:
   storage_rustfs_data:
   postgres_data_16:
   postgres_backups_data:
+  # Runner venv used by the isolated-builder service. Populated by
+  # that service's entrypoint via ``uv sync``, then bind-mounted into
+  # the build containers it spawns (the worker references it by its
+  # docker-compose-namespaced name ``community_runner-venv`` — see
+  # the isolated-builder service's RTD_HOST_RUNNER_VENV_PATH env).
+  runner-venv:
 
 services:
 
@@ -388,6 +394,15 @@ services:
       # restarting the container.
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/opt/readthedocs-builder
 
+      # Runner venv as a docker NAMED VOLUME. The entrypoint populates
+      # it via ``uv sync`` exactly like the prod systemd setup unit
+      # does on the EC2 instance. We use a named volume (instead of a
+      # bind-mounted host path) so the host docker daemon owns the
+      # storage — that's what lets the worker pass
+      # ``community_runner-venv`` to ``docker run -v`` when spawning
+      # build containers, and have the daemon recognize and mount it.
+      - runner-venv:/opt/runner-venv
+
       # The entrypoint script itself, bind-mounted so edits don't
       # need a rebuild (matches how celery.sh / build.sh wire up).
       - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/app/docker/isolated-builder.sh
@@ -403,12 +418,19 @@ services:
       - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
       - RTD_BUILDS_QUEUE=isolated-builds
       - RTD_BUILDER_REF=celery-on-ec2
-      # Host path the worker passes to ``docker run -v ...`` when
+      # Source path the worker passes to ``docker run -v ...`` when
       # spawning build containers. Must be a HOST-visible path because
       # the daemon resolves it on the host. ``${PWD}`` here is the
       # host's CWD (where ``docker compose`` runs), so this resolves
       # to the same checkout the bind-mount above points at.
       - RTD_HOST_BUILDER_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}
+      # Runner venv: the host-daemon-recognized name of the
+      # ``runner-venv`` named volume defined above. Compose prefixes
+      # it with the project name (``community`` for the default
+      # community-edition project). The worker passes this to
+      # ``docker run -v <name>:/opt/runner-venv:ro`` and the daemon
+      # resolves it as a named volume mount.
+      - RTD_HOST_RUNNER_VENV_PATH=community_runner-venv
       # Have build containers join the compose network so they can
       # reach the API at ``http://web`` via service-name DNS.
       - RTD_BUILD_NETWORK=community_readthedocs
