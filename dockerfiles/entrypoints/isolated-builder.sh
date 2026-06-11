@@ -19,6 +19,8 @@ set -euo pipefail
 : "${RTD_BUILDER_TOKEN:=}"
 
 SRC="/opt/readthedocs-builder"
+RUNNER_VENV="/opt/runner-venv"
+UV_PYTHON_DIR="/opt/uv-python"
 WORKER_VENV="/opt/worker-venv"
 
 # 1. Clone (or skip if the host's checkout is bind-mounted in).
@@ -38,16 +40,28 @@ fi
 
 cd "$SRC"
 
-# 2. Worker venv. Dev omits newrelic/sentry-sdk (no observability in
-#    dev). The runner venv is NOT created here — the build container
-#    spawned by the worker creates its own at startup, because a venv
-#    built on this host references this host's Python interpreter
-#    (won't resolve inside the spawned readthedocs/build container).
+# 2. Pre-build the runner venv against a uv-managed Python 3.12.
+#    Same flags as the prod systemd setup unit. Both $RUNNER_VENV and
+#    $UV_PYTHON_DIR are backed by docker NAMED VOLUMES (see compose),
+#    so the venv's bin/python symlink into $UV_PYTHON_DIR lives on
+#    the host daemon's filesystem — that's what lets the worker
+#    bind-mount the same named volumes into build containers it spawns
+#    and have the symlink still resolve.
+#
+#    Idempotent: ``uv sync --frozen`` is a no-op when the venv
+#    already matches uv.lock from a previous run.
+echo "[isolated-builder] Syncing runner venv at $RUNNER_VENV (managed Python under $UV_PYTHON_DIR) ..."
+UV_PYTHON_INSTALL_DIR="$UV_PYTHON_DIR" \
+UV_PROJECT_ENVIRONMENT="$RUNNER_VENV" \
+    uv sync --frozen --python 3.12 --python-preference=only-managed
+
+# 3. Worker venv. Dev omits newrelic/sentry-sdk (no observability in
+#    dev).
 echo "[isolated-builder] Creating worker venv at $WORKER_VENV ..."
 uv venv --clear "$WORKER_VENV"
 uv pip install --python "$WORKER_VENV/bin/python" -r "$SRC/worker/requirements.txt"
 
-# 3. Replace this process with the Celery worker. PYTHONPATH so
+# 4. Replace this process with the Celery worker. PYTHONPATH so
 #    ``-A worker.celery`` resolves; --max-tasks-per-child=1 so the
 #    worker exits after one task (matches prod's ephemeral pattern,
 #    even though there's no AWS API call to terminate anything in

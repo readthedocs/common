@@ -4,6 +4,16 @@ volumes:
   storage_rustfs_data:
   postgres_data_16:
   postgres_backups_data:
+  # Pre-built runner venv + uv-managed Python for the
+  # isolated-builder service. Populated by that service's entrypoint
+  # at compose-up time (idempotent — fast on subsequent restarts) and
+  # bind-mounted into each build container the worker spawns. We use
+  # named volumes (instead of bind-mounted host paths) so the host
+  # docker daemon owns the storage, which lets the worker reference
+  # them by name (``community_runner-venv`` / ``community_uv-python``)
+  # when it does ``docker run -v ...``.
+  runner-venv:
+  uv-python:
 
 services:
 
@@ -388,6 +398,15 @@ services:
       # restarting the container.
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/opt/readthedocs-builder
 
+      # Runner venv + uv-managed Python (named volumes, see top of
+      # this file). The entrypoint populates both via ``uv sync
+      # --python 3.12 --python-preference=only-managed``; the worker
+      # then bind-mounts them into each build container by the volume
+      # names ``community_runner-venv`` / ``community_uv-python``
+      # (passed through RTD_HOST_*_PATH below).
+      - runner-venv:/opt/runner-venv
+      - uv-python:/opt/uv-python
+
       # The entrypoint script itself, bind-mounted so edits don't
       # need a rebuild (matches how celery.sh / build.sh wire up).
       - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/app/docker/isolated-builder.sh
@@ -409,12 +428,14 @@ services:
       # host's CWD (where ``docker compose`` runs), so this resolves
       # to the same checkout the bind-mount above points at.
       - RTD_HOST_BUILDER_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}
-      # Host path to ``uv``. The build container's entrypoint runs
-      # ``uv sync`` to create its runner venv at startup, but the
-      # upstream readthedocs/build image doesn't have uv — the worker
-      # bind-mounts the host's binary in. Override per host if your
-      # uv lives somewhere other than /usr/local/bin/uv.
-      - RTD_HOST_UV_PATH=${RTDDEV_HOST_UV_PATH:-/usr/local/bin/uv}
+      # Runner venv + managed Python install: host-daemon-recognized
+      # names of the named volumes defined at the top of this file.
+      # Compose prefixes volume names with the project (``community``
+      # for the default community-edition project). The worker passes
+      # these as ``-v <name>:<path>:ro`` and the daemon resolves them
+      # as named-volume mounts.
+      - RTD_HOST_RUNNER_VENV_PATH=community_runner-venv
+      - RTD_HOST_PYTHON_INSTALL_PATH=community_uv-python
       # Have build containers join the compose network so they can
       # reach the API at ``http://web`` via service-name DNS.
       - RTD_BUILD_NETWORK=community_readthedocs
