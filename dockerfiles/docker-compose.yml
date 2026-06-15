@@ -328,6 +328,7 @@ services:
       readthedocs:
     command: ["../../docker/celery-beat.sh"]
 
+  # TODO: remove `build` service once we are consolidated into `isolated-builder`.
   build:
     stop_grace_period: 1s
     volumes:
