@@ -61,7 +61,7 @@ UV_PROJECT_ENVIRONMENT="$RUNNER_VENV" \
 # 3. Worker venv. Dev omits newrelic/sentry-sdk (no observability in
 #    dev).
 echo "[isolated-builder] Creating worker venv at $WORKER_VENV ..."
-uv venv --clear "$WORKER_VENV"
+uv venv --clear --python 3.12 "$WORKER_VENV"
 uv pip install --python "$WORKER_VENV/bin/python" -r "$SRC/worker/requirements.txt"
 
 # 4. Replace this process with the Celery worker. PYTHONPATH so
