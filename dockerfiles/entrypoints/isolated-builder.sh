@@ -12,7 +12,10 @@
 
 set -euo pipefail
 
+# Required variable
 : "${RTD_BROKER_URL:?RTD_BROKER_URL must be set (e.g. redis://cache:6379/0)}"
+
+# Optional variables with defaults
 : "${RTD_BUILDS_QUEUE:=isolated-builds}"
 : "${RTD_BUILDER_REPO:=https://github.com/readthedocs/readthedocs-builder.git}"
 : "${RTD_BUILDER_REF:=celery-on-ec2}"
