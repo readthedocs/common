@@ -439,6 +439,10 @@ services:
       # Have build containers join the compose network so they can
       # reach the API at ``http://web`` via service-name DNS.
       - RTD_BUILD_NETWORK=community_readthedocs
+      # Skip the EC2 IMDS metadata fetch + AWS terminate call on
+      # task_postrun (we're obviously not on EC2). Without this the
+      # worker hits a 2 s IMDS timeout after every build.
+      - RTD_SKIP_SELF_TERMINATE=1
     stdin_open: true
     tty: true
     networks:
