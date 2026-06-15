@@ -415,11 +415,16 @@ services:
       # docker-out-of-docker: the worker calls ``docker run`` against
       # the host daemon to spawn build containers.
       - /var/run/docker.sock:/var/run/docker.sock
+
+      # The worker can optionally run with nodemon reload in dev,
+      # so include the config for that (matches the other services).
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
     links:
       - cache
       - storage
       - web
     environment:
+      - DOCKER_NO_RELOAD
       - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
       - RTD_BUILDS_QUEUE=isolated-builds
       - RTD_BUILDER_REF=celery-on-ec2

@@ -72,8 +72,12 @@ uv pip install --python "$WORKER_VENV/bin/python" -r "$SRC/worker/requirements.t
 #    restart or not).
 echo "[isolated-builder] Starting Celery worker on queue '$RTD_BUILDS_QUEUE' ..."
 export PYTHONPATH="$SRC"
-exec "$WORKER_VENV/bin/celery" -A worker.celery worker \
-    --loglevel=INFO \
-    --concurrency=1 \
-    --max-tasks-per-child=1 \
-    -Q "$RTD_BUILDS_QUEUE"
+
+CMD="$WORKER_VENV/bin/celery -A worker.celery worker --loglevel=INFO --concurrency=1 --max-tasks-per-child=1 -Q ${RTD_BUILDS_QUEUE}"
+if [ -n "${DOCKER_NO_RELOAD}" ]; then
+  echo "Running process with no reload"
+  exec $CMD
+else
+  echo "Running process with reload"
+  exec nodemon --config /usr/src/app/checkouts/nodemon.json --exec $CMD
+fi
