@@ -24,7 +24,7 @@ filters:
   - '(?i)\b(?:lookups|tooltip|signup|repos?|Repo|rclone|posargs|msgctxt|golang|delist|authed|Allauth)\b'
   - '(?i)\b(?:fail_on_warning|systemd|spammy|Slycot|semver|rtd_xxx|rinoh|Revsys|Resync|pylint)\b'
   - '(?i)\b(?:numref|nsphinx|ngrams|NGram|nbdime|mockup|mkdir|mixin|Lumache|listout|kwargs)\b'
-  - '(?i)\b(?:Kombu|Kibana|ipdb|hotfix|GUIs|findit|eReader|dotenv|doctool|docdiff|direnv)\b'
+  - '(?i)\b(?:Kombu|Kibana|ipdb|hotfix|GUIs|findit|eReader|dotenv|doctool|docdiff|direnv|tokenless|presigned)\b'
   - '(?i)\b(?:difflib|cron|CPython|CMake|cgroups|bugfix|boolean|autoapi|autodoc|async|asdf|allauth)\b'
   - '(?i)\b(?:nodejs|NodeJS|Node\.js|Bing|uncheck|Uncheck|triaged|tox|IPs?|HTMLDir|DBs|CDNs)\b'
   - '(?i)\b(?:VMs?|uv|uBlock|Twilio|PPA|ppa|pixi|pdb|npm|yarn|webpack|usa|eg|ie)\b'
