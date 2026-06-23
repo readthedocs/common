@@ -242,7 +242,7 @@ def test(c, arguments="", running=True):
     help={
         "tool": "build.tool to compile (python, nodejs, rust, golang)",
         "version": "specific version for the tool",
-        "os": "ubuntu-20.04, ubuntu-22.04, ubuntu-24.04 (default)",
+        "os": "ubuntu-22.04, ubuntu-24.04 (default), ubuntu-26.04",
     }
 )
 def compilebuildtool(c, tool, version, os=None):

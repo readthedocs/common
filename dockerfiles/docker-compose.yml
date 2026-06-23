@@ -4,6 +4,16 @@ volumes:
   storage_rustfs_data:
   postgres_data_16:
   postgres_backups_data:
+  # Pre-built runner venv + uv-managed Python for the
+  # isolated-builder service. Populated by that service's entrypoint
+  # at compose-up time (idempotent — fast on subsequent restarts) and
+  # bind-mounted into each build container the worker spawns. We use
+  # named volumes (instead of bind-mounted host paths) so the host
+  # docker daemon owns the storage, which lets the worker reference
+  # them by name (``community_runner-venv`` / ``community_uv-python``)
+  # when it does ``docker run -v ...``.
+  runner-venv:
+  uv-python:
 
 services:
 
@@ -128,6 +138,9 @@ services:
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
+
+      # Docker in Docker: cancel running builds.
+      - /var/run/docker.sock:/var/run/docker.sock
     links:
       - storage
       - database
@@ -214,6 +227,9 @@ services:
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
+
+      # Docker in Docker: Fargate (call `docker run` from inside `web` queue)
+      - /var/run/docker.sock:/var/run/docker.sock
     links:
       - storage
       - database
@@ -256,6 +272,7 @@ services:
       - RTD_S3_STATIC_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
+      - RTD_BUILDER_TOKEN
     stdin_open: true
     tty: true
     networks:
@@ -311,6 +328,7 @@ services:
       readthedocs:
     command: ["../../docker/celery-beat.sh"]
 
+  # TODO: remove `build` service once we are consolidated into `isolated-builder`.
   build:
     stop_grace_period: 1s
     volumes:
@@ -327,7 +345,7 @@ services:
       # Because of this, we need to use a shared volume between them
       - build-user-builds:/usr/src/app/checkouts/readthedocs.org/user_builds
 
-      # Docker in Docker
+      # Docker in Docker: old implementation (`build-default` queue)
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - web
@@ -361,6 +379,81 @@ services:
     networks:
       readthedocs:
     command: ["../../docker/build.sh"]
+
+  isolated-builder:
+    # Dev emulation of the production isolated-builders AMI. Picks up
+    # tasks from the ``isolated-builds`` queue and spawns build
+    # containers on the host docker daemon (via the bind-mounted
+    # socket). The companion entrypoint clones readthedocs-builder (or
+    # skips if the host's checkout is bind-mounted in), creates the
+    # worker venv via uv, then runs Celery — no systemd, no New Relic,
+    # no Sentry. See readthedocs-builder/docs/architecture.md.
+    stop_grace_period: 1s
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/dockerfiles/Dockerfile.isolated-builder
+    volumes:
+      # Host's readthedocs-builder checkout. The entrypoint sees the
+      # mount as populated and skips ``git clone`` so you can iterate
+      # on the runner / worker code by editing on the host and
+      # restarting the container.
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/opt/readthedocs-builder
+
+      # Runner venv + uv-managed Python (named volumes, see top of
+      # this file). The entrypoint populates both via ``uv sync
+      # --python 3.12 --python-preference=only-managed``; the worker
+      # then bind-mounts them into each build container by the volume
+      # names ``community_runner-venv`` / ``community_uv-python``
+      # (passed through RTD_HOST_*_PATH below).
+      - runner-venv:/opt/runner-venv
+      - uv-python:/opt/uv-python
+
+      # The entrypoint script itself, bind-mounted so edits don't
+      # need a rebuild (matches how celery.sh / build.sh wire up).
+      - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/app/docker/isolated-builder.sh
+
+      # docker-out-of-docker: the worker calls ``docker run`` against
+      # the host daemon to spawn build containers.
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      # The worker can optionally run with nodemon reload in dev,
+      # so include the config for that (matches the other services).
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
+    links:
+      - cache
+      - storage
+      - web
+    environment:
+      - DOCKER_NO_RELOAD
+      - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
+      - RTD_BUILDS_QUEUE=isolated-builds
+      - RTD_BUILDER_REF=celery-on-ec2
+      # Source path the worker passes to ``docker run -v ...`` when
+      # spawning build containers. Must be a HOST-visible path because
+      # the daemon resolves it on the host. ``${PWD}`` here is the
+      # host's CWD (where ``docker compose`` runs), so this resolves
+      # to the same checkout the bind-mount above points at.
+      - RTD_HOST_BUILDER_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}
+      # Runner venv + managed Python install: host-daemon-recognized
+      # names of the named volumes defined at the top of this file.
+      # Compose prefixes volume names with the project (``community``
+      # for the default community-edition project). The worker passes
+      # these as ``-v <name>:<path>:ro`` and the daemon resolves them
+      # as named-volume mounts.
+      - RTD_HOST_RUNNER_VENV_PATH=community_runner-venv
+      - RTD_HOST_PYTHON_INSTALL_PATH=community_uv-python
+      # Have build containers join the compose network so they can
+      # reach the API at ``http://web`` via service-name DNS.
+      - RTD_BUILD_NETWORK=community_readthedocs
+      # Skip the EC2 IMDS metadata fetch + AWS terminate call on
+      # task_postrun (we're obviously not on EC2). Without this the
+      # worker hits a 2 s IMDS timeout after every build.
+      - RTD_SKIP_SELF_TERMINATE=1
+    stdin_open: true
+    tty: true
+    networks:
+      readthedocs:
+    command: ["/usr/src/app/docker/isolated-builder.sh"]
 
   cache:
     image: redis:6.2.6  # Match production version
