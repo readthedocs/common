@@ -18,8 +18,8 @@ exclude = [
 line-length = 100
 indent-width = 4
 
-# Assume Python 3.12
-target-version = "py312"
+# Assume Python 3.14
+target-version = "py314"
 
 [lint]
 # Enable:
