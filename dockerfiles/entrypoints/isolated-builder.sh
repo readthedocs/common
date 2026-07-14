@@ -43,7 +43,7 @@ fi
 
 cd "$SRC"
 
-# 2. Pre-build the runner venv against a uv-managed Python 3.12.
+# 2. Pre-build the runner venv against a uv-managed Python 3.14.
 #    Same flags as the prod systemd setup unit. Both $RUNNER_VENV and
 #    $UV_PYTHON_DIR are backed by docker NAMED VOLUMES (see compose),
 #    so the venv's bin/python symlink into $UV_PYTHON_DIR lives on
@@ -56,12 +56,12 @@ cd "$SRC"
 echo "[isolated-builder] Syncing runner venv at $RUNNER_VENV (managed Python under $UV_PYTHON_DIR) ..."
 UV_PYTHON_INSTALL_DIR="$UV_PYTHON_DIR" \
 UV_PROJECT_ENVIRONMENT="$RUNNER_VENV" \
-    uv sync --frozen --python 3.12 --python-preference=only-managed
+    uv sync --frozen --python 3.14 --python-preference=only-managed
 
 # 3. Worker venv. Dev omits newrelic/sentry-sdk (no observability in
 #    dev).
 echo "[isolated-builder] Creating worker venv at $WORKER_VENV ..."
-uv venv --clear --python 3.12 "$WORKER_VENV"
+uv venv --clear --python 3.14 "$WORKER_VENV"
 uv pip install --python "$WORKER_VENV/bin/python" -r "$SRC/worker/requirements.txt"
 
 # 4. Replace this process with the Celery worker. PYTHONPATH so
