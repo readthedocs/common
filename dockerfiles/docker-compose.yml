@@ -391,7 +391,7 @@ services:
     stop_grace_period: 1s
     build:
       context: ${PWD}
-      dockerfile: ${PWD}/dockerfiles/Dockerfile.isolated-builder
+      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.isolated-builder
     volumes:
       # Host's readthedocs-builder checkout. The entrypoint sees the
       # mount as populated and skips ``git clone`` so you can iterate
@@ -401,7 +401,7 @@ services:
 
       # Runner venv + uv-managed Python (named volumes, see top of
       # this file). The entrypoint populates both via ``uv sync
-      # --python 3.12 --python-preference=only-managed``; the worker
+      # --python 3.14 --python-preference=only-managed``; the worker
       # then bind-mounts them into each build container by the volume
       # names ``community_runner-venv`` / ``community_uv-python``
       # (passed through RTD_HOST_*_PATH below).
