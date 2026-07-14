@@ -5,12 +5,13 @@ fail_fast: false
 repos:
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0
+  rev: v6.0.0
   hooks:
     # Disabled because yapf is better for our purpose
     # - id: autopep8-wrapper
     - id: check-added-large-files
     - id: check-ast
+      language_version: python3.14
     - id: check-case-conflict
     - id: check-executables-have-shebangs
     - id: check-json
@@ -18,14 +19,11 @@ repos:
     - id: check-toml
     - id: check-vcs-permalinks
     - id: debug-statements
+      language_version: python3.14
     - id: fix-byte-order-marker
     - id: end-of-file-fixer
-    - id: fix-encoding-pragma
-      exclude: |
-        (?x)^(
-            readthedocs/rtd_tests/files/conf.py|
-        )$
-      args: ['--remove']
+    # `fix-encoding-pragma` was removed in pre-commit-hooks v6.0.0;
+    # its behavior is now covered by ruff's `UP009` rule (see .ruff.toml).
     - id: check-merge-conflict
     - id: check-symlinks
     - id: trailing-whitespace
@@ -41,25 +39,25 @@ repos:
       args: ['--fix=lf']
 
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: "1.24.0"
+  rev: "1.31.1"
   hooks:
   - id: django-upgrade
     args: [--target-version, "5.2"]
 
 - repo: https://github.com/asottile/blacken-docs
-  rev: 1.19.1
+  rev: 1.20.0
   hooks:
     - id: blacken-docs
       additional_dependencies: [black==23.7.0]
 
 - repo: https://github.com/aspiredu/django-safemigrate
-  rev: "5.3"
+  rev: "6.0"
   hooks:
     - id: check
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ruff version.
-  rev: v0.11.5
+  rev: v0.15.20
   hooks:
     # Run the linter.
     - id: ruff
@@ -68,7 +66,7 @@ repos:
     - id: ruff-format
 
 - repo: https://github.com/errata-ai/vale
-  rev: v3.13.0
+  rev: v3.15.1
   hooks:
     - id: vale
       exclude: '^CHANGELOG\.rst$|^AUTHORS.rst|README\.rst$'
