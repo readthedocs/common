@@ -371,48 +371,20 @@ services:
     command: ["../../docker/build.sh"]
 
   isolated-builder:
-    # Dev emulation of the production isolated-builders AMI. Picks up
-    # tasks from the ``isolated-builds`` queue and spawns build
-    # containers on the host docker daemon (via the bind-mounted
-    # socket). The companion entrypoint clones readthedocs-builder (or
-    # skips if the host's checkout is bind-mounted in), creates the
-    # worker venv via uv, then runs Celery — no systemd, no New Relic,
-    # no Sentry. See readthedocs-builder/docs/architecture.md.
     stop_grace_period: 1s
     build:
       context: ${PWD}
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.isolated-builder
     volumes:
-      # Host's readthedocs-builder checkout. The entrypoint sees the
-      # mount as populated and skips ``git clone`` so you can iterate
-      # on the runner / worker code by editing on the host and
-      # restarting the container.
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/usr/src/builder/checkouts/readthedocs-builder
-
-      # Runner venv + uv-managed Python. Bind-mounted from host paths,
-      # where these are
-      # real host directories the worker passes to ``docker run -v``.
-      # They live inside the host's readthedocs-builder checkout (same
-      # base path as RTD_HOST_BUILDER_PATH).
-      # The entrypoint populates both via ``uv sync --python 3.14
-      # --python-preference=only-managed``; because they live on the
-      # host filesystem, the worker can bind-mount the SAME host paths
-      # into each build container it spawns (passed through
-      # RTD_HOST_*_PATH below) and the venv's bin/python symlink into
-      # /usr/src/builder/uv-python still resolves.
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv:/usr/src/builder/runner-venv
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python:/usr/src/builder/uv-python
-
-      # The entrypoint script itself, bind-mounted so edits don't
-      # need a rebuild (matches how celery.sh / build.sh wire up).
       - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/builder/docker/isolated-builder.sh
 
       # docker-out-of-docker: the worker calls ``docker run`` against
       # the host daemon to spawn build containers.
       - /var/run/docker.sock:/var/run/docker.sock
 
-      # The worker can optionally run with nodemon reload in dev,
-      # so include the config for that (matches the other services).
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
     links:
       - cache
@@ -425,23 +397,17 @@ services:
       - RTD_BUILDER_REF=celery-on-ec2
       # Source path the worker passes to ``docker run -v ...`` when
       # spawning build containers. Must be a HOST-visible path because
-      # the daemon resolves it on the host. ``${PWD}`` here is the
-      # host's CWD (where ``docker compose`` runs), so this resolves
-      # to the same checkout the bind-mount above points at.
+      # the daemon resolves it on the host.
       - RTD_HOST_BUILDER_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}
       # Runner venv + managed Python install: host-visible paths (the
-      # same directories bind-mounted into this service above). The
-      # worker passes these as ``-v <host-path>:<path>:ro`` and the
-      # daemon resolves them as bind mounts — identical to production,
-      # where these point at ``/usr/src/builder/runner-venv`` / ``/usr/src/builder/uv-python``.
+      # same directories bind-mounted into this service above).
       - RTD_HOST_RUNNER_VENV_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv
       - RTD_HOST_PYTHON_INSTALL_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python
       # Have build containers join the compose network so they can
       # reach the API at ``http://web`` via service-name DNS.
       - RTD_BUILD_NETWORK=community_readthedocs
       # Skip the EC2 IMDS metadata fetch + AWS terminate call on
-      # task_postrun (we're obviously not on EC2). Without this the
-      # worker hits a 2 s IMDS timeout after every build.
+      # task_postrun (we're obviously not on EC2).
       - RTD_SKIP_SELF_TERMINATE=1
     stdin_open: true
     tty: true
