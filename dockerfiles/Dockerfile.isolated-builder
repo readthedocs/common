@@ -13,12 +13,13 @@
 #   - git, python3.14, ca-certificates                (AL2023 base + dnf step)
 #   - docker CLI                                      (docker-in-docker for build dispatch)
 #   - uv at /usr/local/bin/uv                         (same path as the AMI)
-#   - empty /opt/{readthedocs-builder,runner-venv,worker-venv} dirs
+#   - empty /usr/src/builder/checkouts/readthedocs-builder +
+#     /usr/src/builder/{runner-venv,uv-python,worker-venv} dirs
 #     (filled by the entrypoint OR a bind-mount from the host;
 #     matches the AMI's pre-created dirs owned by ``docs``)
 #
 # The host's readthedocs-builder checkout is meant to be bind-mounted
-# to /opt/readthedocs-builder; the runner venv bind-mounts to a host
+# to /usr/src/builder/checkouts/readthedocs-builder; the runner venv bind-mounts to a host
 # path the daemon can also see (so the worker's `docker run -v ...`
 # resolves correctly when spawning build containers). See the
 # entrypoint header for the full compose wiring.
@@ -53,18 +54,18 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=/usr/local/bin s
 RUN npm install -g nodemon
 
 # Pre-create the same directories the AMI's Packer step provisions.
-# /opt/readthedocs-builder is replaced by a compose bind-mount of
-# the host's checkout. /opt/runner-venv + /opt/uv-python are replaced
+# /usr/src/builder/checkouts/readthedocs-builder is replaced by a compose bind-mount of
+# the host's checkout. /usr/src/builder/runner-venv + /usr/src/builder/uv-python are replaced
 # by compose bind-mounts of host paths the entrypoint populates with
 # uv (host paths, like production, so the worker can re-mount them
 # into build containers). The entrypoint also populates
-# /opt/worker-venv (container-local).
-RUN mkdir -p /opt/readthedocs-builder /opt/runner-venv /opt/uv-python /opt/worker-venv
+# /usr/src/builder/worker-venv (container-local).
+RUN mkdir -p /usr/src/builder/checkouts/readthedocs-builder /usr/src/builder/runner-venv /usr/src/builder/uv-python /usr/src/builder/worker-venv
 
-WORKDIR /opt/readthedocs-builder
+WORKDIR /usr/src/builder/checkouts/readthedocs-builder
 
 # No ENTRYPOINT or CMD — the compose service supplies
-# ``command: ["/usr/src/app/docker/isolated-builder.sh"]`` after
+# ``command: ["/usr/src/builder/docker/isolated-builder.sh"]`` after
 # bind-mounting the script. Keeping it out of the image means
 # editing the entrypoint doesn't require a rebuild (matches how
 # ``web``, ``celery``, ``build``, etc. wire up their scripts).

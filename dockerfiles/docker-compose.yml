@@ -387,7 +387,7 @@ services:
       # mount as populated and skips ``git clone`` so you can iterate
       # on the runner / worker code by editing on the host and
       # restarting the container.
-      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/opt/readthedocs-builder
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/usr/src/builder/checkouts/readthedocs-builder
 
       # Runner venv + uv-managed Python. Bind-mounted from host paths,
       # where these are
@@ -399,13 +399,13 @@ services:
       # host filesystem, the worker can bind-mount the SAME host paths
       # into each build container it spawns (passed through
       # RTD_HOST_*_PATH below) and the venv's bin/python symlink into
-      # /opt/uv-python still resolves.
-      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv:/opt/runner-venv
-      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python:/opt/uv-python
+      # /usr/src/builder/uv-python still resolves.
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv:/usr/src/builder/runner-venv
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python:/usr/src/builder/uv-python
 
       # The entrypoint script itself, bind-mounted so edits don't
       # need a rebuild (matches how celery.sh / build.sh wire up).
-      - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/app/docker/isolated-builder.sh
+      - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/builder/docker/isolated-builder.sh
 
       # docker-out-of-docker: the worker calls ``docker run`` against
       # the host daemon to spawn build containers.
@@ -413,7 +413,7 @@ services:
 
       # The worker can optionally run with nodemon reload in dev,
       # so include the config for that (matches the other services).
-      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
     links:
       - cache
       - storage
@@ -433,7 +433,7 @@ services:
       # same directories bind-mounted into this service above). The
       # worker passes these as ``-v <host-path>:<path>:ro`` and the
       # daemon resolves them as bind mounts — identical to production,
-      # where these point at ``/opt/runner-venv`` / ``/opt/uv-python``.
+      # where these point at ``/usr/src/builder/runner-venv`` / ``/usr/src/builder/uv-python``.
       - RTD_HOST_RUNNER_VENV_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv
       - RTD_HOST_PYTHON_INSTALL_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python
       # Have build containers join the compose network so they can
@@ -447,7 +447,7 @@ services:
     tty: true
     networks:
       readthedocs:
-    command: ["/usr/src/app/docker/isolated-builder.sh"]
+    command: ["/usr/src/builder/docker/isolated-builder.sh"]
 
   cache:
     image: redis:6.2.6  # Match production version

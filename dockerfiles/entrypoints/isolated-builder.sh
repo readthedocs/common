@@ -21,10 +21,10 @@ set -euo pipefail
 : "${RTD_BUILDER_REF:=celery-on-ec2}"
 : "${RTD_BUILDER_TOKEN:=}"
 
-SRC="/opt/readthedocs-builder"
-RUNNER_VENV="/opt/runner-venv"
-UV_PYTHON_DIR="/opt/uv-python"
-WORKER_VENV="/opt/worker-venv"
+SRC="/usr/src/builder/checkouts/readthedocs-builder"
+RUNNER_VENV="/usr/src/builder/runner-venv"
+UV_PYTHON_DIR="/usr/src/builder/uv-python"
+WORKER_VENV="/usr/src/builder/worker-venv"
 
 # 1. Clone (or skip if the host's checkout is bind-mounted in).
 #    A bind-mount means $SRC is already populated; we skip ``git clone``
@@ -79,5 +79,5 @@ if [ -n "${DOCKER_NO_RELOAD}" ]; then
   exec $CMD
 else
   echo "Running process with reload"
-  exec nodemon --config /usr/src/app/checkouts/nodemon.json --exec $CMD
+  exec nodemon --config /usr/src/builder/checkouts/nodemon.json --exec $CMD
 fi
