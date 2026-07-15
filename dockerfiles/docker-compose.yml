@@ -128,9 +128,6 @@ services:
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
-
-      # Docker in Docker: cancel running builds.
-      - /var/run/docker.sock:/var/run/docker.sock
     links:
       - storage
       - database
@@ -217,9 +214,6 @@ services:
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/app/checkouts/nodemon.json
       - ${PWD}/${RTDDEV_PATH_EXT:-../readthedocs-ext}:/usr/src/app/checkouts/readthedocs-ext
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}:/usr/src/app/checkouts/ext-theme
-
-      # Docker in Docker: Fargate (call `docker run` from inside `web` queue)
-      - /var/run/docker.sock:/var/run/docker.sock
     links:
       - storage
       - database
@@ -380,12 +374,11 @@ services:
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv:/usr/src/builder/runner-venv
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python:/usr/src/builder/uv-python
       - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/builder/docker/isolated-builder.sh
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
 
       # docker-out-of-docker: the worker calls ``docker run`` against
       # the host daemon to spawn build containers.
       - /var/run/docker.sock:/var/run/docker.sock
-
-      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
     links:
       - cache
       - storage
