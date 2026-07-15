@@ -43,11 +43,11 @@ fi
 
 # 2. Pre-build the runner venv against a uv-managed Python 3.14 by
 #    syncing the builder/ project. Same flags as the prod systemd setup
-#    unit. Both $RUNNER_VENV and $UV_PYTHON_DIR are backed by docker
-#    NAMED VOLUMES (see compose), so the venv's bin/python symlink into
-#    $UV_PYTHON_DIR lives on the host daemon's filesystem — that's what
-#    lets the worker bind-mount the same named volumes into build
-#    containers it spawns and have the symlink still resolve.
+#    unit. Both $RUNNER_VENV and $UV_PYTHON_DIR are bind-mounted from
+#    host paths (see compose), so the venv's bin/python symlink into
+#    $UV_PYTHON_DIR lives on the host filesystem — that's what lets the
+#    worker bind-mount the same host paths into build containers it
+#    spawns and have the symlink still resolve (matches production).
 #
 #    Idempotent: ``uv sync --frozen`` is a no-op when the venv
 #    already matches uv.lock from a previous run.

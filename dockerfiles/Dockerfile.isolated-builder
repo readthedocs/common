@@ -55,8 +55,10 @@ RUN npm install -g nodemon
 # Pre-create the same directories the AMI's Packer step provisions.
 # /opt/readthedocs-builder is replaced by a compose bind-mount of
 # the host's checkout. /opt/runner-venv + /opt/uv-python are replaced
-# by compose named volumes the entrypoint populates with uv. The
-# entrypoint also populates /opt/worker-venv (container-local).
+# by compose bind-mounts of host paths the entrypoint populates with
+# uv (host paths, like production, so the worker can re-mount them
+# into build containers). The entrypoint also populates
+# /opt/worker-venv (container-local).
 RUN mkdir -p /opt/readthedocs-builder /opt/runner-venv /opt/uv-python /opt/worker-venv
 
 WORKDIR /opt/readthedocs-builder
