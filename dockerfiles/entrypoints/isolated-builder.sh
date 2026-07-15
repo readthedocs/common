@@ -3,7 +3,7 @@
 #
 # Emulates the production AMI's two systemd units —
 # ``readthedocs-builder-setup.service`` (clone + worker venv setup) and
-# then ``celery-readthedocs-builder.service`` (start the worker) — as
+# then ``readthedocs-celery-worker.service`` (start the worker) — as
 # one foreground bash script. No systemd, no New Relic, no Sentry:
 # dev only.
 #
