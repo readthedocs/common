@@ -256,6 +256,7 @@ services:
       - RTD_S3_STATIC_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
+      - RTD_BUILDER_TOKEN
     stdin_open: true
     tty: true
     networks:
@@ -311,6 +312,7 @@ services:
       readthedocs:
     command: ["../../docker/celery-beat.sh"]
 
+  # TODO: remove `build` service once we are consolidated into `isolated-builder`.
   build:
     stop_grace_period: 1s
     volumes:
@@ -327,7 +329,7 @@ services:
       # Because of this, we need to use a shared volume between them
       - build-user-builds:/usr/src/app/checkouts/readthedocs.org/user_builds
 
-      # Docker in Docker
+      # Docker in Docker: old implementation (`build-default` queue)
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - web
@@ -361,6 +363,50 @@ services:
     networks:
       readthedocs:
     command: ["../../docker/build.sh"]
+
+  isolated-builder:
+    stop_grace_period: 1s
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.isolated-builder
+    volumes:
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/usr/src/builder/checkouts/readthedocs-builder
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv:/usr/src/builder/runner-venv
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python:/usr/src/builder/uv-python
+      - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/builder/docker/isolated-builder.sh
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
+
+      # docker-out-of-docker: the worker calls ``docker run`` against
+      # the host daemon to spawn build containers.
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - cache
+      - storage
+      - web
+    environment:
+      - DOCKER_NO_RELOAD
+      - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
+      - RTD_BUILDS_QUEUE=isolated-builds
+      - RTD_BUILDER_REF=celery-on-ec2
+      # Source path the worker passes to ``docker run -v ...`` when
+      # spawning build containers. Must be a HOST-visible path because
+      # the daemon resolves it on the host.
+      - RTD_HOST_BUILDER_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}
+      # Runner venv + managed Python install: host-visible paths (the
+      # same directories bind-mounted into this service above).
+      - RTD_HOST_RUNNER_VENV_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv
+      - RTD_HOST_PYTHON_INSTALL_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python
+      # Have build containers join the compose network so they can
+      # reach the API at ``http://web`` via service-name DNS.
+      - RTD_BUILD_NETWORK=community_readthedocs
+      # Skip the EC2 IMDS metadata fetch + AWS terminate call on
+      # task_postrun (we're obviously not on EC2).
+      - RTD_SKIP_SELF_TERMINATE=1
+    stdin_open: true
+    tty: true
+    networks:
+      readthedocs:
+    command: ["/usr/src/builder/docker/isolated-builder.sh"]
 
   cache:
     image: redis:6.2.6  # Match production version
