@@ -25,6 +25,7 @@ SRC="/usr/src/builder/checkouts/readthedocs-builder"
 RUNNER_VENV="/usr/src/builder/runner-venv"
 UV_PYTHON_DIR="/usr/src/builder/uv-python"
 WORKER_VENV="/usr/src/builder/worker-venv"
+RCLONE_DIR="/usr/src/builder/rclone"
 
 # 1. Clone (or skip if the host's checkout is bind-mounted in).
 #    A bind-mount means $SRC is already populated; we skip ``git clone``
@@ -39,6 +40,24 @@ if [ -z "$(ls -A "$SRC" 2>/dev/null)" ]; then
     git clone --depth=1 --branch "$RTD_BUILDER_REF" "$clone_url" "$SRC"
 else
     echo "[isolated-builder] $SRC already populated; skipping clone (dev bind-mount)."
+fi
+
+# 1b. Copy the image's rclone onto the host-visible bind-mount.
+#     The runner syncs artifacts to storage with rclone from inside the
+#     build container, and the worker bind-mounts the binary in rather
+#     than each build downloading its own. In production Packer bakes
+#     rclone into the AMI, so the worker mounts a real host path.
+#
+#     Here the worker runs in THIS container, but ``docker run -v`` is
+#     resolved by the HOST daemon (docker-out-of-docker via the mounted
+#     socket) — so /usr/local/bin/rclone from this image is invisible to
+#     it. Copying into $RCLONE_DIR (a host bind-mount, see compose) puts
+#     the binary on the host filesystem, same trick as $RUNNER_VENV.
+if [ ! -x "$RCLONE_DIR/rclone" ]; then
+    echo "[isolated-builder] Copying rclone to $RCLONE_DIR (host-visible for build containers) ..."
+    install -m 0755 /usr/local/bin/rclone "$RCLONE_DIR/rclone"
+else
+    echo "[isolated-builder] $RCLONE_DIR/rclone already present; skipping."
 fi
 
 # 2. Pre-build the runner venv against a uv-managed Python 3.14 by
