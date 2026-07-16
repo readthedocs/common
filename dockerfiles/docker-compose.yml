@@ -388,6 +388,7 @@ services:
       - web
     environment:
       - DOCKER_NO_RELOAD
+      - RTD_DOCKER_COMPOSE=1
       - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
       - RTD_BUILDS_QUEUE=isolated-builds
       - RTD_BUILDER_REF=celery-on-ec2
@@ -405,9 +406,6 @@ services:
       # Have build containers join the compose network so they can
       # reach the API at ``http://web`` via service-name DNS.
       - RTD_BUILD_NETWORK=community_readthedocs
-      # Skip the EC2 IMDS metadata fetch + AWS terminate call on
-      # task_postrun (we're obviously not on EC2).
-      - RTD_SKIP_SELF_TERMINATE=1
     stdin_open: true
     tty: true
     networks:
