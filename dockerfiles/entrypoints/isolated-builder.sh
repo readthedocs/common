@@ -18,7 +18,7 @@ set -euo pipefail
 # Optional variables with defaults
 : "${RTD_BUILDS_QUEUE:=isolated-builds}"
 : "${RTD_BUILDER_REPO:=https://github.com/readthedocs/readthedocs-builder.git}"
-: "${RTD_BUILDER_REF:=celery-on-ec2}"
+: "${RTD_BUILDER_REF:=main}"
 : "${RTD_BUILDER_TOKEN:=}"
 
 SRC="/usr/src/builder/checkouts/readthedocs-builder"

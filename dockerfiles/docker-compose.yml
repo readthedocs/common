@@ -390,7 +390,7 @@ services:
       - RTD_DOCKER_COMPOSE=1
       - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
       - RTD_BUILDS_QUEUE=isolated-builds
-      - RTD_BUILDER_REF=celery-on-ec2
+      - RTD_BUILDER_REF=main
       # Source path the worker passes to ``docker run -v ...`` when
       # spawning build containers. Must be a HOST-visible path because
       # the daemon resolves it on the host.
