@@ -403,8 +403,10 @@ services:
       # image). Bind-mounted onto PATH inside each build container.
       - RTD_HOST_RCLONE_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/rclone/rclone
       # Have build containers join the compose network so they can
-      # reach the API at ``http://web`` via service-name DNS.
-      - RTD_BUILD_NETWORK=community_readthedocs
+      # reach the API at ``http://web`` via service-name DNS. Derived from the
+      # compose project so it's correct for both community (``community``) and
+      # commercial (``commercial``) — a hardcoded value breaks the other env.
+      - RTD_BUILD_NETWORK=${COMPOSE_PROJECT_NAME}_readthedocs
     stdin_open: true
     tty: true
     networks:
