@@ -10,7 +10,7 @@
 #
 # What this image installs corresponds to the Packer template's
 # bake-time steps:
-#   - git, python3.14, ca-certificates                (AL2023 base + dnf step)
+#   - git, openssh-client, python3.14, ca-certificates (AL2023 base + dnf step)
 #   - docker CLI                                      (docker-in-docker for build dispatch)
 #   - uv at /usr/local/bin/uv                         (same path as the AMI)
 #   - empty /usr/src/builder/checkouts/readthedocs-builder +
@@ -34,11 +34,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
         git \
+        openssh-client \
         python3.14 \
         python3.14-venv \
         docker.io \
         nodejs \
         npm \
+        unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Symlink so ``python`` works without a version suffix (matches the AMI,
@@ -48,6 +50,23 @@ RUN ln -sf /usr/bin/python3.14 /usr/local/bin/python
 # Install uv at the same path the AMI uses (/usr/local/bin/uv) so the
 # entrypoint script is identical to the production setup unit.
 RUN curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=/usr/local/bin sh
+
+# rclone, at the same path and version the AMI bakes in (see
+# readthedocs-builder/packer/builder.pkr.hcl's ``rclone_version``). The runner
+# syncs build artifacts to storage with it, from inside the build container.
+#
+# The entrypoint copies this onto a host-visible bind-mount so the worker can
+# pass it to ``docker run -v``: the worker runs in THIS container, but the
+# daemon resolving that mount is the host's, so a path that only exists here
+# would not resolve. See the entrypoint + RTD_HOST_RCLONE_PATH in
+# docker-compose.yml.
+ARG RTD_RCLONE_VERSION=1.60.1
+RUN curl -fsSL -o /tmp/rclone.zip \
+        "https://downloads.rclone.org/v${RTD_RCLONE_VERSION}/rclone-v${RTD_RCLONE_VERSION}-linux-amd64.zip" \
+    && cd /tmp && unzip -q rclone.zip \
+    && install -m 0755 "/tmp/rclone-v${RTD_RCLONE_VERSION}-linux-amd64/rclone" /usr/local/bin/rclone \
+    && rm -rf /tmp/rclone.zip "/tmp/rclone-v${RTD_RCLONE_VERSION}-linux-amd64" \
+    && rclone version
 
 # Install nodemon globally so the entrypoint can optionally run the
 # Celery worker with reload (dev-only, not in the AMI).
@@ -60,7 +79,7 @@ RUN npm install -g nodemon
 # uv (host paths, like production, so the worker can re-mount them
 # into build containers). The entrypoint also populates
 # /usr/src/builder/worker-venv (container-local).
-RUN mkdir -p /usr/src/builder/checkouts/readthedocs-builder /usr/src/builder/runner-venv /usr/src/builder/uv-python /usr/src/builder/worker-venv
+RUN mkdir -p /usr/src/builder/checkouts/readthedocs-builder /usr/src/builder/runner-venv /usr/src/builder/uv-python /usr/src/builder/worker-venv /usr/src/builder/rclone
 
 WORKDIR /usr/src/builder/checkouts/readthedocs-builder
 

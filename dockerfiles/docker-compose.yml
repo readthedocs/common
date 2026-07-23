@@ -256,7 +256,6 @@ services:
       - RTD_S3_STATIC_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
-      - RTD_BUILDER_TOKEN
     stdin_open: true
     tty: true
     networks:
@@ -373,6 +372,9 @@ services:
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/usr/src/builder/checkouts/readthedocs-builder
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv:/usr/src/builder/runner-venv
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python:/usr/src/builder/uv-python
+      # The entrypoint copies the image's rclone here so the host daemon
+      # can bind-mount it into the build containers the worker spawns.
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/rclone:/usr/src/builder/rclone
       - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/builder/docker/isolated-builder.sh
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
 
@@ -385,9 +387,10 @@ services:
       - web
     environment:
       - DOCKER_NO_RELOAD
+      - RTD_DOCKER_COMPOSE=1
       - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
       - RTD_BUILDS_QUEUE=isolated-builds
-      - RTD_BUILDER_REF=celery-on-ec2
+      - RTD_BUILDER_REF=main
       # Source path the worker passes to ``docker run -v ...`` when
       # spawning build containers. Must be a HOST-visible path because
       # the daemon resolves it on the host.
@@ -396,12 +399,14 @@ services:
       # same directories bind-mounted into this service above).
       - RTD_HOST_RUNNER_VENV_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv
       - RTD_HOST_PYTHON_INSTALL_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python
+      # rclone binary, host-visible (the entrypoint copies it out of the
+      # image). Bind-mounted onto PATH inside each build container.
+      - RTD_HOST_RCLONE_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/rclone/rclone
       # Have build containers join the compose network so they can
-      # reach the API at ``http://web`` via service-name DNS.
-      - RTD_BUILD_NETWORK=community_readthedocs
-      # Skip the EC2 IMDS metadata fetch + AWS terminate call on
-      # task_postrun (we're obviously not on EC2).
-      - RTD_SKIP_SELF_TERMINATE=1
+      # reach the API at ``http://web`` via service-name DNS. Derived from the
+      # compose project so it's correct for both community (``community``) and
+      # commercial (``commercial``) — a hardcoded value breaks the other env.
+      - RTD_BUILD_NETWORK=${COMPOSE_PROJECT_NAME}_readthedocs
     stdin_open: true
     tty: true
     networks:
