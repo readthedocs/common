@@ -15,4 +15,6 @@ test "${INIT}" || exit 0
 /usr/bin/mc policy set public myrustfs/builds;
 /usr/bin/mc mb myrustfs/usercontent;
 /usr/bin/mc policy set public myrustfs/usercontent;
+/usr/bin/mc mb myrustfs/build-uploads;
+/usr/bin/mc policy set private myrustfs/build-uploads;
 exit 0;
