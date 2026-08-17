@@ -18,7 +18,7 @@
   "author": "Read the Docs, Inc",
   "license": "MIT",
   "dependencies": {
-    "wrangler": "4.19.1"
+    "wrangler": "4.123.0"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.6.12",
