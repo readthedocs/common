@@ -1,5 +1,6 @@
 volumes:
   build-user-builds:
+  isolated-builder-user-builds:
   storage_data:
   storage_rustfs_data:
   postgres_data_16:
@@ -370,11 +371,16 @@ services:
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.isolated-builder
     volumes:
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/usr/src/builder/checkouts/readthedocs-builder
-      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv:/usr/src/builder/runner-venv
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/venv:/usr/src/builder/venv
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python:/usr/src/builder/uv-python
-      # The entrypoint copies the image's rclone here so the host daemon
-      # can bind-mount it into the build containers the worker spawns.
-      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/rclone:/usr/src/builder/rclone
+
+      # The docroot. The runner reads and writes it here; every build command
+      # sees the same storage inside the build container, at the same path.
+      # A named volume rather than a bind-mount because the worker runs in a
+      # container in dev, so the host daemon has to be able to resolve it by
+      # name when the worker spawns the build container.
+      - isolated-builder-user-builds:/home/docs/checkouts
+
       - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/builder/docker/isolated-builder.sh
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
 
@@ -391,17 +397,13 @@ services:
       - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
       - RTD_BUILDS_QUEUE=isolated-builds
       - RTD_BUILDER_REF=main
-      # Source path the worker passes to ``docker run -v ...`` when
-      # spawning build containers. Must be a HOST-visible path because
-      # the daemon resolves it on the host.
-      - RTD_HOST_BUILDER_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}
-      # Runner venv + managed Python install: host-visible paths (the
-      # same directories bind-mounted into this service above).
-      - RTD_HOST_RUNNER_VENV_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/runner-venv
-      - RTD_HOST_PYTHON_INSTALL_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python
-      # rclone binary, host-visible (the entrypoint copies it out of the
-      # image). Bind-mounted onto PATH inside each build container.
-      - RTD_HOST_RCLONE_PATH=${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/rclone/rclone
+      # What the worker passes to ``docker run -v <source>:<target>`` for the
+      # docroot. In prod both are just ``/home/docs/checkouts`` on the
+      # instance; here the source has to be the named volume above, because
+      # the host daemon resolves it and cannot see this container's paths.
+      - RTD_HOST_DOCROOT=${COMPOSE_PROJECT_NAME}_isolated-builder-user-builds
+      - RTD_DOCROOT=/home/docs/checkouts
+
       # Have build containers join the compose network so they can
       # reach the API at ``http://web`` via service-name DNS. Derived from the
       # compose project so it's correct for both community (``community``) and

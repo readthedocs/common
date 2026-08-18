@@ -22,10 +22,9 @@ set -euo pipefail
 : "${RTD_BUILDER_TOKEN:=}"
 
 SRC="/usr/src/builder/checkouts/readthedocs-builder"
-RUNNER_VENV="/usr/src/builder/runner-venv"
+VENV="/usr/src/builder/venv"
 UV_PYTHON_DIR="/usr/src/builder/uv-python"
-WORKER_VENV="/usr/src/builder/worker-venv"
-RCLONE_DIR="/usr/src/builder/rclone"
+DOCROOT="${RTD_DOCROOT:-/home/docs/checkouts}"
 
 # 1. Clone (or skip if the host's checkout is bind-mounted in).
 #    A bind-mount means $SRC is already populated; we skip ``git clone``
@@ -42,48 +41,35 @@ else
     echo "[isolated-builder] $SRC already populated; skipping clone (dev bind-mount)."
 fi
 
-# 1b. Copy the image's rclone onto the host-visible bind-mount.
-#     The runner syncs artifacts to storage with rclone from inside the
-#     build container, and the worker bind-mounts the binary in rather
-#     than each build downloading its own. In production Packer bakes
-#     rclone into the AMI, so the worker mounts a real host path.
+# 1b. The docroot is a named volume shared with the build containers, and
+#     docker creates named volumes root-owned. Every command in the build
+#     container runs as ``docs``, so it has to own this or the very first
+#     ``mkdir`` fails — silently, because that command is ``record=False``
+#     (which implies warn-only), leaving the next command to die on a cwd
+#     that was never created.
 #
-#     Here the worker runs in THIS container, but ``docker run -v`` is
-#     resolved by the HOST daemon (docker-out-of-docker via the mounted
-#     socket) — so /usr/local/bin/rclone from this image is invisible to
-#     it. Copying into $RCLONE_DIR (a host bind-mount, see compose) puts
-#     the binary on the host filesystem, same trick as $RUNNER_VENV.
-if [ ! -x "$RCLONE_DIR/rclone" ]; then
-    echo "[isolated-builder] Copying rclone to $RCLONE_DIR (host-visible for build containers) ..."
-    install -m 0755 /usr/local/bin/rclone "$RCLONE_DIR/rclone"
-else
-    echo "[isolated-builder] $RCLONE_DIR/rclone already present; skipping."
-fi
+#     ``docs`` is uid 1005 / gid 205 in the readthedocs/build images. Given
+#     by number rather than name because that user doesn't exist in THIS
+#     container. Production has it as a real user: Packer creates the host
+#     ``docs`` with the same ids and the worker runs as it, which is what
+#     makes the shared mount need no translation.
+mkdir -p "$DOCROOT"
+chown "${RTD_DOCKER_UID:-1005}:${RTD_DOCKER_GID:-205}" "$DOCROOT"
 
-# 2. Pre-build the runner venv against a uv-managed Python 3.14 by
-#    syncing the builder/ project. Same flags as the prod systemd setup
-#    unit. Both $RUNNER_VENV and $UV_PYTHON_DIR are bind-mounted from
-#    host paths (see compose), so the venv's bin/python symlink into
-#    $UV_PYTHON_DIR lives on the host filesystem — that's what lets the
-#    worker bind-mount the same host paths into build containers it
-#    spawns and have the symlink still resolve (matches production).
+# 2. Build the venv against a uv-managed Python 3.14. One venv holds
+#    everything: ``--package worker`` pulls in ``builder`` too, since the
+#    worker runs it in-process. Same flags as the prod systemd setup unit,
+#    minus the ``observability`` extra (no New Relic / Sentry in dev).
 #
-#    Idempotent: ``uv sync --frozen`` is a no-op when the venv
-#    already matches uv.lock from a previous run.
-echo "[isolated-builder] Syncing runner venv at $RUNNER_VENV (managed Python under $UV_PYTHON_DIR) ..."
-cd "$SRC/builder"
+#    Idempotent: ``uv sync --frozen`` is a no-op when the venv already
+#    matches uv.lock from a previous run.
+echo "[isolated-builder] Syncing venv at $VENV (managed Python under $UV_PYTHON_DIR) ..."
+cd "$SRC"
 UV_PYTHON_INSTALL_DIR="$UV_PYTHON_DIR" \
-UV_PROJECT_ENVIRONMENT="$RUNNER_VENV" \
-    uv sync --frozen --python 3.14 --python-preference=only-managed
+UV_PROJECT_ENVIRONMENT="$VENV" \
+    uv sync --frozen --package worker --python 3.14 --python-preference=only-managed
 
-# 3. Worker venv — sync the worker/ project. Dev omits the
-#    ``observability`` extra (no New Relic / Sentry in dev).
-echo "[isolated-builder] Syncing worker venv at $WORKER_VENV ..."
-cd "$SRC/worker"
-UV_PROJECT_ENVIRONMENT="$WORKER_VENV" \
-    uv sync --frozen --python 3.14
-
-# 4. Replace this process with the Celery worker. PYTHONPATH points at
+# 3. Replace this process with the Celery worker. PYTHONPATH points at
 #    the worker/ project dir so ``-A worker.celery`` resolves from the
 #    live source; --max-tasks-per-child=1 so the worker exits after one
 #    task (matches prod's ephemeral pattern, even though there's no AWS
@@ -92,7 +78,7 @@ UV_PROJECT_ENVIRONMENT="$WORKER_VENV" \
 echo "[isolated-builder] Starting Celery worker on queue '$RTD_BUILDS_QUEUE' ..."
 export PYTHONPATH="$SRC/worker"
 
-CMD="$WORKER_VENV/bin/celery -A worker.celery worker --loglevel=INFO --concurrency=1 --max-tasks-per-child=1 -Q ${RTD_BUILDS_QUEUE}"
+CMD="$VENV/bin/celery -A worker.celery worker --loglevel=INFO --concurrency=1 --max-tasks-per-child=1 -Q ${RTD_BUILDS_QUEUE}"
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
   echo "Running process with no reload"
   exec $CMD
