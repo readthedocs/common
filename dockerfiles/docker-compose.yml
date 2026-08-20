@@ -371,8 +371,6 @@ services:
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.isolated-builder
     volumes:
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/usr/src/builder/checkouts/readthedocs-builder
-      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/venv:/usr/src/builder/venv
-      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}/uv-python:/usr/src/builder/uv-python
 
       # The docroot. The runner reads and writes it here; every build command
       # sees the same storage inside the build container, at the same path.
