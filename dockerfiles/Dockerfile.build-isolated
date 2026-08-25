@@ -1,10 +1,10 @@
-# Dev-only image emulating the production isolated-builders AMI.
+# Dev-only image emulating the production build-isolated AMI.
 #
 # Built for: docker-compose service that runs the readthedocs-builder
 # worker package against the local broker, picks up tasks from the
-# ``isolated-builds`` queue, and spawns build containers on the host
+# ``build:isolated`` queue, and spawns build containers on the host
 # docker daemon. The companion entrypoint
-# (``common/dockerfiles/entrypoints/isolated-builder.sh``) does the
+# (``common/dockerfiles/entrypoints/build-isolated.sh``) does the
 # AMI's bake-time + boot-time work at container start, then ``exec``s
 # the Celery worker — no systemd, no New Relic, no Sentry (this is dev).
 #
@@ -67,7 +67,7 @@ RUN mkdir -p /usr/src/builder/checkouts/readthedocs-builder /usr/src/builder/ven
 WORKDIR /usr/src/builder/checkouts/readthedocs-builder
 
 # No ENTRYPOINT or CMD — the compose service supplies
-# ``command: ["/usr/src/builder/docker/isolated-builder.sh"]`` after
+# ``command: ["/usr/src/builder/docker/build-isolated.sh"]`` after
 # bind-mounting the script. Keeping it out of the image means
 # editing the entrypoint doesn't require a rebuild (matches how
 # ``web``, ``celery``, ``build``, etc. wire up their scripts).

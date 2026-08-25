@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Dev entrypoint for the isolated-builders pattern.
+# Dev entrypoint for the build-isolated pattern.
 #
 # Emulates the production AMI's two systemd units —
 # ``readthedocs-builder-setup.service`` (clone + worker venv setup) and
@@ -12,7 +12,7 @@ set -euo pipefail
 : "${RTD_BROKER_URL:?RTD_BROKER_URL must be set (e.g. redis://cache:6379/0)}"
 
 # Optional variables with defaults
-: "${RTD_BUILDS_QUEUE:=isolated-builds}"
+: "${RTD_BUILDS_QUEUE:=build:isolated}"
 : "${RTD_BUILDER_REF:=main}"
 
 SRC="/usr/src/builder/checkouts/readthedocs-builder"

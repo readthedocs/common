@@ -1,6 +1,6 @@
 volumes:
   build-user-builds:
-  isolated-builder-user-builds:
+  build-isolated-user-builds:
   storage_data:
   storage_rustfs_data:
   postgres_data_16:
@@ -316,7 +316,7 @@ services:
       readthedocs:
     command: ["../../docker/celery-beat.sh"]
 
-  # TODO: remove `build` service once we are consolidated into `isolated-builder`.
+  # TODO: remove `build` service once we are consolidated into `build-isolated`.
   build:
     stop_grace_period: 1s
     volumes:
@@ -369,11 +369,11 @@ services:
       readthedocs:
     command: ["../../docker/build.sh"]
 
-  isolated-builder:
+  build-isolated:
     stop_grace_period: 1s
     build:
       context: ${PWD}
-      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.isolated-builder
+      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.build-isolated
     volumes:
       - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/usr/src/builder/checkouts/readthedocs-builder
 
@@ -382,9 +382,9 @@ services:
       # A named volume rather than a bind-mount because the worker runs in a
       # container in dev, so the host daemon has to be able to resolve it by
       # name when the worker spawns the build container.
-      - isolated-builder-user-builds:/home/docs/checkouts
+      - build-isolated-user-builds:/home/docs/checkouts
 
-      - ${PWD}/common/dockerfiles/entrypoints/isolated-builder.sh:/usr/src/builder/docker/isolated-builder.sh
+      - ${PWD}/common/dockerfiles/entrypoints/build-isolated.sh:/usr/src/builder/docker/build-isolated.sh
       - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
 
       # docker-out-of-docker: the worker calls ``docker run`` against
@@ -398,13 +398,13 @@ services:
       - DOCKER_NO_RELOAD
       - RTD_DOCKER_COMPOSE=1
       - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
-      - RTD_BUILDS_QUEUE=isolated-builds
+      - RTD_BUILDS_QUEUE=build:isolated
       - RTD_BUILDER_REF=main
       # What the worker passes to ``docker run -v <source>:<target>`` for the
       # docroot. In prod both are just ``/home/docs/checkouts`` on the
       # instance; here the source has to be the named volume above, because
       # the host daemon resolves it and cannot see this container's paths.
-      - RTD_HOST_DOCROOT=${COMPOSE_PROJECT_NAME}_isolated-builder-user-builds
+      - RTD_HOST_DOCROOT=${COMPOSE_PROJECT_NAME}_build-isolated-user-builds
       - RTD_DOCROOT=/home/docs/checkouts
 
       # Have build containers join the compose network so they can
@@ -416,7 +416,7 @@ services:
     tty: true
     networks:
       readthedocs:
-    command: ["/usr/src/builder/docker/isolated-builder.sh"]
+    command: ["/usr/src/builder/docker/build-isolated.sh"]
 
   cache:
     image: redis:6.2.6  # Match production version
