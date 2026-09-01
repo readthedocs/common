@@ -1,6 +1,6 @@
 extends: spelling
 message: "Did you really mean '%s'?"
-level: error
+level: warning
 # Custom dictionary for Read the Docs technical terms
 filters:
   # Core web technologies
