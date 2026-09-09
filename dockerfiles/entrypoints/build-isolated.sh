@@ -56,7 +56,7 @@ UV_PROJECT_ENVIRONMENT="$VENV" \
 echo "Starting Celery worker on queue '$RTD_BUILDS_QUEUE' ..."
 export PYTHONPATH="$SRC/worker"
 
-CMD="$VENV/bin/celery -A worker.celery worker --loglevel=INFO --concurrency=1 --max-tasks-per-child=1 -Q ${RTD_BUILDS_QUEUE}"
+CMD="$VENV/bin/celery -A worker.celery worker --loglevel=INFO --concurrency=1 --max-tasks-per-child=1 --without-mingle --without-gossip --without-heartbeat -Q ${RTD_BUILDS_QUEUE}"
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
   echo "Running process with no reload"
   exec $CMD
