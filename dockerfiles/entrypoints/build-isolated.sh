@@ -51,16 +51,16 @@ UV_PROJECT_ENVIRONMENT="$VENV" \
     uv sync --frozen --package worker --python 3.14 --python-preference=only-managed
 
 # 3. Replace this process with the Celery worker. PYTHONPATH points at
-#    the worker/ project dir so ``-A worker.celery`` resolves from the
+#    the worker/ project dir so ``--app=worker.celery`` resolves from the
 #    live source.
 echo "Starting Celery worker on queue '$RTD_BUILDS_QUEUE' ..."
 export PYTHONPATH="$SRC/worker"
 
-CMD="$VENV/bin/celery -A worker.celery worker --loglevel=INFO --concurrency=1 --max-tasks-per-child=1 --without-mingle --without-gossip --without-heartbeat -Q ${RTD_BUILDS_QUEUE}"
+CMD="$VENV/bin/celery --quiet --app=worker.celery worker --loglevel=INFO --concurrency=1 --max-tasks-per-child=1 --without-mingle --without-gossip --without-heartbeat --queues=${RTD_BUILDS_QUEUE}"
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
   echo "Running process with no reload"
   exec $CMD
 else
   echo "Running process with reload"
-  exec nodemon --config /usr/src/builder/checkouts/nodemon.json --exec $CMD
+  exec nodemon --config /usr/src/builder/checkouts/nodemon.json --exec "$CMD"
 fi
