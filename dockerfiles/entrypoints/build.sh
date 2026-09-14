@@ -9,7 +9,7 @@
 # Ref https://docs.celeryq.dev/en/stable/userguide/workers.html#persistent-revokes.
 CELERY_STATE_DIR=/var/run/celery/
 mkdir -p $CELERY_STATE_DIR
-CMD="uv run python3 -m celery --quiet --app=${CELERY_APP_NAME}.worker worker --optimization=fair --concurrency=1 --queues=builder,celery,default,build01,build:default,build:large --loglevel=${CELERY_LOG_LEVEL} --statedb=${CELERY_STATE_DIR}worker.state"
+CMD="uv run python3 -m celery --quiet --app=${CELERY_APP_NAME}.worker worker --optimization=fair --concurrency=1 --queues=builder,celery,default,build01,build:default,build:large --loglevel=${CELERY_LOG_LEVEL} --statedb=${CELERY_STATE_DIR}worker.state --without-mingle --without-gossip --without-heartbeat"
 
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
   echo "Running process with no reload"
