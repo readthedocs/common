@@ -439,7 +439,12 @@ services:
       readthedocs:
 
   storage:
-    image: rustfs/rustfs:1.0.0-alpha.83
+    # Pinned on 1.0.0-alpha.70 on purpose. Newer releases ship an s3s multipart
+    # parser with a 64 KiB boundary-buffer cap that makes multi-MB presigned POST uploads
+    # (direct artifacts upload) fail intermittently with "failed to read file
+    # stream". alpha.70 predates it: https://github.com/s3s-project/s3s/pull/413
+    # It took me a while to find this issue, so pinning the version is necessary.
+    image: rustfs/rustfs:1.0.0-alpha.70
     ports:
       - "9000:9000"
       - "9001:9001"
