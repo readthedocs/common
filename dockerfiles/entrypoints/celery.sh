@@ -8,7 +8,7 @@ if [ "$SEARCH" != "" ]; then
   ../../docker/wait-for-it.sh search:9200 --timeout=180 --strict
 fi
 
-CMD="uv run python3 -m celery --quiet --app=${CELERY_APP_NAME}.worker worker --optimization=fair --concurrency=2 --queues=web,web01,reindex,autoscaling --loglevel=${CELERY_LOG_LEVEL} --without-mingle --without-gossip --without-heartbeat" 
+CMD="uv run python3 -m celery --quiet --app=${CELERY_APP_NAME}.worker worker --optimization=fair --concurrency=2 --queues=web,web01,reindex,autoscaling --loglevel=${CELERY_LOG_LEVEL} --without-mingle --without-gossip --without-heartbeat"
 
 if [ -n "${DOCKER_NO_RELOAD}" ]; then
   echo "Running process with no reload"
