@@ -96,6 +96,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_TRACEBACKS
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
       - RTD_FILETREEDIFF_ALL
       # AWS related settings.
@@ -146,6 +147,7 @@ services:
       - RUSTFS_ROOT_PASSWORD=password
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_TRACEBACKS
       - RTD_GITHUB_APP_ID
       - RTD_GITHUB_APP_NAME
       - RTD_GITHUB_APP_WEBHOOK_SECRET
@@ -233,6 +235,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_TRACEBACKS
       - RTD_GITHUB_APP_ID
       - RTD_GITHUB_APP_NAME
       - RTD_GITHUB_APP_WEBHOOK_SECRET
@@ -283,6 +286,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_TRACEBACKS
       - RTD_GITHUB_APP_ID
       - RTD_GITHUB_APP_NAME
       - RTD_GITHUB_APP_WEBHOOK_SECRET
@@ -349,6 +353,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_TRACEBACKS
       - RTD_FILETREEDIFF_ALL
       # TODO: remove these from here, as builders should not
       # need to have these settings.
