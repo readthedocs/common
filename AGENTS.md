@@ -94,6 +94,14 @@ Always run `tox -e migrations` after adding or modifying migration files. This r
 `manage.py makemigrations --check --dry-run` and catches missing or inconsistent migrations
 before they cause `IntegrityError` failures at deploy time.
 
+## Logging
+
+- Use `structlog` keyword arguments for context, never string interpolation
+- Name keys as `<model>_<field>`: `project_slug`, `build_id`, `user_username`, `organization_slug`
+- Use `_id`, not `_pk`: `invitation_id=invitation.pk`
+- Don't use bare keys like `project=`, `build=`, or `username=`
+- Bind repeated context once with `structlog.contextvars.bind_contextvars(...)` instead of passing it to every call
+
 ## Front-end
 
 - Most templates/css/js are in a separate repository (https://github.com/readthedocs/ext-theme/).
