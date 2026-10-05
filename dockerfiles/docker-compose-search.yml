@@ -27,8 +27,6 @@ services:
       # Disable HTTPS on development.
       - xpack.security.transport.ssl.enabled=false
       - 'ES_JAVA_OPTS=-Xms128m -Xmx128m'
-    ports:
-      - "${RTDDEV_PORT_SEARCH:-9200}:9200"
     links:
       - web
       - celery

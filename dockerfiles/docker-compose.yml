@@ -30,7 +30,7 @@ services:
       readthedocs:
     volumes:
       - ${PWD}/dockerfiles/nginx:/etc/nginx/templates
-      # Each repository symlinks `side-by-side.conf.template` from its templates to this directory,
+      # Each repository symlinks the templates in this directory from its own templates,
       # mounted at the path the relative symlink resolves to inside the container.
       - ${PWD}/common/dockerfiles/nginx:/etc/common/dockerfiles/nginx:ro
     # Required on Linux by `side-by-side.conf.template`; Docker Desktop resolves it already.
@@ -75,8 +75,6 @@ services:
       - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/webpack.config.js:/usr/src/app/checkouts/addons/webpack.config.js
     tty: true
     working_dir: /usr/src/app/checkouts/addons/
-    ports:
-      - "${RTDDEV_PORT_ADDONS:-8000}:8000"
     command: [
       "npm",
       "run",
@@ -104,8 +102,6 @@ services:
       - RTD_DJANGO_DEBUG
       - RTD_LOGGING_SUPPRESS_TRACEBACKS
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
-      - RTDDEV_PORT_WEBPACK
-      - RTDDEV_PORT_STORAGE
       - RTD_FILETREEDIFF_ALL
       # AWS related settings.
       - RTD_S3_PROVIDER
@@ -149,8 +145,6 @@ services:
       - INIT=${INIT:-}
       - DOCKER_NO_RELOAD
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
-      - RTDDEV_PORT_WEBPACK
-      - RTDDEV_PORT_STORAGE
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
       - RUSTFS_ROOT_USER=admin
@@ -196,8 +190,6 @@ services:
       context: ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.webpack
     working_dir: /usr/src/app/checkouts/ext-theme
-    ports:
-      - "${RTDDEV_PORT_WEBPACK:-10001}:10001"
     volumes:
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/src:/usr/src/app/checkouts/ext-theme/src
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/readthedocsext:/usr/src/app/checkouts/ext-theme/readthedocsext
@@ -455,9 +447,6 @@ services:
 
   storage:
     image: rustfs/rustfs:1.0.0-alpha.83
-    ports:
-      - "${RTDDEV_PORT_STORAGE:-9000}:9000"
-      - "${RTDDEV_PORT_STORAGE_CONSOLE:-9001}:9001"
     environment:
       - RUSTFS_ADDRESS=:9000
       - RUSTFS_ACCESS_KEY=admin
