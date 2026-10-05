@@ -20,7 +20,7 @@ services:
     stop_grace_period: 1s
     image: nginx:1.22
     ports:
-      - "80:80"
+      - "${RTDDEV_PORT_NGINX:-80}:80"
     links:
       - web
       - proxito
@@ -70,7 +70,7 @@ services:
     tty: true
     working_dir: /usr/src/app/checkouts/addons/
     ports:
-      - "8000:8000"
+      - "${RTDDEV_PORT_ADDONS:-8000}:8000"
     command: [
       "npm",
       "run",
@@ -98,6 +98,8 @@ services:
       - RTD_DJANGO_DEBUG
       - RTD_LOGGING_SUPPRESS_TRACEBACKS
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
+      - RTDDEV_PORT_WEBPACK
+      - RTDDEV_PORT_STORAGE
       - RTD_FILETREEDIFF_ALL
       # AWS related settings.
       - RTD_S3_PROVIDER
@@ -141,6 +143,8 @@ services:
       - INIT=${INIT:-}
       - DOCKER_NO_RELOAD
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
+      - RTDDEV_PORT_WEBPACK
+      - RTDDEV_PORT_STORAGE
       - RTD_PRODUCTION_DOMAIN
       - RTD_PUBLIC_DOMAIN
       - RUSTFS_ROOT_USER=admin
@@ -187,7 +191,7 @@ services:
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.webpack
     working_dir: /usr/src/app/checkouts/ext-theme
     ports:
-      - "10001:10001"
+      - "${RTDDEV_PORT_WEBPACK:-10001}:10001"
     volumes:
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/src:/usr/src/app/checkouts/ext-theme/src
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/readthedocsext:/usr/src/app/checkouts/ext-theme/readthedocsext
@@ -446,8 +450,8 @@ services:
   storage:
     image: rustfs/rustfs:1.0.0-alpha.83
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "${RTDDEV_PORT_STORAGE:-9000}:9000"
+      - "${RTDDEV_PORT_STORAGE_CONSOLE:-9001}:9001"
     environment:
       - RUSTFS_ADDRESS=:9000
       - RUSTFS_ACCESS_KEY=admin
