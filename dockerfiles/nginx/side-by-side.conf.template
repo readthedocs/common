@@ -1,0 +1,17 @@
+# Forward the other environment's domains (community <-> business) to its NGINX,
+# so both can run side by side: whichever one owns port 80 forwards to the other,
+# which publishes its NGINX on another host port (`RTDDEV_PORT_NGINX`).
+# Returns a 502 for those domains when the other environment isn't running.
+server {
+    listen 80;
+    server_name ${NGINX_SIDE_BY_SIDE_SERVER_NAME};
+    access_log off;
+    client_max_body_size 0;
+
+    location / {
+        proxy_pass http://host.docker.internal:${NGINX_SIDE_BY_SIDE_PORT};
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 300s;
+    }
+}

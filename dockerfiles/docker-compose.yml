@@ -30,6 +30,10 @@ services:
       readthedocs:
     volumes:
       - ${PWD}/dockerfiles/nginx:/etc/nginx/templates
+      - ${PWD}/common/dockerfiles/nginx/side-by-side.conf.template:/etc/nginx/templates/side-by-side.conf.template
+    # Required on Linux by `side-by-side.conf.template`; Docker Desktop resolves it already.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # Disable logs for NGINX by default because they are too noisy and we have
     # better logs in our application code
     logging:
