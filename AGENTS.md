@@ -105,3 +105,8 @@ before they cause `IntegrityError` failures at deploy time.
 ## Front-end
 
 - Most templates/css/js are in a separate repository (https://github.com/readthedocs/ext-theme/).
+- Fomantic UI is the design system. Use an existing variation before adding CSS, and never use inline styles or `!important`.
+- Name custom CSS as a variation on the Fomantic element it extends, like `.ui.invertable.image` or `.ui.labeled.image`, and keep it in that element's `.overrides` file in the theme.
+- Take colors from the theme variables (`@primaryColor`, `@secondaryColor`), not hex values or named colors.
+- In templates, use Django comments and named blocks, load tags explicitly, and wrap user-facing strings in `{% trans %}`.
+- Rebuild and commit the theme's static assets after changing styles or JavaScript.
