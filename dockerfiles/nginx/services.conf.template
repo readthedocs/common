@@ -55,8 +55,8 @@ server {
     location / {
         set $upstream http://storage:9000;
         proxy_pass $upstream;
-        # Keep path-style buckets: RustFS could read a bucket from the hostname otherwise.
-        proxy_set_header Host storage:9000;
+        # S3 clients sign the Host header.
+        proxy_set_header Host $http_host;
     }
 }
 
@@ -67,6 +67,11 @@ server {
     access_log off;
     resolver 127.0.0.11 valid=10s;
 
+    location = / {
+        return 302 /rustfs/console/;
+    }
+
+    # The console calls the S3 and admin APIs on its own origin, signing the Host header.
     location / {
         set $upstream http://storage:9001;
         proxy_pass $upstream;
