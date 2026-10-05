@@ -9,7 +9,6 @@ DOCKER_COMPOSE = "common/dockerfiles/docker-compose.yml"
 DOCKER_COMPOSE_SEARCH = "common/dockerfiles/docker-compose-search.yml"
 DOCKER_COMPOSE_ASSETS = "dockerfiles/docker-compose-assets.yml"
 DOCKER_COMPOSE_OVERRIDE = "docker-compose.override.yml"
-DOCKER_COMPOSE_FRONT = "common/dockerfiles/docker-compose-front.yml"
 DOCKER_COMPOSE_COMMAND = f"docker compose --project-directory=. -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}"
 
 
@@ -65,24 +64,6 @@ def down(c, volumes=False):
         c.run(f"{DOCKER_COMPOSE_COMMAND} down -v", pty=True)
     else:
         c.run(f"{DOCKER_COMPOSE_COMMAND} down", pty=True)
-
-
-@task(
-    help={
-        "down": "Stop and remove the proxy instead of starting it (default: False)",
-    }
-)
-def front(c, down=False):
-    """
-    Start the proxy that runs community and business side by side.
-
-    The proxy takes port 80, so start each environment on its own port first:
-    `RTDDEV_PORT_NGINX=10080` for community and `RTDDEV_PORT_NGINX=10081` for business.
-    """
-    if down:
-        c.run(f"docker compose -f {DOCKER_COMPOSE_FRONT} down", pty=True)
-    else:
-        c.run(f"docker compose -f {DOCKER_COMPOSE_FRONT} up --detach", pty=True)
 
 
 @task(
