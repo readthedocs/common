@@ -23,6 +23,7 @@ else
 fi
 TARGET_REPOS=(
     readthedocs.org
+    ext-theme
     readthedocs-ext
     readthedocs-ops
     readthedocs-corporate
