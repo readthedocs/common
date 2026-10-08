@@ -1,0 +1,15 @@
+[codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = .git,*.svg,*.css,*.min.*,*.ai,locale,package-lock.json,vendor,migrations,CHANGELOG.rst,common,media/javascript,*/search/tests/data/*,.codespellrc
+check-hidden = true
+# Ignore camelCase and PascalCase identifiers, URLs, and very long lines (minified)
+# Also: specific patterns in test fixtures and docs examples
+ignore-regex = \b[a-z]+[A-Z]\w*\b|\b[A-Z][a-z]+[A-Z]\w*\b|https?://\S+|.{300,}|"pyton\b|\|(ative|ment)\||"Hel" will match\b|ative: ''|help_text *=.*|\bOre\b|\bWile E\. Coyote\b|\bre-(used?|using|declare)\b|\bpre-selected\b
+# fo,te - ISO 639 language codes (Faroese, Telugu)
+# astroid - Python AST library name
+# requestor - used in RTD codebase
+# syntaxt - Django model field, changing requires DB migration
+# DED - Django Elasticsearch DSL abbreviation
+# indx - intentional non-matching search query in tests
+# ore - used in example diff output
+ignore-words-list = fo,te,astroid,requestor,syntaxt,DED,indx,ore
