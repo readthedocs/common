@@ -1,0 +1,97 @@
+# Development services, served by hostname instead of their own host ports,
+# so both environments can run side by side (see `side-by-side.conf.template`).
+#
+# Upstreams are resolved per request (`resolver` + variable),
+# since these containers may start after NGINX, or not at all (`--no-search`).
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
+# ext-theme webpack development server, including its live reload websocket.
+server {
+    listen 80;
+    server_name assets.${NGINX_WEB_SERVER_NAME};
+    access_log off;
+    resolver 127.0.0.11 valid=10s;
+
+    location / {
+        set $upstream http://webpack:10001;
+        proxy_pass $upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $http_host;
+    }
+}
+
+# Addons development server.
+server {
+    listen 80;
+    server_name addons.${NGINX_WEB_SERVER_NAME};
+    access_log off;
+    resolver 127.0.0.11 valid=10s;
+
+    location / {
+        set $upstream http://addons:8000;
+        proxy_pass $upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $http_host;
+    }
+}
+
+# S3 API, used by presigned upload URLs.
+server {
+    listen 80;
+    server_name storage.${NGINX_WEB_SERVER_NAME};
+    access_log off;
+    resolver 127.0.0.11 valid=10s;
+    client_max_body_size 0;
+    proxy_request_buffering off;
+
+    location / {
+        set $upstream http://storage:9000;
+        proxy_pass $upstream;
+        # S3 clients sign the Host header.
+        proxy_set_header Host $http_host;
+    }
+}
+
+# S3 web console.
+server {
+    listen 80;
+    server_name storage-console.${NGINX_WEB_SERVER_NAME};
+    access_log off;
+    resolver 127.0.0.11 valid=10s;
+
+    location = / {
+        return 302 /rustfs/console/;
+    }
+
+    # The console calls the S3 and admin APIs on its own origin, signing the Host header.
+    location / {
+        set $upstream http://storage:9001;
+        proxy_pass $upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $http_host;
+    }
+}
+
+# Elasticsearch.
+server {
+    listen 80;
+    server_name search.${NGINX_WEB_SERVER_NAME};
+    access_log off;
+    resolver 127.0.0.11 valid=10s;
+
+    location / {
+        set $upstream http://search:9200;
+        proxy_pass $upstream;
+        proxy_set_header Host $http_host;
+    }
+}

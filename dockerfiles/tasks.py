@@ -11,6 +11,48 @@ DOCKER_COMPOSE_ASSETS = "dockerfiles/docker-compose-assets.yml"
 DOCKER_COMPOSE_OVERRIDE = "docker-compose.override.yml"
 DOCKER_COMPOSE_COMMAND = f"docker compose --project-directory=. -f {DOCKER_COMPOSE} -f {DOCKER_COMPOSE_OVERRIDE} -f {DOCKER_COMPOSE_SEARCH}"
 
+# Host port for NGINX when the other environment already owns port 80.
+# The other environment forwards our domains here (see `nginx/side-by-side.conf.template`).
+NGINX_SIDE_BY_SIDE_PORTS = {
+    "community": "10080",
+    "commercial": "10081",
+}
+
+
+def compose_project_name():
+    if os.environ.get("COMPOSE_PROJECT_NAME"):
+        return os.environ["COMPOSE_PROJECT_NAME"]
+    with open(".env") as f:
+        for line in f:
+            name, _, value = line.strip().partition("=")
+            if name == "COMPOSE_PROJECT_NAME":
+                return value
+    return None
+
+
+def nginx_port(c):
+    """
+    Host port for NGINX: 80, unless another container already publishes it.
+
+    Run community and business at the same time without any configuration:
+    the second one to start gets its side-by-side port.
+    ``RTDDEV_PORT_NGINX`` overrides it.
+    """
+    if os.environ.get("RTDDEV_PORT_NGINX"):
+        return os.environ["RTDDEV_PORT_NGINX"]
+
+    project = compose_project_name()
+    side_by_side_port = NGINX_SIDE_BY_SIDE_PORTS.get(project)
+    if not side_by_side_port:
+        return "80"
+
+    result = c.run("docker ps --filter publish=80 --format '{{.Names}}'", hide=True, warn=True)
+    for owner in result.stdout.split():
+        if owner != f"{project}-nginx-1":
+            print(f"Port 80 is used by {owner}, publishing NGINX on port {side_by_side_port}.")
+            return side_by_side_port
+    return "80"
+
 
 @task(
     help={
@@ -50,7 +92,7 @@ def build(c, cache=False):
 )
 def compose(c, command):
     """Pass the command to docker compose directly."""
-    c.run(f"{DOCKER_COMPOSE_COMMAND} {command}", pty=True)
+    c.run(f"RTDDEV_PORT_NGINX={nginx_port(c)} {DOCKER_COMPOSE_COMMAND} {command}", pty=True)
 
 
 @task(
@@ -99,6 +141,7 @@ def up(
     cmd.append("INIT=t" if init else "INIT=")
     cmd.append("DOCKER_NO_RELOAD=t" if not reload else "DOCKER_NO_RELOAD=")
     cmd.append(f"RTD_LOGGING_LEVEL={log_level}")
+    cmd.append(f"RTDDEV_PORT_NGINX={nginx_port(c)}")
 
     cmd.append("docker compose")
     cmd.append("--project-directory=.")

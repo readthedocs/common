@@ -20,7 +20,7 @@ services:
     stop_grace_period: 1s
     image: nginx:1.22
     ports:
-      - "80:80"
+      - "${RTDDEV_PORT_NGINX:-80}:80"
     links:
       - web
       - proxito
@@ -30,6 +30,12 @@ services:
       readthedocs:
     volumes:
       - ${PWD}/dockerfiles/nginx:/etc/nginx/templates
+      # Each repository symlinks the templates in this directory from its own templates,
+      # mounted at the path the relative symlink resolves to inside the container.
+      - ${PWD}/common/dockerfiles/nginx:/etc/common/dockerfiles/nginx:ro
+    # Required on Linux by `side-by-side.conf.template`; Docker Desktop resolves it already.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # Disable logs for NGINX by default because they are too noisy and we have
     # better logs in our application code
     logging:
@@ -69,8 +75,6 @@ services:
       - ${PWD}/${RTDDEV_PATH_ADDONS:-../addons}/webpack.config.js:/usr/src/app/checkouts/addons/webpack.config.js
     tty: true
     working_dir: /usr/src/app/checkouts/addons/
-    ports:
-      - "8000:8000"
     command: [
       "npm",
       "run",
@@ -186,8 +190,6 @@ services:
       context: ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}
       dockerfile: ${PWD}/common/dockerfiles/Dockerfile.webpack
     working_dir: /usr/src/app/checkouts/ext-theme
-    ports:
-      - "10001:10001"
     volumes:
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/src:/usr/src/app/checkouts/ext-theme/src
       - ${PWD}/${RTDDEV_PATH_EXT_THEME:-../ext-theme}/readthedocsext:/usr/src/app/checkouts/ext-theme/readthedocsext
@@ -445,9 +447,6 @@ services:
 
   storage:
     image: rustfs/rustfs:1.0.0-alpha.83
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     environment:
       - RUSTFS_ADDRESS=:9000
       - RUSTFS_ACCESS_KEY=admin
