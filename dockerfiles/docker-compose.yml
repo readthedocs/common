@@ -1,5 +1,6 @@
 volumes:
   build-user-builds:
+  build-isolated-user-builds:
   storage_data:
   storage_rustfs_data:
   postgres_data_16:
@@ -95,6 +96,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_THIRDPARTY_TRACEBACKS
       - RTD_EXT_THEME_DEV_SERVER_ENABLED
       - RTD_FILETREEDIFF_ALL
       # AWS related settings.
@@ -106,6 +108,7 @@ services:
       - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
       - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
       - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_S3_BUILD_UPLOADS_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
 
     # Allow us to run `docker attach readthedocsorg_proxito_1` and get
@@ -144,6 +147,7 @@ services:
       - RUSTFS_ROOT_PASSWORD=password
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_THIRDPARTY_TRACEBACKS
       - RTD_GITHUB_APP_ID
       - RTD_GITHUB_APP_NAME
       - RTD_GITHUB_APP_WEBHOOK_SECRET
@@ -168,6 +172,7 @@ services:
       - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
       - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
       - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_S3_BUILD_UPLOADS_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
     stdin_open: true
@@ -230,6 +235,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_THIRDPARTY_TRACEBACKS
       - RTD_GITHUB_APP_ID
       - RTD_GITHUB_APP_NAME
       - RTD_GITHUB_APP_WEBHOOK_SECRET
@@ -254,6 +260,7 @@ services:
       - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
       - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
       - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_S3_BUILD_UPLOADS_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
     stdin_open: true
@@ -279,6 +286,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_THIRDPARTY_TRACEBACKS
       - RTD_GITHUB_APP_ID
       - RTD_GITHUB_APP_NAME
       - RTD_GITHUB_APP_WEBHOOK_SECRET
@@ -303,6 +311,7 @@ services:
       - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
       - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
       - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_S3_BUILD_UPLOADS_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
       - RTD_OPENAI_API_KEY
     stdin_open: true
@@ -311,6 +320,7 @@ services:
       readthedocs:
     command: ["../../docker/celery-beat.sh"]
 
+  # TODO: remove `build` service once we are consolidated into `build-isolated`.
   build:
     stop_grace_period: 1s
     volumes:
@@ -327,7 +337,7 @@ services:
       # Because of this, we need to use a shared volume between them
       - build-user-builds:/usr/src/app/checkouts/readthedocs.org/user_builds
 
-      # Docker in Docker
+      # Docker in Docker: old implementation (`build-default` queue)
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - web
@@ -343,6 +353,7 @@ services:
       - RTD_PUBLIC_DOMAIN
       - RTD_LOGGING_LEVEL
       - RTD_DJANGO_DEBUG
+      - RTD_LOGGING_SUPPRESS_THIRDPARTY_TRACEBACKS
       - RTD_FILETREEDIFF_ALL
       # TODO: remove these from here, as builders should not
       # need to have these settings.
@@ -355,12 +366,62 @@ services:
       - RTD_S3_BUILD_COMMANDS_STORAGE_BUCKET
       - RTD_S3_BUILD_TOOLS_STORAGE_BUCKET
       - RTD_S3_STATIC_STORAGE_BUCKET
+      - RTD_S3_BUILD_UPLOADS_STORAGE_BUCKET
       - RTD_AWS_S3_REGION_NAME
     stdin_open: true
     tty: true
     networks:
       readthedocs:
     command: ["../../docker/build.sh"]
+
+  build-isolated:
+    stop_grace_period: 1s
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/common/dockerfiles/Dockerfile.build-isolated
+    volumes:
+      - ${PWD}/${RTDDEV_PATH_BUILDER:-../readthedocs-builder}:/usr/src/builder/checkouts/readthedocs-builder
+
+      # The docroot. The runner reads and writes it here; every build command
+      # sees the same storage inside the build container, at the same path.
+      # A named volume rather than a bind-mount because the worker runs in a
+      # container in dev, so the host daemon has to be able to resolve it by
+      # name when the worker spawns the build container.
+      - build-isolated-user-builds:/home/docs/checkouts
+
+      - ${PWD}/common/dockerfiles/entrypoints/build-isolated.sh:/usr/src/builder/docker/build-isolated.sh
+      - ${PWD}/common/dockerfiles/nodemon.json:/usr/src/builder/checkouts/nodemon.json
+
+      # docker-out-of-docker: the worker calls ``docker run`` against
+      # the host daemon to spawn build containers.
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - cache
+      - storage
+      - web
+    environment:
+      - DOCKER_NO_RELOAD
+      - RTD_DOCKER_COMPOSE=1
+      - RTD_BROKER_URL=redis://:redispassword@cache:6379/0
+      - RTD_BUILDS_QUEUE=build:isolated
+      - RTD_BUILDER_REF=main
+      # What the worker passes to ``docker run -v <source>:<target>`` for the
+      # docroot. In prod both are just ``/home/docs/checkouts`` on the
+      # instance; here the source has to be the named volume above, because
+      # the host daemon resolves it and cannot see this container's paths.
+      - RTD_HOST_DOCROOT=${COMPOSE_PROJECT_NAME}_build-isolated-user-builds
+      - RTD_DOCROOT=/home/docs/checkouts
+
+      # Have build containers join the compose network so they can
+      # reach the API at ``http://web`` via service-name DNS. Derived from the
+      # compose project so it's correct for both community (``community``) and
+      # commercial (``commercial``) — a hardcoded value breaks the other env.
+      - RTD_BUILD_NETWORK=${COMPOSE_PROJECT_NAME}_readthedocs
+    stdin_open: true
+    tty: true
+    networks:
+      readthedocs:
+    command: ["/usr/src/builder/docker/build-isolated.sh"]
 
   cache:
     image: redis:6.2.6  # Match production version
