@@ -210,8 +210,9 @@ def restart(c, containers):
 def pull(c):
     """Pull all docker images required for build servers."""
     images = [
-        ("ubuntu-22.04-2024.01.29", "ubuntu-22.04"),
-        ("ubuntu-24.04-2024.06.17", "ubuntu-24.04"),
+        ("ubuntu-22.04-2026.10.21", "ubuntu-22.04"),
+        ("ubuntu-24.04-2026.10.21", "ubuntu-24.04"),
+        ("ubuntu-26.04-2026.10.21", "ubuntu-26.04"),
     ]
     for image, tag in images:
         c.run(f"docker pull readthedocs/build:{image}", pty=True)
@@ -242,7 +243,7 @@ def test(c, arguments="", running=True):
     help={
         "tool": "build.tool to compile (python, nodejs, rust, golang)",
         "version": "specific version for the tool",
-        "os": "ubuntu-20.04, ubuntu-22.04, ubuntu-24.04 (default)",
+        "os": "ubuntu-22.04, ubuntu-24.04, ubuntu-26.04 (default)",
     }
 )
 def compilebuildtool(c, tool, version, os=None):
