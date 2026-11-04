@@ -424,7 +424,7 @@ services:
     command: ["/usr/src/builder/docker/build-isolated.sh"]
 
   cache:
-    image: redis:6.2.6  # Match production version
+    image: valkey/valkey:9.1.3
     command: >
           --requirepass "redispassword"
     networks:
