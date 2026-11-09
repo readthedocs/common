@@ -44,7 +44,6 @@ It supports multiple documentation tools (Sphinx, MkDocs, etc.) and automaticall
   1. The problem: what was wrong or missing.
   2. The approach, and anything the diff doesn't make obvious: a judgement call, a side fix made along the way, a behavior change.
   3. What the reviewer or merger has to do, if anything: a redirect to add, a setting to change, a follow-up this unblocks.
-- Keep it under about 120 words. One paragraph is fine.
 - Describe only this PR: no roadmap, no "first of several", no links to other PRs unless the reviewer must read them first. Link issues it fixes or relates to.
 - Don't restate _what_ changed — no "Changes" section, changelog, file lists, or per-change bullets — since the diff already shows that.
 - Decide, don't ask: state the choice made and why in a clause, not as an open question to the reviewer.
