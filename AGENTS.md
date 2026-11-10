@@ -37,6 +37,9 @@ It supports multiple documentation tools (Sphinx, MkDocs, etc.) and automaticall
 
 - Always open pull requests as drafts
 - Use feature branches for all changes
+- Name branches `claude/<short-description>`, e.g. `claude/docs-direct-upload-business`
+- Never open pull requests or push commits for security fixes without asking first.
+  Public PRs can disclose vulnerabilities before they're patched in production.
 - Prefix pull request titles, example `Api:`, `Builds:`, or `Docs:`.
 - Open with a summary a human wrote or chose: the shortest text a reader can take in to know what the pull request is for and whether it deserves their attention. One or two sentences; a screenshot too when one shows the change. Before opening the pull request, ask the author for it. They may lift a sentence from your write-up, but it leads only once they have chosen it. Never open with your own text.
 - Put your own write-up below that, inside `<details>`, with the model name (and effort level, if you know it) as the `<summary>` — `<summary>Claude Opus 5.5</summary>`. That line is the note that the rest is agent-written: don't add another, and some hosts append a footer of their own. Include the session link inside, if there is one. This is the details-summary pattern: https://simonwillison.net/2026/Nov/9/details-summary/
