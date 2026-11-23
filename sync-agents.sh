@@ -25,6 +25,7 @@ TARGET_REPOS=(
     readthedocs.org
     ext-theme
     readthedocs-ext
+    readthedocs-builder
     readthedocs-ops
     readthedocs-corporate
     readthedocs-corporate-ops
