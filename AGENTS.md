@@ -27,6 +27,11 @@ It supports multiple documentation tools (Sphinx, MkDocs, etc.) and automaticall
 - Elasticsearch for search
 - Redis for caching and Celery for background tasks
 
+## Python
+
+- The target runtime is **Python 3.14**; use syntax and standard-library features available through 3.14.
+- Multiple exception types need no parentheses (PEP 758): `except ValueError, TypeError:` is valid 3.14 syntax and catches both types — don't flag it as a Python 2 relic or a syntax error. Binding an exception still requires `as`.
+
 ## Commits
 
 - Use short descriptive commit messages
